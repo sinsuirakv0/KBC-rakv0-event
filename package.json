@@ -1,0 +1,16 @@
+{
+  "name": "kbc-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "にゃんこ大戦争イベントデータ取得・変換バックエンド",
+  "scripts": {
+    "start":       "node scripts/run.js",
+    "force":       "node scripts/run.js --force",
+    "force:gatya": "node scripts/run.js --force gatya",
+    "force:sale":  "node scripts/run.js --force sale",
+    "force:item":  "node scripts/run.js --force item"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
