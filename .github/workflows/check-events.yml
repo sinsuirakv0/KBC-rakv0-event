@@ -1,0 +1,36 @@
+name: Check Events
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"  # 30分ごとに実行
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "強制更新するファイル（例: gatya sale item / 空欄で全部）"
+        required: false
+        default: ""
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Node.js のセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: 通常実行
+        if: ${{ github.event.inputs.force == '' }}
+        run: node scripts/run.js
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: 強制更新
+        if: ${{ github.event.inputs.force != '' }}
+        run: node scripts/run.js --force ${{ github.event.inputs.force }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
