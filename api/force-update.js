@@ -2,7 +2,7 @@ const GITHUB_OWNER  = "sinsuirakv0";
 const GITHUB_REPO   = "KBC-rakv0-event";
 const WORKFLOW_FILE = "check-events.yml";
 const GITHUB_BRANCH = "main";
-const GITHUB_TOKEN  = process.env.GH_TOKEN;
+const GITHUB_TOKEN  = process.env.GH_TOKEN_EVENT;
 
 const VALID_TYPES = ["gatya", "sale", "item"];
 
