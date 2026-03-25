@@ -1,8 +1,6 @@
 name: Check Events
 
 on:
-  schedule:
-    - cron: "*/30 * * * *"  # 30分ごとに実行
   workflow_dispatch:
     inputs:
       force:
@@ -21,7 +19,7 @@ jobs:
       - name: Node.js のセットアップ
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
 
       - name: 通常実行
         if: ${{ github.event.inputs.force == '' }}
