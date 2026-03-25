@@ -25,10 +25,10 @@ jobs:
         if: ${{ github.event.inputs.force == '' }}
         run: node scripts/run.js
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN_EVENT }}
+          GH_TOKEN_EVENT: ${{ secrets.GH_TOKEN_EVENT }}
 
       - name: 強制更新
         if: ${{ github.event.inputs.force != '' }}
         run: node scripts/run.js --force ${{ github.event.inputs.force }}
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN_EVENT }}
+          GH_TOKEN_EVENT: ${{ secrets.GH_TOKEN_EVENT }}
