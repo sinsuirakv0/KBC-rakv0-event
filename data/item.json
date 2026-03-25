@@ -1,0 +1,1358 @@
+{
+  "updatedAt": "26/03/25 15:51:14",
+  "data": [
+    {
+      "header": {
+        "startDate": "20160101",
+        "startTime": "0",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "50700",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 5,
+        "giftType": 202,
+        "giftAmount": 1,
+        "title": "毎日もらえる、にゃんこチケット！",
+        "message": "ログインボーナスです。<br>にゃんこチケットがプレゼントされました☆",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20160101",
+        "startTime": "0",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "50700",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 5000,
+        "giftType": 901,
+        "giftAmount": 1,
+        "title": "カムバックキャンペーン！",
+        "message": "復帰ユーザーさんに9日連続の応援ボーナス！",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20181115",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "80000",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 5100,
+        "giftType": 930,
+        "giftAmount": 0,
+        "title": "にゃんこクラブ☆ゴールド会員限定ログインスタンプ",
+        "message": "ゴールド会員のあなたへにゃんこ軍団からのプレゼント！<br>1日30個ずつ、合計600個のネコカンをお届けにゃ！",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20190628",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "80200",
+        "maxVersion": "80699"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 50698,
+        "giftType": 303,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "https://ponosgames.com/information/appli/battlecats/event/20190628o.html",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20190830",
+        "startTime": "0",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "80700",
+        "maxVersion": "80899"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 50761,
+        "giftType": 303,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "https://ponosgames.com/information/appli/battlecats/event/20190830o.html",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20190901",
+        "startTime": "0",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "81000",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 5110,
+        "giftType": 807,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20190610",
+        "startTime": "0",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "80900",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Mon"
+          ],
+          "timeRanges": []
+        }
+      ],
+      "gift": {
+        "eventId": 50687,
+        "giftType": 303,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "https://nyanko-webview.ponosgames.com/information/appli/battlecats/event/nekovitandayL1.html",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20191222",
+        "startTime": "0",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "80900",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [],
+          "monthDays": [
+            22
+          ],
+          "weekdays": [],
+          "timeRanges": []
+        }
+      ],
+      "gift": {
+        "eventId": 50770,
+        "giftType": 303,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "https://nyanko-webview.ponosgames.com/information/appli/battlecats/event/catmemorialdayL1.html",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20201211",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "1100",
+        "minVersion": "80900",
+        "maxVersion": "100099"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51090,
+        "giftType": 300,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "https://nyanko-webview.ponosgames.com/information/appli/battlecats/event/20201211o.html",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20210101",
+        "startTime": "000",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "100200",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51101,
+        "giftType": 29002,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20210101",
+        "startTime": "000",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "100200",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51102,
+        "giftType": 29008,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20210201",
+        "startTime": "000",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "100300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 5120,
+        "giftType": 819,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20210401",
+        "startTime": "400",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "100400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [
+            {
+              "start": "101 400",
+              "end": "103 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "201 400",
+              "end": "203 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "301 400",
+              "end": "303 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "401 400",
+              "end": "403 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "501 400",
+              "end": "503 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "601 400",
+              "end": "603 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "701 400",
+              "end": "703 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "801 400",
+              "end": "803 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "901 400",
+              "end": "903 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "1001 400",
+              "end": "1003 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "1101 400",
+              "end": "1103 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "1201 400",
+              "end": "1203 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        }
+      ],
+      "gift": {
+        "eventId": 51121,
+        "giftType": 817,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20210401",
+        "startTime": "400",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "100400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [
+            {
+              "start": "101 400",
+              "end": "103 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "201 400",
+              "end": "203 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "301 400",
+              "end": "303 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "401 400",
+              "end": "403 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "501 400",
+              "end": "503 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "601 400",
+              "end": "603 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "701 400",
+              "end": "703 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "801 400",
+              "end": "803 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "901 400",
+              "end": "903 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "1001 400",
+              "end": "1003 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "1101 400",
+              "end": "1103 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "1201 400",
+              "end": "1203 400"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        }
+      ],
+      "gift": {
+        "eventId": 51122,
+        "giftType": 818,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20210410",
+        "startTime": "0",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "100400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [],
+          "monthDays": [
+            10,
+            11,
+            12
+          ],
+          "weekdays": [],
+          "timeRanges": []
+        }
+      ],
+      "gift": {
+        "eventId": 51123,
+        "giftType": 817,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20210410",
+        "startTime": "0",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "100400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [],
+          "monthDays": [
+            10,
+            11,
+            12
+          ],
+          "weekdays": [],
+          "timeRanges": []
+        }
+      ],
+      "gift": {
+        "eventId": 51124,
+        "giftType": 818,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20210422",
+        "startTime": "0",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "100400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [],
+          "monthDays": [
+            22,
+            23,
+            24
+          ],
+          "weekdays": [],
+          "timeRanges": []
+        }
+      ],
+      "gift": {
+        "eventId": 51125,
+        "giftType": 817,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20210422",
+        "startTime": "0",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "100400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [],
+          "monthDays": [
+            22,
+            23,
+            24
+          ],
+          "weekdays": [],
+          "timeRanges": []
+        }
+      ],
+      "gift": {
+        "eventId": 51126,
+        "giftType": 818,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20210531",
+        "startTime": "000",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "100600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51140,
+        "giftType": 949,
+        "giftAmount": 0,
+        "title": "カムバックログインスタンプ☆",
+        "message": "おひさしぶりにゃ～！カムバックしてくれたお礼に<br>毎日ログインで豪華アイテムプレゼントにゃ！",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20241218",
+        "startTime": "000",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "140100",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51515,
+        "giftType": 846,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20241218",
+        "startTime": "000",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "140100",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51516,
+        "giftType": 847,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20250322",
+        "startTime": "0",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "140200",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [
+            {
+              "start": "122 0",
+              "end": "123 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "322 0",
+              "end": "323 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "422 0",
+              "end": "423 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "522 0",
+              "end": "523 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "622 0",
+              "end": "623 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "722 0",
+              "end": "723 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "822 0",
+              "end": "823 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "922 0",
+              "end": "923 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "1022 0",
+              "end": "1023 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "1122 0",
+              "end": "1123 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "1222 0",
+              "end": "1223 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        }
+      ],
+      "gift": {
+        "eventId": 2433,
+        "giftType": 203,
+        "giftAmount": 1,
+        "title": "にゃんにゃん記念日☆",
+        "message": "毎月22日はにゃんにゃん記念日！<br>大サービスで「レアチケット」を1枚プレゼント！",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20250322",
+        "startTime": "0",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "140200",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [
+            {
+              "start": "122 0",
+              "end": "123 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "322 0",
+              "end": "323 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "422 0",
+              "end": "423 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "522 0",
+              "end": "523 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "622 0",
+              "end": "623 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "722 0",
+              "end": "723 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "822 0",
+              "end": "823 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "922 0",
+              "end": "923 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "1022 0",
+              "end": "1023 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "1122 0",
+              "end": "1123 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        },
+        {
+          "dateRanges": [
+            {
+              "start": "1222 0",
+              "end": "1223 0"
+            }
+          ],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": []
+        }
+      ],
+      "gift": {
+        "eventId": 2434,
+        "giftType": 220,
+        "giftAmount": 1,
+        "title": "にゃんにゃん記念日☆",
+        "message": "毎月22日はにゃんにゃん記念日！<br>感謝の気持ちを込めて「リーダーシップ」を1枚プレゼント！",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20250703",
+        "startTime": "000",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "140500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51599,
+        "giftType": 35030,
+        "giftAmount": 0,
+        "title": "カムバックログインボーナス！",
+        "message": "帰って来てくれた君に特別なプレゼント！<br>レジェンドストーリーのネコ基地で地図を開けるぞ！",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20250703",
+        "startTime": "000",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "140500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51600,
+        "giftType": 35031,
+        "giftAmount": 0,
+        "title": "カムバックログインボーナス！",
+        "message": "帰って来てくれた君に特別なプレゼント！<br>レジェンドストーリーのネコ基地で地図を開けるぞ！",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20250703",
+        "startTime": "000",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "140500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51601,
+        "giftType": 35032,
+        "giftAmount": 0,
+        "title": "カムバックログインボーナス！",
+        "message": "帰って来てくれた君に特別なプレゼント！<br>レジェンドストーリーのネコ基地で地図を開けるぞ！",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20251113",
+        "startTime": "1100",
+        "endDate": "20260317",
+        "endTime": "1100",
+        "minVersion": "150000",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51650,
+        "giftType": 35041,
+        "giftAmount": 0,
+        "title": "13周年記念ログインスタンプ☆",
+        "message": "30日間、にゃんこレンジャーを目指すネコの勇姿を目に焼き付けよう！<br>スタンプを貯めてレアチケ＆にゃんチケ最大10枚ずつゲット！(3/17まで)",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260218",
+        "startTime": "0",
+        "endDate": "20300101",
+        "endTime": "0",
+        "minVersion": "150200",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Wed"
+          ],
+          "timeRanges": []
+        }
+      ],
+      "gift": {
+        "eventId": 2479,
+        "giftType": 220,
+        "giftAmount": 1,
+        "title": "水曜にゃんこDAY☆",
+        "message": "毎週水曜限定の特別ボーナス！<br>リーダーシップを1枚プレゼント！",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260221",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "150200",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2480,
+        "giftType": 301,
+        "giftAmount": 0,
+        "title": "←全画面告知の表示と同時に付与する",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260221",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "150200",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2481,
+        "giftType": 302,
+        "giftAmount": 0,
+        "title": "←全画面告知の表示と同時に付与する",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260302",
+        "startTime": "1100",
+        "endDate": "20260330",
+        "endTime": "1100",
+        "minVersion": "150200",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51692,
+        "giftType": 974,
+        "giftAmount": 0,
+        "title": "「トキメキにゃんこ学園」学園生活応援スタンプ☆",
+        "message": "にゃんこ学園イベントを記念して特別ボーナス！<br>恋も勉強も両立！伝説のラブレターを集めて学園生活を充実させよう！（3/30まで）",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260302",
+        "startTime": "1100",
+        "endDate": "20260330",
+        "endTime": "1100",
+        "minVersion": "150200",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 5203,
+        "giftType": 838,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260302",
+        "startTime": "1100",
+        "endDate": "20260323",
+        "endTime": "1100",
+        "minVersion": "150200",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 80096,
+        "giftType": 11012,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260303",
+        "startTime": "700",
+        "endDate": "20260330",
+        "endTime": "900",
+        "minVersion": "150200",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [],
+          "timeRanges": [
+            [
+              "700",
+              "900"
+            ]
+          ]
+        }
+      ],
+      "gift": {
+        "eventId": 51693,
+        "giftType": 973,
+        "giftAmount": 0,
+        "title": "「トキメキにゃんこ学園」生徒出席簿",
+        "message": "トキメキにゃんこ学園イベントを記念して特別ボーナス！めざせ無遅刻無欠席！<br>毎朝7時～9時限定で出席確認！ログインでアイテムプレゼント！（3/30まで）",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260313",
+        "startTime": "1100",
+        "endDate": "20260322",
+        "endTime": "1100",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51695,
+        "giftType": 827,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260316",
+        "startTime": "1100",
+        "endDate": "20260408",
+        "endTime": "1100",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 80097,
+        "giftType": 11043,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260320",
+        "startTime": "000",
+        "endDate": "20260321",
+        "endTime": "000",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2483,
+        "giftType": 203,
+        "giftAmount": 1,
+        "title": "春分の日記念☆",
+        "message": "祝日感謝！春分の日を記念して<br>レアチケット1枚をプレゼント！",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260327",
+        "startTime": "1100",
+        "endDate": "20260417",
+        "endTime": "1100",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2484,
+        "giftType": 201,
+        "giftAmount": 10000,
+        "title": "初心者応援！！ログインボーナス☆",
+        "message": "日本編クリアを応援！育成に役立つアイテムを毎日プレゼント！<br>今がにゃんこ軍団の戦力をアップする大チャンス！(4/17まで)",
+        "url": "",
+        "repeatFlag": 1
+      }
+    }
+  ]
+}
