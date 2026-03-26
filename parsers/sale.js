@@ -11,7 +11,8 @@ export function parseSale(tsv) {
     .filter(line => line.trim() && line !== "[start]" && line !== "[end]");
 
   return lines.map(line => {
-    const parts = line.trim().split("\t").filter(x => x !== "");
+    const trimmed = line.trim();
+    const parts   = trimmed.split("\t").filter(x => x !== "");
 
     const header = {
       startDate:  parts[0],
@@ -57,6 +58,6 @@ export function parseSale(tsv) {
     const stageCount = parseInt(parts[index++], 10);
     const stageIds   = parts.slice(index, index + stageCount).map(Number);
 
-    return { header, timeBlocks, stageIds };
+    return { header, timeBlocks, stageIds, raw: trimmed };
   });
 }
