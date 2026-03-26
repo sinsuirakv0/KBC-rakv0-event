@@ -1,63 +1,58 @@
-function decodeWeekdays(bitmask) {
-  if (bitmask === 0) return [];
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  return days.filter((_, i) => (bitmask >> i) & 1);
-}
+export function parseGatya(tsv) {
+  const lines   = tsv.trim().split("\n");
+  const results = [];
 
-export function parseSale(tsv) {
-  const lines = tsv
-    .trim()
-    .split("\n")
-    .filter(line => line.trim() && line !== "[start]" && line !== "[end]");
-
-  return lines.map(line => {
+  for (const line of lines) {
+    // [start] / [end] をスキップ
     const trimmed = line.trim();
-    const parts   = trimmed.split("\t").filter(x => x !== "");
+    if (!trimmed || trimmed === "[start]" || trimmed === "[end]") continue;
+
+    const cells = trimmed.split("\t");
+    if (cells.length < 10) continue;
 
     const header = {
-      startDate:  parts[0],
-      startTime:  parts[1],
-      endDate:    parts[2],
-      endTime:    parts[3],
-      minVersion: parts[4],
-      maxVersion: parts[5],
+      startDate:  cells[0],
+      startTime:  cells[1],
+      endDate:    cells[2],
+      endTime:    cells[3],
+      minVersion: cells[4],
+      maxVersion: cells[5],
+      gachaType:  Number(cells[8]),
+      gachaCount: Number(cells[9]),
     };
 
-    let index = 6;
-    index++; // 未使用フィールドをスキップ
+    const gachas = [];
+    let offset   = 10;
 
-    const timeBlockCount = parseInt(parts[index++], 10);
-    const timeBlocks     = [];
+    for (let i = 0; i < header.gachaCount; i++) {
+      // スロット間の空白フィールドをスキップ
+      while (offset < cells.length && cells[offset] === "") offset++;
 
-    for (let i = 0; i < timeBlockCount; i++) {
-      const block = { dateRanges: [], monthDays: [], weekdays: [], timeRanges: [] };
+      const slice   = cells.slice(offset, offset + 15);
+      const gachaId = Number(slice[0]);
 
-      const yearCount = parseInt(parts[index++], 10);
-      for (let j = 0; j < yearCount; j++) {
-        block.dateRanges.push({
-          start: `${parts[index++]} ${parts[index++]}`,
-          end:   `${parts[index++]} ${parts[index++]}`,
+      if (gachaId !== -1) {
+        gachas.push({
+          id:    gachaId,
+          price: Number(slice[1]),
+          flags: Number(slice[3]),
+          rates: {
+            normal:     Number(slice[4]),
+            rare:       Number(slice[6]),
+            superRare:  Number(slice[8]),
+            uberRare:   Number(slice[10]),
+            legendRare: Number(slice[12]),
+          },
+          guaranteed: Number(slice[11]) === 1,
+          message:    slice[14] ?? "",
         });
       }
 
-      const monthCount = parseInt(parts[index++], 10);
-      for (let j = 0; j < monthCount; j++) {
-        block.monthDays.push(parseInt(parts[index++], 10));
-      }
-
-      block.weekdays = decodeWeekdays(parseInt(parts[index++], 10));
-
-      const timeRangeCount = parseInt(parts[index++], 10);
-      for (let j = 0; j < timeRangeCount; j++) {
-        block.timeRanges.push([parts[index++], parts[index++]]);
-      }
-
-      timeBlocks.push(block);
+      offset += 15;
     }
 
-    const stageCount = parseInt(parts[index++], 10);
-    const stageIds   = parts.slice(index, index + stageCount).map(Number);
+    results.push({ header, gachas, raw: trimmed });
+  }
 
-    return { header, timeBlocks, stageIds, raw: trimmed };
-  });
+  return results;
 }
