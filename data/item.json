@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/03/25 15:51:14",
+  "updatedAt": "26/03/27 12:18:18",
   "data": [
     {
       "header": {
@@ -1095,26 +1095,6 @@
     },
     {
       "header": {
-        "startDate": "20251113",
-        "startTime": "1100",
-        "endDate": "20260317",
-        "endTime": "1100",
-        "minVersion": "150000",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51650,
-        "giftType": 35041,
-        "giftAmount": 0,
-        "title": "13周年記念ログインスタンプ☆",
-        "message": "30日間、にゃんこレンジャーを目指すネコの勇姿を目に焼き付けよう！<br>スタンプを貯めてレアチケ＆にゃんチケ最大10枚ずつゲット！(3/17まで)",
-        "url": "",
-        "repeatFlag": 1
-      }
-    },
-    {
-      "header": {
         "startDate": "20260218",
         "startTime": "0",
         "endDate": "20300101",
@@ -1146,8 +1126,8 @@
       "header": {
         "startDate": "20260221",
         "startTime": "1100",
-        "endDate": "20300101",
-        "endTime": "000",
+        "endDate": "20260330",
+        "endTime": "1100",
         "minVersion": "150200",
         "maxVersion": "999999"
       },
@@ -1166,8 +1146,8 @@
       "header": {
         "startDate": "20260221",
         "startTime": "1100",
-        "endDate": "20300101",
-        "endTime": "000",
+        "endDate": "20260330",
+        "endTime": "1100",
         "minVersion": "150200",
         "maxVersion": "999999"
       },
@@ -1224,26 +1204,6 @@
     },
     {
       "header": {
-        "startDate": "20260302",
-        "startTime": "1100",
-        "endDate": "20260323",
-        "endTime": "1100",
-        "minVersion": "150200",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 80096,
-        "giftType": 11012,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 1
-      }
-    },
-    {
-      "header": {
         "startDate": "20260303",
         "startTime": "700",
         "endDate": "20260330",
@@ -1276,26 +1236,6 @@
     },
     {
       "header": {
-        "startDate": "20260313",
-        "startTime": "1100",
-        "endDate": "20260322",
-        "endTime": "1100",
-        "minVersion": "150201",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51695,
-        "giftType": 827,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      }
-    },
-    {
-      "header": {
         "startDate": "20260316",
         "startTime": "1100",
         "endDate": "20260408",
@@ -1316,26 +1256,6 @@
     },
     {
       "header": {
-        "startDate": "20260320",
-        "startTime": "000",
-        "endDate": "20260321",
-        "endTime": "000",
-        "minVersion": "150201",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2483,
-        "giftType": 203,
-        "giftAmount": 1,
-        "title": "春分の日記念☆",
-        "message": "祝日感謝！春分の日を記念して<br>レアチケット1枚をプレゼント！",
-        "url": "",
-        "repeatFlag": 0
-      }
-    },
-    {
-      "header": {
         "startDate": "20260327",
         "startTime": "1100",
         "endDate": "20260417",
@@ -1350,6 +1270,206 @@
         "giftAmount": 10000,
         "title": "初心者応援！！ログインボーナス☆",
         "message": "日本編クリアを応援！育成に役立つアイテムを毎日プレゼント！<br>今がにゃんこ軍団の戦力をアップする大チャンス！(4/17まで)",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260330",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2485,
+        "giftType": 301,
+        "giftAmount": 0,
+        "title": "←全画面告知の表示と同時に付与する",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260330",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2486,
+        "giftType": 302,
+        "giftAmount": 0,
+        "title": "←全画面告知の表示と同時に付与する",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260330",
+        "startTime": "1100",
+        "endDate": "20260417",
+        "endTime": "1100",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51696,
+        "giftType": 35045,
+        "giftAmount": 0,
+        "title": "1億1111万ダウンロード記念ログインスタンプ☆",
+        "message": "イベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>最大でレアチケ5枚、にゃんチケ5枚の合計10枚をゲット！(4/17まで)",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260330",
+        "startTime": "1100",
+        "endDate": "20260417",
+        "endTime": "1100",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51697,
+        "giftType": 833,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260330",
+        "startTime": "1100",
+        "endDate": "20260417",
+        "endTime": "1100",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51698,
+        "giftType": 834,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260330",
+        "startTime": "1100",
+        "endDate": "20260417",
+        "endTime": "1100",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51699,
+        "giftType": 830,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260330",
+        "startTime": "1100",
+        "endDate": "20260417",
+        "endTime": "1100",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51700,
+        "giftType": 837,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260401",
+        "startTime": "000",
+        "endDate": "20260402",
+        "endTime": "000",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51701,
+        "giftType": 828,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 4
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260401",
+        "startTime": "000",
+        "endDate": "20260402",
+        "endTime": "000",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51702,
+        "giftType": 835,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 2
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260401",
+        "startTime": "1100",
+        "endDate": "20260422",
+        "endTime": "1100",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 80098,
+        "giftType": 11013,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
         "url": "",
         "repeatFlag": 1
       }
