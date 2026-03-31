@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/03/31 12:05:20",
+  "updatedAt": "26/03/31 16:00:29",
   "data": [
     {
       "header": {
@@ -1490,6 +1490,26 @@
         "giftAmount": 1,
         "title": "「にゃんこ大戦争」TVアニメ化決定！",
         "message": "TVアニメ「にゃんこ大戦争」の制作決定を記念して<br>「レアチケット」を1枚プレゼントにゃ！（詳細は公式SNSをチェック！）",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260331",
+        "startTime": "000",
+        "endDate": "20260417",
+        "endTime": "1100",
+        "minVersion": "150201",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2488,
+        "giftType": 270,
+        "giftAmount": 1,
+        "title": "イベント不具合のお詫び",
+        "message": "「ダウンロード記念！スペシャルイベントガチャ」不具合のお詫びでプラチナのかけら1個が送られました。<br>詳細はアプリ内「運営からのお知らせ」をご確認ください。",
         "url": "",
         "repeatFlag": 0
       }
