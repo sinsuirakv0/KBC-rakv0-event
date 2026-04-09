@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/03/31 16:00:29",
+  "updatedAt": "26/04/09 15:12:18",
   "data": [
     {
       "header": {
@@ -1124,138 +1124,6 @@
     },
     {
       "header": {
-        "startDate": "20260221",
-        "startTime": "1100",
-        "endDate": "20260330",
-        "endTime": "1100",
-        "minVersion": "150200",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2480,
-        "giftType": 301,
-        "giftAmount": 0,
-        "title": "←全画面告知の表示と同時に付与する",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      }
-    },
-    {
-      "header": {
-        "startDate": "20260221",
-        "startTime": "1100",
-        "endDate": "20260330",
-        "endTime": "1100",
-        "minVersion": "150200",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2481,
-        "giftType": 302,
-        "giftAmount": 0,
-        "title": "←全画面告知の表示と同時に付与する",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      }
-    },
-    {
-      "header": {
-        "startDate": "20260302",
-        "startTime": "1100",
-        "endDate": "20260330",
-        "endTime": "1100",
-        "minVersion": "150200",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51692,
-        "giftType": 974,
-        "giftAmount": 0,
-        "title": "「トキメキにゃんこ学園」学園生活応援スタンプ☆",
-        "message": "にゃんこ学園イベントを記念して特別ボーナス！<br>恋も勉強も両立！伝説のラブレターを集めて学園生活を充実させよう！（3/30まで）",
-        "url": "",
-        "repeatFlag": 1
-      }
-    },
-    {
-      "header": {
-        "startDate": "20260302",
-        "startTime": "1100",
-        "endDate": "20260330",
-        "endTime": "1100",
-        "minVersion": "150200",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 5203,
-        "giftType": 838,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      }
-    },
-    {
-      "header": {
-        "startDate": "20260303",
-        "startTime": "700",
-        "endDate": "20260330",
-        "endTime": "900",
-        "minVersion": "150200",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [
-        {
-          "dateRanges": [],
-          "monthDays": [],
-          "weekdays": [],
-          "timeRanges": [
-            [
-              "700",
-              "900"
-            ]
-          ]
-        }
-      ],
-      "gift": {
-        "eventId": 51693,
-        "giftType": 973,
-        "giftAmount": 0,
-        "title": "「トキメキにゃんこ学園」生徒出席簿",
-        "message": "トキメキにゃんこ学園イベントを記念して特別ボーナス！めざせ無遅刻無欠席！<br>毎朝7時～9時限定で出席確認！ログインでアイテムプレゼント！（3/30まで）",
-        "url": "",
-        "repeatFlag": 1
-      }
-    },
-    {
-      "header": {
-        "startDate": "20260316",
-        "startTime": "1100",
-        "endDate": "20260408",
-        "endTime": "1100",
-        "minVersion": "150201",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 80097,
-        "giftType": 11043,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 1
-      }
-    },
-    {
-      "header": {
         "startDate": "20260327",
         "startTime": "1100",
         "endDate": "20260417",
@@ -1417,46 +1285,6 @@
     {
       "header": {
         "startDate": "20260401",
-        "startTime": "000",
-        "endDate": "20260402",
-        "endTime": "000",
-        "minVersion": "150201",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51701,
-        "giftType": 828,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 4
-      }
-    },
-    {
-      "header": {
-        "startDate": "20260401",
-        "startTime": "000",
-        "endDate": "20260402",
-        "endTime": "000",
-        "minVersion": "150201",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51702,
-        "giftType": 835,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 2
-      }
-    },
-    {
-      "header": {
-        "startDate": "20260401",
         "startTime": "1100",
         "endDate": "20260422",
         "endTime": "1100",
@@ -1472,26 +1300,6 @@
         "message": "",
         "url": "",
         "repeatFlag": 1
-      }
-    },
-    {
-      "header": {
-        "startDate": "20260401",
-        "startTime": "000",
-        "endDate": "20260402",
-        "endTime": "000",
-        "minVersion": "150201",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2487,
-        "giftType": 203,
-        "giftAmount": 1,
-        "title": "「にゃんこ大戦争」TVアニメ化決定！",
-        "message": "TVアニメ「にゃんこ大戦争」の制作決定を記念して<br>「レアチケット」を1枚プレゼントにゃ！（詳細は公式SNSをチェック！）",
-        "url": "",
-        "repeatFlag": 0
       }
     },
     {
@@ -1512,6 +1320,26 @@
         "message": "「ダウンロード記念！スペシャルイベントガチャ」不具合のお詫びでプラチナのかけら1個が送られました。<br>詳細はアプリ内「運営からのお知らせ」をご確認ください。",
         "url": "",
         "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260416",
+        "startTime": "1100",
+        "endDate": "20260508",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 80099,
+        "giftType": 11044,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 1
       }
     }
   ]
