@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/04/09 15:12:18",
+  "updatedAt": "26/04/15 16:23:18",
   "data": [
     {
       "header": {
@@ -1146,8 +1146,8 @@
       "header": {
         "startDate": "20260330",
         "startTime": "1100",
-        "endDate": "20300101",
-        "endTime": "000",
+        "endDate": "20260417",
+        "endTime": "1100",
         "minVersion": "150201",
         "maxVersion": "999999"
       },
@@ -1166,8 +1166,8 @@
       "header": {
         "startDate": "20260330",
         "startTime": "1100",
-        "endDate": "20300101",
-        "endTime": "000",
+        "endDate": "20260417",
+        "endTime": "1100",
         "minVersion": "150201",
         "maxVersion": "999999"
       },
@@ -1340,6 +1340,146 @@
         "message": "",
         "url": "",
         "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260417",
+        "startTime": "1100",
+        "endDate": "20261015",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51703,
+        "giftType": 981,
+        "giftAmount": 0,
+        "title": "13と1/2周年記念ログインスタンプ☆",
+        "message": "イベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めてレアチケ＆にゃんチケ最大10枚ずつゲット！(10/15まで)",
+        "url": "",
+        "repeatFlag": 1
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260417",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2490,
+        "giftType": 301,
+        "giftAmount": 0,
+        "title": "←全画面告知の表示と同時に付与する",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260417",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2491,
+        "giftType": 302,
+        "giftAmount": 0,
+        "title": "←全画面告知の表示と同時に付与する",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260417",
+        "startTime": "1100",
+        "endDate": "20260501",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51704,
+        "giftType": 831,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260417",
+        "startTime": "1100",
+        "endDate": "20260501",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51705,
+        "giftType": 832,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260417",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 5201,
+        "giftType": 814,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260417",
+        "startTime": "1100",
+        "endDate": "20260501",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51706,
+        "giftType": 837,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
       }
     }
   ]
