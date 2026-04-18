@@ -4,20 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KBC スケジュール</title>
-  <link rel="stylesheet" href="https://kbc-rakv0.vercel.app/assets/style.css" />
-  <link rel="stylesheet" href="https://kbc-rakv0.vercel.app/assets/event.css" />
+  <link rel="stylesheet" href="../assets/style.css" />
+  <link rel="stylesheet" href="../assets/event.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-<link rel="icon" href="https://kbc-rakv0.vercel.app/assets/favicon.ico">
+<link rel="icon" href="../assets/favicon.ico">
 <meta property="og:title" content="KBC スケジュール">
 <meta property="og:description" content="スケジュールを閲覧することができます。">
-<meta property="og:image" content="https://kbc-rakv0.vercel.app/assets/preview.png">
-<meta property="og:url" content="https://kbc-rakv0-event.vercel.app/">
+<meta property="og:image" content="../assets/preview.png">
+<meta property="og:url" content="https://kbc-rakv0.vercel.app/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="KBC スケジュール">
 <meta name="twitter:description" content="スケジュールを閲覧することができます。">
-<meta name="twitter:image" content="https://kbc-rakv0.vercel.app/assets/preview.png">
-<script src="https://kbc-rakv0.vercel.app/js/theme.js"></script>
+<meta name="twitter:image" content="../assets/preview.png">
+<script src="../js/theme.js"></script>
   <script>
   (function(){var t=localStorage.getItem('kbc-theme');if(t&&t!=='original')document.documentElement.setAttribute('data-theme',t);})();
 </script>
@@ -82,24 +82,59 @@
 .card-name    { font-size: 0.7rem !important; }
 .card-tag     { font-size: 0.5rem !important; padding: 1px 5px !important; }
 .card-arrow   { font-size: 0.75rem !important; }
+/* バージョンバッジ */
+.ver-badge  { font-size:0.6rem; padding:1px 4px; border-radius:3px; vertical-align:middle; margin-left:3px; }
+.ver-need   { background:rgba(255,80,80,0.2); color:#f99; }
+.ver-limit  { background:rgba(255,200,0,0.15); color:#fc8; }
+/* ハンバーガーメニュー */
+.tabs-row { display:flex; align-items:center; gap:6px; }
+.hamburger-btn {
+  background:none; border:1px solid #555; color:#ccc;
+  font-size:1.1rem; padding:3px 8px; border-radius:4px;
+  cursor:pointer; flex-shrink:0; line-height:1;
+}
+.hamburger-btn:hover { border-color:#f90; color:#f90; }
+.hamburger-menu {
+  display:none; background:var(--card,#0a1931);
+  border:1px solid var(--border,rgba(255,255,255,0.1));
+  border-radius:8px; padding:12px 16px; margin-bottom:8px;
+  animation:fadeIn 0.2s ease;
+}
+.hmenu-section { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.hmenu-label   { font-size:0.8rem; color:#aaa; }
+#utc-select    { font-size:0.8rem; padding:3px 6px; }
+/* 次の開催リスト */
+.occ-list { font-size:0.7rem; color:#bbb; white-space:pre-wrap; line-height:1.8; }
+.occ-current { color:#4f8; font-weight:bold; }
 </style>
 <body>
   <div class="container fade-in">
     <header class="header">
       <div class="header-left">
-        <img src="https://kbc-rakv0.vercel.app/assets/logo.png" alt="ロゴ" id="logo">
+        <img src="../assets/logo.png" alt="ロゴ" id="logo">
         <h1 class="site-title">KBC</h1>
       </div>
       <nav class="nav">
-        <a href="../index.html">Home</a>
+        <a href="https://kbc-rakv0.vercel.app/index.html">Home</a>
       </nav>
     </header>
 
-    <div class="tabs">
-      <div class="tab active" data-tab="gatya">ガチャ</div>
-      <div class="tab" data-tab="sale">イベント</div>
-      <div class="tab" data-tab="item">アイテム</div>
-      <div class="tab" data-tab="mission">ミッション</div>
+    <div class="tabs-row">
+      <div class="tabs">
+        <div class="tab active" data-tab="gatya">ガチャ</div>
+        <div class="tab" data-tab="sale">イベント</div>
+        <div class="tab" data-tab="item">アイテム</div>
+        <div class="tab" data-tab="mission">ミッション</div>
+      </div>
+      <button class="hamburger-btn" id="hamburger-btn" onclick="toggleHamburger()" title="設定">☰</button>
+    </div>
+    <div id="hamburger-menu" class="hamburger-menu">
+      <div class="hmenu-section">
+        <span class="hmenu-label">🕐 表示タイムゾーン</span>
+        <select id="utc-select" onchange="onUtcChange(this.value)">
+          <option value="local">ローカル時間</option>
+        </select>
+      </div>
     </div>
 
     <div class="controls">
@@ -157,6 +192,13 @@
 
 <script>
 // =============================================
+// ★ 現在のアプリバージョン設定
+//    例: 150300 = ver.15.3.0
+//    イベントの minVersion/maxVersion との比較に使用
+// =============================================
+const CURRENT_VERSION = 150300;
+
+// =============================================
 // 状態管理
 // =============================================
 let gatyaData = [];
@@ -173,7 +215,8 @@ let gatyaENames  = new Map(); // gacha id -> 名前（イベント: type 4）
 // activeTab:   現在表示中のタブ名
 // suggestIdx:  キーボードナビ用インデックス
 // =============================================
-let searchQuery = '';
+let searchQuery      = '';
+let selectedUtcOffset = 'local'; // 'local' or number (e.g. 9 for UTC+9)
 
 // =============================================
 // オーバーレイ用エントリ保持
@@ -225,11 +268,40 @@ const DOW_JP     = ['日','月','火','水','木','金','土'];
 // =============================================
 const SALE_HIDDEN_CONFIG = {
   ranges: [
-  //  { from: -4, to: 999 },
-
+    { from: -4, to: 999 },
+    { from: 3000, to: 3008 },
+    { from: 1000, to: 1006 },
+    { from: 1008, to: 1032 },
+    { from: 1036, to: 1039 },
+    { from: 1043, to: 1064 },
+    { from: 1073, to: 1077 },
+    { from: 1083, to: 1112 },
+    { from: 1130, to: 1138 },
+    { from: 1150, to: 1152 },
+    { from: 1165, to: 1172 },
+    { from: 1175, to: 1181 },
+    { from: 1184, to: 1187 },
+    { from: 1192, to: 1199 },
+    { from: 1214, to: 1217 },
+    { from: 1226, to: 1250 },
+    { from: 1255, to: 1259 },
+    { from: 1265, to: 1281 },
+    { from: 1312, to: 1314 },
+    { from: 1333, to: 1335 },
+    { from: 1338, to: 1340 },
+    { from: 1345, to: 1348 },
+    { from: 1350, to: 1358 },
+    { from: 1393, to: 1395 },
+    { from: 14000, to: 14051 },
+    { from: 24015, to: 24018 },
+    { from: 24028, to: 24033 },
+    { from: 26000, to: 26018 },
+    { from: 28000, to: 28568 },
+    { from: 31000, to: 31003 },
+    { from: 37000, to: 37011 },
   ],
   ids: [
-
+     1066,1114,1117,1119,1122,1124,1128,1148,1157,1158,1161,1162,1189,1201,1203,1205,1207,1208,1209,1219,1220,1222,1296,1326,1342,1375,1376,1381,1383,1391,1404,1206,1416,1422,6000,12000,24021,24022,24023,24024,24025,24026,24039,24040,24043,24044,24046,24047,24050,24051,24055
   ],
 };
 
@@ -265,6 +337,34 @@ function getStageProxyUrl(id) {
   if (!entry) return null;
   const num = String(id - entry.from).padStart(3, '0');
   return `https://kbc-rakv0.vercel.app/api/stage-proxy?type=${entry.type}&num=${num}`;
+}
+
+// =============================================
+// バージョンユーティリティ
+// =============================================
+function fmtVer(v) {
+  const major = Math.floor(v / 10000);
+  const minor = Math.floor((v % 10000) / 100);
+  const patch = v % 100;
+  return patch > 0 ? `${major}.${minor}.${patch}` : `${major}.${minor}`;
+}
+
+// バージョンが現在に対して有効か
+// maxVersion < CURRENT_VERSION かつ 999999 以外 → 非表示
+function isVersionVisible(header) {
+  const max = Number(header.maxVersion);
+  return max === 999999 || max >= CURRENT_VERSION;
+}
+
+// カード名に付けるバージョンバッジ HTML
+function getVersionBadgeHtml(header) {
+  const min = Number(header.minVersion);
+  const max = Number(header.maxVersion);
+  if (min > CURRENT_VERSION)
+    return `<span class="ver-badge ver-need">(要v${fmtVer(min)})</span>`;
+  if (max !== 999999)
+    return `<span class="ver-badge ver-limit">(v${fmtVer(max)}まで)</span>`;
+  return '';
 }
 
 // =============================================
@@ -379,51 +479,207 @@ function formatTimeRanges(ranges) {
 }
 
 // =============================================
-// 曜日配列 → "月・水・金"
+// 曜日配列 → "月・水・金"（短縮形）
 // =============================================
 function formatWeekdays(days) {
   return days.map(d => WEEKDAY_JP[d] || d).join('・');
 }
 
+// 曜日配列 → "月曜日・火曜日"（フル形）
+const WEEKDAY_FULL = { Mon:'月曜日', Tue:'火曜日', Wed:'水曜日', Thu:'木曜日',
+                       Fri:'金曜日', Sat:'土曜日', Sun:'日曜日' };
+function formatWeekdaysFull(days) {
+  return days.map(d => WEEKDAY_FULL[d] || d).join('・');
+}
+
 // =============================================
-// 1つの timeBlock を人間が読める形に変換
-// 戻り値: 文字列（複数行の可能性あり）
+// 1つの timeBlock を人間が読める形に変換（改善版）
 // =============================================
 function formatTimeBlock(block) {
   const { dateRanges, monthDays, weekdays, timeRanges } = block;
-  const timeStr = formatTimeRanges(timeRanges);
+  const hasTime = timeRanges && timeRanges.length > 0;
+  const timeStr = hasTime ? formatTimeRanges(timeRanges) : '';
   const lines   = [];
 
-  // dateRanges: 特定期間
   if (dateRanges && dateRanges.length > 0) {
     for (const dr of dateRanges) {
       const s = parseDateRangePart(dr.start);
       const e = parseDateRangePart(dr.end);
       const sStr = `${s.month}/${String(s.day).padStart(2,'0')}${s.midnight ? '' : ' ' + s.timeStr}`;
       const eStr = `${e.month}/${String(e.day).padStart(2,'0')}${e.midnight ? '' : ' ' + e.timeStr}`;
-      lines.push(`${sStr}~${eStr} ${timeStr}`);
+      lines.push(`${sStr}~${eStr}${hasTime ? ' ' + timeStr : ''}`);
     }
   }
 
-  // monthDays: 毎月〇日
   if (monthDays && monthDays.length > 0) {
-    lines.push(`${monthDays.join(',')}日 ${timeStr}`);
+    lines.push(`毎月${monthDays.join(',')}日${hasTime ? ' ' + timeStr : ''}`);
   }
 
-  // weekdays: 曜日
   if (weekdays && weekdays.length > 0) {
-    lines.push(`${formatWeekdays(weekdays)} ${timeStr}`);
+    lines.push(`毎週 ${formatWeekdaysFull(weekdays)}${hasTime ? ' ' + timeStr : ''}`);
   }
 
   return lines.join('\n');
 }
 
 // =============================================
-// 全 timeBlocks → 開催期間テキスト
+// 全 timeBlocks → 開催期間テキスト（改善版）
+// header を渡すと常時開催に期間を表示
 // =============================================
-function formatTimeBlocks(blocks) {
-  if (!blocks || blocks.length === 0) return '（常時開催）';
+function formatTimeBlocks(blocks, header) {
+  if (!blocks || blocks.length === 0) {
+    if (header) {
+      const s = formatDetailDate(header.startDate, header.startTime);
+      const e = formatDetailDate(header.endDate,   header.endTime);
+      return `期間内常時開催\n(${s} ~ ${e})`;
+    }
+    return '（常時開催）';
+  }
   return blocks.map(formatTimeBlock).filter(Boolean).join('\n');
+}
+
+// =============================================
+// 次の開催スロット計算
+// =============================================
+function parseDateRangeStr(str, refDate) {
+  const { month, day, timeStr } = parseDateRangePart(str);
+  const [hh, mm] = timeStr.split(':').map(Number);
+  let year = refDate.getFullYear();
+  let d    = new Date(year, month - 1, day, hh, mm, 0, 0);
+  // 半年以上前なら翌年で試す
+  if (d < refDate && (refDate - d) > 180 * 86400000)
+    d = new Date(year + 1, month - 1, day, hh, mm, 0, 0);
+  return d;
+}
+
+function setTimeHM(date, timeStr) {
+  const s = String(timeStr).padStart(4, '0');
+  date.setHours(parseInt(s.slice(0,2)), parseInt(s.slice(2,4)), 0, 0);
+  return date;
+}
+
+function generateOccurrenceSlots(block, periodStart, periodEnd, now, searchTo) {
+  const { dateRanges, monthDays, weekdays, timeRanges } = block;
+  const hasTime    = timeRanges && timeRanges.length > 0;
+  const slots      = [];
+  const searchFrom = now > periodStart ? now : periodStart;
+  const effEnd     = searchTo < periodEnd ? searchTo : periodEnd;
+
+  if (dateRanges && dateRanges.length > 0) {
+    for (const dr of dateRanges) {
+      let rS = parseDateRangeStr(dr.start, searchFrom);
+      let rE = parseDateRangeStr(dr.end,   searchFrom);
+      if (rE <= rS) rE.setFullYear(rE.getFullYear() + 1);
+      const eS = new Date(Math.max(rS.getTime(), periodStart.getTime()));
+      const eE = new Date(Math.min(rE.getTime(), periodEnd.getTime()));
+      if (eE <= eS) continue;
+      if (hasTime) {
+        let day = new Date(eS); day.setHours(0,0,0,0);
+        while (day < eE) {
+          for (const [ts, te] of timeRanges) {
+            const sS = setTimeHM(new Date(day), ts);
+            const sE = setTimeHM(new Date(day), te);
+            if (sE > now && sS < eE)
+              slots.push({ start: sS, end: sE, isCurrent: now >= sS && now < sE });
+          }
+          day.setDate(day.getDate() + 1);
+        }
+      } else {
+        if (eE > now) slots.push({ start: eS, end: eE, isCurrent: now >= eS && now < eE });
+      }
+    }
+  } else if (monthDays && monthDays.length > 0) {
+    let day = new Date(searchFrom); day.setHours(0,0,0,0);
+    while (day < effEnd) {
+      if (monthDays.includes(day.getDate())) {
+        if (hasTime) {
+          for (const [ts, te] of timeRanges) {
+            const sS = setTimeHM(new Date(day), ts);
+            const sE = setTimeHM(new Date(day), te);
+            if (sE > now && sS < periodEnd)
+              slots.push({ start: sS, end: sE, isCurrent: now >= sS && now < sE });
+          }
+        } else {
+          const sS = new Date(day);
+          const sE = new Date(day); sE.setDate(sE.getDate() + 1);
+          if (sE > now) slots.push({ start: sS, end: sE, isCurrent: now >= sS && now < sE });
+        }
+      }
+      day.setDate(day.getDate() + 1);
+    }
+  } else if (weekdays && weekdays.length > 0) {
+    const WD = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 };
+    const targets = weekdays.map(w => WD[w]).filter(n => n !== undefined);
+    let day = new Date(searchFrom); day.setHours(0,0,0,0);
+    while (day < effEnd) {
+      if (targets.includes(day.getDay())) {
+        if (hasTime) {
+          for (const [ts, te] of timeRanges) {
+            const sS = setTimeHM(new Date(day), ts);
+            const sE = setTimeHM(new Date(day), te);
+            if (sE > now && sS < periodEnd)
+              slots.push({ start: sS, end: sE, isCurrent: now >= sS && now < sE });
+          }
+        } else {
+          const sS = new Date(day);
+          const sE = new Date(day); sE.setDate(sE.getDate() + 1);
+          if (sE > now) slots.push({ start: sS, end: sE, isCurrent: now >= sS && now < sE });
+        }
+      }
+      day.setDate(day.getDate() + 1);
+    }
+  }
+  return slots;
+}
+
+function getNextOccurrences(header, timeBlocks, count = 5) {
+  const now         = getAccurateDate();
+  const periodStart = parseDateTime(header.startDate, header.startTime);
+  const periodEnd   = parseDateTime(header.endDate,   header.endTime);
+  if (periodEnd <= now) return [];
+
+  if (!timeBlocks || timeBlocks.length === 0) {
+    return [{ start: periodStart, end: periodEnd, isCurrent: now >= periodStart }];
+  }
+
+  const searchTo = new Date(Math.min(periodEnd.getTime(), now.getTime() + 90 * 86400000));
+  const slots    = [];
+  for (const block of timeBlocks) {
+    slots.push(...generateOccurrenceSlots(block, periodStart, periodEnd, now, searchTo));
+  }
+  slots.sort((a, b) => a.start - b.start);
+
+  const result = [];
+  for (const s of slots) {
+    if (result.length >= count) break;
+    if (!result.some(r => r.start.getTime() === s.start.getTime())) result.push(s);
+  }
+  return result;
+}
+
+function formatOccurrences(header, timeBlocks) {
+  const now   = getAccurateDate();
+  const slots = getNextOccurrences(header, timeBlocks, 5);
+  if (slots.length === 0) return '';
+
+  const DOW = ['日','月','火','水','木','金','土'];
+  const fmt  = d => `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}(${DOW[d.getDay()]}) ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  const fmtT = d => `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+
+  return slots.map(({ start, end, isCurrent }) => {
+    if (isCurrent) {
+      const rem  = end - now;
+      const h    = Math.floor(rem / 3600000);
+      const m    = Math.floor((rem % 3600000) / 60000);
+      return `<span class="occ-current">開催中 |${fmtT(end)}まで| (残り${h}時間${m}分)</span>`;
+    }
+    const diff = start - now;
+    const days = Math.floor(diff / 86400000);
+    const hrs  = Math.floor((diff % 86400000) / 3600000);
+    const mins = Math.floor((diff % 3600000) / 60000);
+    const label = days > 0 ? `${days}日と${hrs}時間${mins}分後` : hrs > 0 ? `${hrs}時間${mins}分後` : `${mins}分後`;
+    return `${fmt(start)} ~ ${fmtT(end)} (${label})`;
+  }).join('\n');
 }
 
 // =============================================
@@ -507,6 +763,9 @@ function makeCard(period, name, isCurrent, isPast, detail) {
 // missionOnly: true=ミッションのみ, false=ミッション除外
 // =============================================
 function expandSaleEntry(entry, missionOnly) {
+  // バージョンフィルタ: maxVersion < CURRENT_VERSION かつ 999999 以外は非表示
+  if (!isVersionVisible(entry.header)) return [];
+
   const now      = new Date();
   const entryIdx = storeOverlayEntry(entry); // エントリ全体を保持
   const result   = [];
@@ -519,7 +778,9 @@ function expandSaleEntry(entry, missionOnly) {
 
     const start   = parseDateTime(entry.header.startDate, entry.header.startTime);
     const end     = parseDateTime(entry.header.endDate,   entry.header.endTime);
-    const name    = saleNames.get(id) ?? `ID:${id}`;
+    const baseName   = saleNames.get(id) ?? `ID:${id}`;
+    const verBadge   = getVersionBadgeHtml(entry.header);
+    const name       = verBadge ? `${baseName}${verBadge}` : baseName;
     const period  = formatCardPeriod(
       entry.header.startDate, entry.header.startTime,
       entry.header.endDate,   entry.header.endTime
@@ -530,7 +791,7 @@ function expandSaleEntry(entry, missionOnly) {
       id,
       period: `${formatDetailDate(entry.header.startDate, entry.header.startTime)} ~ ${formatDetailDate(entry.header.endDate, entry.header.endTime)}`,
       ver:    `${entry.header.minVersion}~${entry.header.maxVersion}`,
-      schedule: formatTimeBlocks(entry.timeBlocks),
+      schedule: formatTimeBlocks(entry.timeBlocks, entry.header),
       stageProxyUrl: getStageProxyUrl(id),
       steady: isSteadyEntry(entry.header), // 常設フラグ
       _entryIdx: entryIdx,
@@ -611,6 +872,20 @@ function openOverlay(jsonStr) {
           onerror="handleIframeError(this)">
         </iframe>
       </div>` : ''}`;
+
+    // 次の開催日時（エントリデータから計算）
+    const entryForOcc  = _overlayEntries[d._entryIdx] ?? null;
+    const entryObjOcc  = entryForOcc ? JSON.parse(entryForOcc.json) : null;
+    if (entryObjOcc?.header && entryObjOcc?.timeBlocks !== undefined) {
+      const occHtml = formatOccurrences(entryObjOcc.header, entryObjOcc.timeBlocks);
+      if (occHtml) {
+        bodyHtml += `<hr class="overlay-divider">
+      <div class="overlay-section">
+        <div class="overlay-label">次の開催</div>
+        <div class="overlay-value occ-list">${occHtml}</div>
+      </div>`;
+      }
+    }
   }
 
   // エントリデータをセット（生データ・JSONボタン用）
@@ -731,6 +1006,8 @@ function renderGatya() {
     const type = h.gachaType;
 
     if (type === 2 || type === 3) continue;
+    // バージョンフィルタ
+    if (!isVersionVisible(h)) continue;
 
     const sub      = gachaTypeToSub(type);
     const start    = parseDateTime(h.startDate, h.startTime);
@@ -743,15 +1020,18 @@ function renderGatya() {
       const csvName   = nameMap.get(g.id);
       const flagLabel = FLAGS_LABEL[g.flags] || '';
       const guarLabel = g.guaranteed ? '＜確定＞' : '';
+      const verBadge  = getVersionBadgeHtml(h);
       const nameParts = [csvName ?? `ID:${g.id}`, guarLabel, flagLabel].filter(Boolean);
+      if (verBadge) nameParts.push(verBadge);
       const period    = formatCardPeriod(h.startDate, h.startTime, h.endDate, h.endTime);
       const rateText  = formatRates(g.rates || {});
       const msgText   = (g.message && g.message !== '0') ? g.message : '';
 
-      const infoPrefix = h.gachaType === 1 ? 'R' : h.gachaType === 4 ? 'E' : null;
-      const infoUrl = infoPrefix
-        ? `https://ponosgames.com/information/appli/battlecats/gacha/rare/${infoPrefix}${g.id}.html`
-        : null;
+      // type別に公式URLを生成
+      let infoUrl = null;
+      if (type === 1)      infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/rare/R${g.id}.html`;
+      else if (type === 4) infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/event/E${g.id}.html`;
+      else if (type === 0) infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/normal/N${g.id}.html`;
 
       const detail = {
         type: 'gatya',
@@ -1121,13 +1401,64 @@ function formatDate(date) {
 
 // 表示更新（1秒ごとに必ず進む）
 function updateNow() {
-  const now = getAccurateDate();
-  document.getElementById('now-display').textContent =
-    '現在: ' + formatDate(now);
+  let displayStr;
+  if (selectedUtcOffset === 'local') {
+    displayStr = '現在: ' + formatDate(getAccurateDate());
+  } else {
+    const label = selectedUtcOffset >= 0 ? `(UTC+${selectedUtcOffset})` : `(UTC${selectedUtcOffset})`;
+    displayStr  = `現在: ${label}${formatDateUtc(getDisplayDate())}`;
+  }
+  document.getElementById('now-display').textContent = displayStr;
+}
+
+// =============================================
+// ハンバーガーメニュー
+// =============================================
+function toggleHamburger() {
+  const m = document.getElementById('hamburger-menu');
+  m.style.display = m.style.display === 'none' || m.style.display === '' ? 'block' : 'none';
+}
+
+// UTC セレクターを初期化（-12～+14）
+function initUtcSelect() {
+  const sel = document.getElementById('utc-select');
+  for (let u = -12; u <= 14; u++) {
+    const opt = document.createElement('option');
+    opt.value = u;
+    opt.textContent = u >= 0 ? `UTC+${u}` : `UTC${u}`;
+    if (u === 9) opt.textContent += ' (JST)';
+    sel.appendChild(opt);
+  }
+}
+
+function onUtcChange(val) {
+  selectedUtcOffset = val === 'local' ? 'local' : parseInt(val);
+  updateNow();
+}
+
+// UTC オフセット適用済みの表示用 Date を生成
+function getDisplayDate() {
+  const accurateMs = Date.now() + offset;
+  if (selectedUtcOffset === 'local') return new Date(accurateMs);
+  // ローカル → UTC → 目標オフセット
+  const utcMs = accurateMs + new Date().getTimezoneOffset() * 60000;
+  return new Date(utcMs + selectedUtcOffset * 3600000);
+}
+
+// UTC オフセット表示時刻のフォーマット（UTC メソッドで読む）
+function formatDateUtc(d) {
+  const y   = d.getUTCFullYear();
+  const mon = String(d.getUTCMonth()+1).padStart(2,'0');
+  const day = String(d.getUTCDate()).padStart(2,'0');
+  const h   = String(d.getUTCHours()).padStart(2,'0');
+  const min = String(d.getUTCMinutes()).padStart(2,'0');
+  const sec = String(d.getUTCSeconds()).padStart(2,'0');
+  return `${y}/${mon}/${day} ${h}:${min}:${sec}`;
 }
 
 // 初期化して1秒ごとに更新
 async function startClock() {
+  initUtcSelect();
   await syncAccurateTime(); // 初回同期
   updateNow();
 
@@ -1156,7 +1487,7 @@ document.getElementById('sortByDate').addEventListener('change', function() {
 document.getElementById('sortById').addEventListener('change', function() {
   if (this.checked) document.getElementById('sortByDate').checked = false;
 });
-document.getElementById('showAllSale').addEventListener('change', renderSale);
+document.getElementById('showAllSale').addEventListener('change', renderAll);
 document.getElementById('overlay-close').addEventListener('click', closeOverlay);
 document.getElementById('overlay').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeOverlay();
