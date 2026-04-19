@@ -215,6 +215,9 @@ let saleData  = [];
 let itemData  = [];
 let saleNames    = new Map();
 let itemNames    = new Map(); // giftType id → 名前
+let itemDetails  = new Map(); // giftType id → 詳細文字列（3列目）
+let itemPackMap  = new Map(); // giftType id → URL（item_pack.csv）
+let itemTsvCache = new Map(); // giftType id → TSVテキスト（ログインイベント）
 let gatyaRNames  = new Map();
 let gatyaNNames  = new Map();
 let gatyaENames  = new Map();
@@ -672,7 +675,7 @@ function formatOccurrences(header, timeBlocks) {
 }
 
 // =============================================
-// CSV パース
+// CSV パース（2列: id,名前）
 // =============================================
 function parseCSV(text) {
   const map = new Map();
@@ -684,6 +687,58 @@ function parseCSV(text) {
     if (!isNaN(id) && name) map.set(id, name);
   }
   return map;
+}
+
+// =============================================
+// item_name.csv パース（3列: id,名前,詳細）
+// nameMap: id→名前、detailMap: id→詳細
+// =============================================
+function parseItemNameCsv(text) {
+  const nameMap   = new Map();
+  const detailMap = new Map();
+  for (const line of text.split('\n')) {
+    const cols = line.split(',');
+    if (cols.length < 2) continue;
+    const id = parseInt(cols[0].trim());
+    if (isNaN(id)) continue;
+    const name   = cols[1].trim();
+    const detail = cols.slice(2).join(',').trim(); // 3列目以降（カンマ含む可能性）
+    if (name) nameMap.set(id, name);
+    if (detail) detailMap.set(id, detail);
+  }
+  return { nameMap, detailMap };
+}
+
+// =============================================
+// item_pack.csv パース（2列: id,url）
+// =============================================
+function parseItemPackCsv(text) {
+  const map = new Map();
+  for (const line of text.split('\n')) {
+    const idx = line.indexOf(',');
+    if (idx === -1) continue;
+    const id  = parseInt(line.slice(0, idx).trim());
+    const url = line.slice(idx + 1).trim();
+    if (!isNaN(id) && url) map.set(id, url);
+  }
+  return map;
+}
+
+// =============================================
+// DailyLoginEventText TSV パース
+// コメント行（//で始まるセル）を除外して表示テキストを返す
+// =============================================
+function parseTsvContent(text) {
+  const lines = [];
+  for (const line of text.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    // タブ区切りで最初の列を取得
+    const firstCell = trimmed.split('\t')[0].trim();
+    if (firstCell.startsWith('//')) continue; // コメント行スキップ
+    if (firstCell) lines.push(firstCell);
+  }
+  return lines.join('\n');
 }
 
 // =============================================
@@ -925,9 +980,29 @@ function openOverlay(jsonStr) {
         <div class="overlay-value" style="opacity:.6;">なし</div>
       </div>`;
 
+    // ギフト表示: "id:220 リーダーシップ × 1個"
     const giftStr = d.giftAmountStr
-      ? `${d.giftTypeName} (ID:${d.giftTypeId}) × ${d.giftAmountStr}`
-      : `${d.giftTypeName} (ID:${d.giftTypeId})`;
+      ? `id:${d.giftTypeId} ${d.giftTypeName} × ${d.giftAmountStr}`
+      : `id:${d.giftTypeId} ${d.giftTypeName}`;
+
+    // ギフト詳細（item_name.csv 3列目 + 追加情報）
+    let giftDetailHtml = '';
+    if (d.giftDetailStr || d.giftPackUrl || d.giftTsvText) {
+      let inner = '';
+      if (d.giftDetailStr) {
+        inner += `<div style="white-space:pre-wrap;line-height:1.7;">${d.giftDetailStr}</div>`;
+      }
+      if (d.giftPackUrl) {
+        inner += `<div style="margin-top:4px;"><a href="${d.giftPackUrl}" target="_blank" rel="noopener" style="color:#f90;">＜公式＞</a></div>`;
+      }
+      if (d.giftTsvText) {
+        inner += `<div style="white-space:pre-wrap;line-height:1.7;margin-top:4px;font-size:0.85em;color:#ccc;">${d.giftTsvText}</div>`;
+      }
+      giftDetailHtml = `<div class="overlay-section">
+        <div class="overlay-label">ギフト詳細</div>
+        <div class="overlay-value">${inner}</div>
+      </div>`;
+    }
 
     bodyHtml = `
       <div class="overlay-section">
@@ -952,6 +1027,7 @@ function openOverlay(jsonStr) {
         <div class="overlay-label">ギフト</div>
         <div class="overlay-value">${giftStr}</div>
       </div>
+      ${giftDetailHtml}
       ${occSection}`;
   } else {
     // sale/mission 詳細
@@ -1161,6 +1237,48 @@ function renderGatya() {
     { key: 'event',  label: 'イベント' },
   ];
 
+  // giftType 301/302 のアイテムエントリをレアバケツに追加
+  // 名前は title を無視して itemNames から取得
+  for (const entry of itemData) {
+    const h  = entry.header;
+    const g  = entry.gift;
+    if (!g) continue;
+    if (g.giftType !== 301 && g.giftType !== 302) continue;
+
+    const start    = parseDateTime(h.startDate, h.startTime);
+    const end      = parseDateTime(h.endDate,   h.endTime);
+    const giftName = itemNames.get(g.giftType) ?? `giftType:${g.giftType}`;
+    const verBadge = getVersionBadgeHtml(h);
+    const cardName = verBadge ? `${giftName}${verBadge}` : giftName;
+    const period   = formatCardPeriod(h.startDate, h.startTime, h.endDate, h.endTime);
+
+    const giftAmountStr = g.giftAmount > 0 ? `${g.giftAmount}個` : '';
+    const giftDetailStr = itemDetails.get(g.giftType) ?? '';
+    const entryIdx = storeOverlayEntry(entry);
+
+    const detail = {
+      type: 'item',
+      name: cardName,
+      id:   g.giftType,
+      period: `${formatDetailDate(h.startDate, h.startTime)} ~ ${formatDetailDate(h.endDate, h.endTime)}`,
+      ver:    `${h.minVersion}~${h.maxVersion}`,
+      schedule: formatTimeBlocks(entry.timeBlocks, h),
+      eventId:      g.eventId,
+      message:      (g.message ?? '').replace(/<br>/g, '\n').trim(),
+      url:          (g.url ?? '').trim(),
+      giftTypeId:   g.giftType,
+      giftTypeName: giftName,
+      giftAmountStr: giftAmountStr,
+      giftDetailStr: giftDetailStr,
+      giftPackUrl:   null,
+      giftTsvText:   null,
+      steady: isSteadyEntry(h),
+      _entryIdx: entryIdx,
+    };
+
+    buckets.rare.push({ start, end, name: cardName, period, detail });
+  }
+
   let html = '';
   let totalCount = 0;
 
@@ -1197,42 +1315,49 @@ function renderSale() {
 
 // =============================================
 // アイテムエントリ展開
-// 各エントリは gift が1つ → カード1枚
-// カード名: gift.title が空なら itemNames.get(giftType) にフォールバック
+// giftType 301/302 は gatyaレアに回すためここではスキップ
+// id = giftType（タイトルに表示）
 // =============================================
 function expandItemEntry(entry) {
-  const h    = entry.header;
-  const g    = entry.gift;
+  const h = entry.header;
+  const g = entry.gift;
   if (!g) return [];
+
+  // 301/302 は renderGatya で処理するためスキップ
+  if (g.giftType === 301 || g.giftType === 302) return [];
 
   const start = parseDateTime(h.startDate, h.startTime);
   const end   = parseDateTime(h.endDate,   h.endTime);
 
-  // カード表示名の決定
+  // カード表示名: title > itemNames > giftType
   const titleRaw = (g.title ?? '').trim();
-  let cardName;
-  if (titleRaw) {
-    cardName = titleRaw;
-  } else {
-    cardName = itemNames.get(g.giftType) ?? `giftType:${g.giftType}`;
-  }
-
+  const cardName = titleRaw || itemNames.get(g.giftType) || `giftType:${g.giftType}`;
   const verBadge = getVersionBadgeHtml(h);
   const displayName = verBadge ? `${cardName}${verBadge}` : cardName;
 
   const period = formatCardPeriod(h.startDate, h.startTime, h.endDate, h.endTime);
 
-  // ギフトタイプ名
-  const giftTypeName = itemNames.get(g.giftType) ?? `ID:${g.giftType}`;
-  // giftAmount が 0 なら個数表示なし
+  const giftTypeName  = itemNames.get(g.giftType) ?? `ID:${g.giftType}`;
   const giftAmountStr = g.giftAmount > 0 ? `${g.giftAmount}個` : '';
+  const giftDetailStr = itemDetails.get(g.giftType) ?? '';
+
+  // ギフトタイプ種別に応じた追加情報
+  let giftPackUrl  = null;
+  let giftTsvText  = null;
+  const gt = g.giftType;
+  if (gt >= 800 && gt <= 899) {
+    giftPackUrl = itemPackMap.get(gt) ?? null;
+  }
+  if ((gt >= 900 && gt <= 999) || (gt >= 35000 && gt <= 35999)) {
+    giftTsvText = itemTsvCache.get(gt) ?? null;
+  }
 
   const entryIdx = storeOverlayEntry(entry);
 
   const detail = {
     type: 'item',
     name: displayName,
-    id:   g.eventId,
+    id:   g.giftType,           // ← giftType をIDとして使う
     period: `${formatDetailDate(h.startDate, h.startTime)} ~ ${formatDetailDate(h.endDate, h.endTime)}`,
     ver:    `${h.minVersion}~${h.maxVersion}`,
     schedule: formatTimeBlocks(entry.timeBlocks, h),
@@ -1242,6 +1367,9 @@ function expandItemEntry(entry) {
     giftTypeId:   g.giftType,
     giftTypeName: giftTypeName,
     giftAmountStr: giftAmountStr,
+    giftDetailStr: giftDetailStr, // item_name.csv 3列目
+    giftPackUrl:   giftPackUrl,   // 800-899 公式URL
+    giftTsvText:   giftTsvText,   // 900-999/35000-35999 ログインテキスト
     steady: isSteadyEntry(h),
     _entryIdx: entryIdx,
   };
@@ -1346,7 +1474,30 @@ async function loadData() {
     gatyaRNames = parseCSV(gatyaNameText);
     gatyaNNames = parseCSV(gatyaNNameText);
     gatyaENames = parseCSV(gatyaENameText);
-    itemNames   = parseCSV(itemNameText);
+    // item_name.csv は 3列（id,名前,詳細）
+    const { nameMap: _iN, detailMap: _iD } = parseItemNameCsv(itemNameText);
+    itemNames   = _iN;
+    itemDetails = _iD;
+
+    // item_pack.csv（giftType 800-899 の公式URL）
+    const RAW = 'https://raw.githubusercontent.com/sinsuirakv0/KBC-rakv0-event/refs/heads/main/data';
+    const itemPackText = await fetch(`${RAW}/item_pack.csv`).then(r => r.text()).catch(() => '');
+    itemPackMap = parseItemPackCsv(itemPackText);
+
+    // DailyLoginEventText TSV 一括取得（giftType 900-999, 35000-35999）
+    const tsvTypes = new Set();
+    for (const entry of itemData) {
+      const gt = entry.gift?.giftType ?? 0;
+      if ((gt >= 900 && gt <= 999) || (gt >= 35000 && gt <= 35999)) {
+        tsvTypes.add(gt);
+      }
+    }
+    const tsvFetches = [...tsvTypes].map(async gt => {
+      const url = `${RAW}/DailyLoginEventText/DailyLoginEventText_${gt}_ja.tsv`;
+      const text = await fetch(url).then(r => r.ok ? r.text() : '').catch(() => '');
+      if (text) itemTsvCache.set(gt, parseTsvContent(text));
+    });
+    await Promise.all(tsvFetches);
 
     updateLastModified(gatyaUpdatedAt, saleUpdatedAt, itemUpdatedAt);
     renderAll();
@@ -1396,7 +1547,8 @@ function collectTabItems() {
     for (const entry of itemData) {
       const g = entry.gift;
       if (!g) continue;
-      const id = g.eventId;
+      if (g.giftType === 301 || g.giftType === 302) continue; // gatyaレアに移動済み
+      const id = g.giftType; // IDはgiftType
       if (seen.has(id)) continue;
       seen.add(id);
       const titleRaw = (g.title ?? '').trim();
