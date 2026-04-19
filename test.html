@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Gatyaitem 結合ツール</title>
+  <style>
+    body { font-family: sans-serif; padding: 16px; }
+    textarea { width: 100%; height: 200px; }
+    pre { background: #f5f5f5; padding: 8px; white-space: pre-wrap; }
+    .col { width: 48%; display: inline-block; vertical-align: top; }
+  </style>
+</head>
+<body>
+  <h1>Gatyaitembuy.csv × GatyaitemName.csv 結合ツール</h1>
+
+  <div class="col">
+    <h2>Gatyaitembuy.csv</h2>
+    <p>※ヘッダー行を含めてそのまま貼り付けてOK</p>
+    <textarea id="buyCsv"></textarea>
+  </div>
+
+  <div class="col" style="margin-left:4%;">
+    <h2>GatyaitemName.csv</h2>
+    <p>※1列目がアイテム名のCSVをそのまま貼り付け</p>
+    <textarea id="nameCsv"></textarea>
+  </div>
+
+  <div style="margin-top:16px;">
+    <button id="runBtn">結合実行</button>
+  </div>
+
+  <h2>出力結果（id,名前）</h2>
+  <pre id="output"></pre>
+
+  <script>
+    function parseCsv(text) {
+      // シンプルなカンマ区切り前提（ダブルクォートなどは考慮しない）
+      return text
+        .trim()
+        .split(/\r?\n/)
+        .map(line => line.split(','));
+    }
+
+    document.getElementById('runBtn').addEventListener('click', () => {
+      const buyText = document.getElementById('buyCsv').value;
+      const nameText = document.getElementById('nameCsv').value;
+      const out = document.getElementById('output');
+
+      if (!buyText.trim() || !nameText.trim()) {
+        out.textContent = 'どちらかのCSVが空です。両方貼り付けてください。';
+        return;
+      }
+
+      const buyRows = parseCsv(buyText);
+      const nameRows = parseCsv(nameText);
+
+      // 1行目はヘッダーとしてスキップ
+      const buyData = buyRows.slice(1);
+      const nameData = nameRows; // こちらはヘッダーなし想定（そのまま）
+
+      const resultLines = [];
+
+      const len = Math.min(buyData.length, nameData.length);
+
+      for (let i = 0; i < len; i++) {
+        const buyRow = buyData[i];
+        const nameRow = nameData[i];
+
+        // Gatyaitembuy.csv の 6つ目の列（index 5）が SeverID
+        const id = buyRow[5] !== undefined ? buyRow[5].trim() : '';
+        // GatyaitemName.csv の 1つ目の列（index 0）がアイテム名
+        const name = nameRow[0] !== undefined ? nameRow[0].trim() : '';
+
+        if (id !== '' && name !== '') {
+          resultLines.push(`${id},${name}`);
+        }
+      }
+
+      out.textContent = resultLines.join('\n');
+    });
+  </script>
+</body>
+</html>
