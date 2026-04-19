@@ -2,82 +2,74 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>Gatyaitem 結合ツール</title>
-  <style>
-    body { font-family: sans-serif; padding: 16px; }
-    textarea { width: 100%; height: 200px; }
-    pre { background: #f5f5f5; padding: 8px; white-space: pre-wrap; }
-    .col { width: 48%; display: inline-block; vertical-align: top; }
-  </style>
+  <title>KBC EventData Downloader</title>
 </head>
 <body>
-  <h1>Gatyaitembuy.csv × GatyaitemName.csv 結合ツール</h1>
 
-  <div class="col">
-    <h2>Gatyaitembuy.csv</h2>
-    <p>※ヘッダー行を含めてそのまま貼り付けてOK</p>
-    <textarea id="buyCsv"></textarea>
-  </div>
+  <h2>EventData Downloader</h2>
 
-  <div class="col" style="margin-left:4%;">
-    <h2>GatyaitemName.csv</h2>
-    <p>※1列目がアイテム名のCSVをそのまま貼り付け</p>
-    <textarea id="nameCsv"></textarea>
-  </div>
+  <label>国コード：</label>
+  <select id="locale">
+    <option value="ja">jp</option>
+    <option value="en">en</option>
+    <option value="kr">kr</option>
+    <option value="tw">tw</option>
+  </select>
 
-  <div style="margin-top:16px;">
-    <button id="runBtn">結合実行</button>
-  </div>
+  <br><br>
 
-  <h2>出力結果（id,名前）</h2>
+  <label>ファイル：</label>
+  <select id="fileType">
+    <option value="gatya">gatya.tsv</option>
+    <option value="sale">sale.tsv</option>
+    <option value="item">item.tsv</option>
+  </select>
+
+  <br><br>
+
+  <button onclick="fetchData()">内容を表示</button>
+  <button onclick="downloadTSV()">TSV をダウンロード</button>
+
   <pre id="output"></pre>
+  <a id="dataLink" href="#" target="_blank" style="display:none;"></a>
 
   <script>
-    function parseCsv(text) {
-      // シンプルなカンマ区切り前提（ダブルクォートなどは考慮しない）
-      return text
-        .trim()
-        .split(/\r?\n/)
-        .map(line => line.split(','));
+    let lastTSV = "";
+
+    async function fetchData() {
+      const type = document.getElementById("fileType").value;
+      const locale = document.getElementById("locale").value;
+
+      const res = await fetch(`/api/getData?type=${type}&locale=${locale}`);
+      const text = await res.text();
+
+      lastTSV = text;
+      document.getElementById("output").textContent = text;
+
+      const urlRes = await fetch(`/api/getData?type=${type}&locale=${locale}&urlOnly=1`);
+      const realUrl = await urlRes.text();
+
+      const link = document.getElementById("dataLink");
+      link.href = realUrl;
+      link.textContent = realUrl;
+      link.style.display = "block";
     }
 
-    document.getElementById('runBtn').addEventListener('click', () => {
-      const buyText = document.getElementById('buyCsv').value;
-      const nameText = document.getElementById('nameCsv').value;
-      const out = document.getElementById('output');
+    function downloadTSV() {
+      if (!lastTSV) return alert("先に内容を表示してください");
 
-      if (!buyText.trim() || !nameText.trim()) {
-        out.textContent = 'どちらかのCSVが空です。両方貼り付けてください。';
-        return;
-      }
+      const type = document.getElementById("fileType").value;
+      const blob = new Blob([lastTSV], { type: "text/tab-separated-values" });
+      const url = URL.createObjectURL(blob);
 
-      const buyRows = parseCsv(buyText);
-      const nameRows = parseCsv(nameText);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${type}.tsv`;
+      a.click();
 
-      // 1行目はヘッダーとしてスキップ
-      const buyData = buyRows.slice(1);
-      const nameData = nameRows; // こちらはヘッダーなし想定（そのまま）
-
-      const resultLines = [];
-
-      const len = Math.min(buyData.length, nameData.length);
-
-      for (let i = 0; i < len; i++) {
-        const buyRow = buyData[i];
-        const nameRow = nameData[i];
-
-        // Gatyaitembuy.csv の 6つ目の列（index 5）が SeverID
-        const id = buyRow[5] !== undefined ? buyRow[5].trim() : '';
-        // GatyaitemName.csv の 1つ目の列（index 0）がアイテム名
-        const name = nameRow[0] !== undefined ? nameRow[0].trim() : '';
-
-        if (id !== '' && name !== '') {
-          resultLines.push(`${id},${name}`);
-        }
-      }
-
-      out.textContent = resultLines.join('\n');
-    });
+      URL.revokeObjectURL(url);
+    }
   </script>
+
 </body>
 </html>
