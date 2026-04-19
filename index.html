@@ -205,7 +205,7 @@
 // =============================================
 // ★ 現在のアプリバージョン設定
 // =============================================
-const CURRENT_VERSION = 150300;
+const CURRENT_VERSION = 150000;
 
 // =============================================
 // 状態管理
@@ -463,51 +463,32 @@ function formatTimeBlocks(blocks, header) {
 }
 
 // =============================================
-// タイムゾーン対応ヘルパー
+// イベント時刻フォーマットヘルパー
+// ※ イベント時刻はゲームサーバー時刻（JST固定）のまま表示
+//    タイムゾーン設定はクロック表示のみに影響し、イベント時刻は変換しない
 // =============================================
 
-// date の各フィールドを選択中タイムゾーンで返す
-function getDateParts(date) {
-  if (selectedUtcOffset === 'local') {
-    return {
-      y:       date.getFullYear(),
-      mon:     String(date.getMonth()+1).padStart(2,'0'),
-      day:     String(date.getDate()).padStart(2,'0'),
-      dow:     DOW_JP[date.getDay()],
-      h:       String(date.getHours()).padStart(2,'0'),
-      min:     String(date.getMinutes()).padStart(2,'0'),
-      dateKey: `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
-    };
-  } else {
-    // UTC ms に選択オフセット(h)を加算してUTCメソッドで読む
-    const shifted = new Date(date.getTime() + Number(selectedUtcOffset) * 3600000);
-    return {
-      y:       shifted.getUTCFullYear(),
-      mon:     String(shifted.getUTCMonth()+1).padStart(2,'0'),
-      day:     String(shifted.getUTCDate()).padStart(2,'0'),
-      dow:     DOW_JP[shifted.getUTCDay()],
-      h:       String(shifted.getUTCHours()).padStart(2,'0'),
-      min:     String(shifted.getUTCMinutes()).padStart(2,'0'),
-      dateKey: `${shifted.getUTCFullYear()}-${shifted.getUTCMonth()}-${shifted.getUTCDate()}`
-    };
-  }
-}
-
 // "2026/04/21(火)"
-function fmtDateStrTz(date) {
-  const p = getDateParts(date);
-  return `${p.y}/${p.mon}/${p.day}(${p.dow})`;
+function fmtDateStr(date) {
+  const y   = date.getFullYear();
+  const mon = String(date.getMonth()+1).padStart(2,'0');
+  const day = String(date.getDate()).padStart(2,'0');
+  const dow = DOW_JP[date.getDay()];
+  return `${y}/${mon}/${day}(${dow})`;
 }
 
 // "11:00"
-function fmtTimeStrTz(date) {
-  const p = getDateParts(date);
-  return `${p.h}:${p.min}`;
+function fmtTimeStr(date) {
+  const h   = String(date.getHours()).padStart(2,'0');
+  const min = String(date.getMinutes()).padStart(2,'0');
+  return `${h}:${min}`;
 }
 
-// 選択タイムゾーンで同日か判定
-function isSameDayTz(d1, d2) {
-  return getDateParts(d1).dateKey === getDateParts(d2).dateKey;
+// 同日か判定（ゲームサーバー時刻基準）
+function isSameDay(d1, d2) {
+  return d1.getFullYear() === d2.getFullYear() &&
+         d1.getMonth()    === d2.getMonth()    &&
+         d1.getDate()     === d2.getDate();
 }
 
 // =============================================
@@ -668,7 +649,7 @@ function formatOccurrences(header, timeBlocks) {
       if (days > 0) remParts.push(`${days}日`);
       remParts.push(`${h}時間`);
       remParts.push(`${m}分`);
-      return `<span class="occ-current">開催中 |${fmtDateStrTz(end)} ${fmtTimeStrTz(end)}まで| (残り${remParts.join('')})</span>`;
+      return `<span class="occ-current">開催中 |${fmtDateStr(end)} ${fmtTimeStr(end)}まで| (残り${remParts.join('')})</span>`;
     }
 
     const diff    = start - now;
@@ -676,12 +657,12 @@ function formatOccurrences(header, timeBlocks) {
     const dur     = end - start;
     const durStr  = formatDuration(dur);
 
-    const startStr = `${fmtDateStrTz(start)} ${fmtTimeStrTz(start)}`;
+    const startStr = `${fmtDateStr(start)} ${fmtTimeStr(start)}`;
     let endStr;
-    if (isSameDayTz(start, end)) {
-      endStr = `~${fmtTimeStrTz(end)}`;
+    if (isSameDay(start, end)) {
+      endStr = `~${fmtTimeStr(end)}`;
     } else {
-      endStr = `~${fmtDateStrTz(end)} ${fmtTimeStrTz(end)}`;
+      endStr = `~${fmtDateStr(end)} ${fmtTimeStr(end)}`;
     }
 
     return `${startStr} ${endStr} <${durStr}> (${waitStr}後に開催)`;
@@ -724,6 +705,30 @@ function stripHtml(str) {
 }
 
 // =============================================
+// 検索クエリパーサー
+// "1148 ネコフラワー" → { idPart:"1148", namePart:"ネコフラワー" }
+// "1148"             → { idPart:"1148", namePart:"" }
+// "ネコフラワー"     → { idPart:"",     namePart:"ネコフラワー" }
+// =============================================
+function parseSearchQuery(q) {
+  const trimmed = q.trim();
+  if (!trimmed) return { idPart: '', namePart: '' };
+  // 先頭が数字列 → idPart、残りを namePart
+  const m = trimmed.match(/^(\d+)\s*([\s\S]*)$/);
+  if (m) return { idPart: m[1], namePart: m[2].trim() };
+  return { idPart: '', namePart: trimmed };
+}
+
+// イベント1件が検索クエリにマッチするか
+function matchesSearch(id, name, query) {
+  if (!query) return true;
+  const { idPart, namePart } = parseSearchQuery(query);
+  const idMatch   = idPart   ? String(id).includes(idPart) : true;
+  const nameMatch = namePart ? normalizeForSearch(name).includes(normalizeForSearch(namePart)) : true;
+  return idMatch && nameMatch;
+}
+
+// =============================================
 // フィルタリング & ソート
 // 検索中は日付/状態フィルタを全無視
 // =============================================
@@ -735,12 +740,11 @@ function filterAndSort(events) {
   let filtered;
 
   if (searchQuery) {
-    // 検索中: 過去・常設・バージョン外問わず全て表示（IDと名前でマッチ）
-    const q = normalizeForSearch(searchQuery);
+    // 検索中: 過去・常設・バージョン外問わず全て表示
     filtered = events.filter(e => {
-      const idStr   = String(e.detail?.id ?? '');
-      const nameStr = normalizeForSearch(stripHtml(e.name ?? ''));
-      return idStr.includes(searchQuery) || nameStr.includes(q);
+      const id   = e.detail?.id ?? '';
+      const name = normalizeForSearch(stripHtml(e.name ?? ''));
+      return matchesSearch(id, name, searchQuery);
     });
   } else {
     const showCurrent = document.getElementById('showCurrent').checked;
@@ -1272,21 +1276,28 @@ function showSuggestions(q) {
   const box = document.getElementById('search-suggestions');
   if (!q) { box.style.display = 'none'; return; }
 
-  const normQ = normalizeForSearch(q);
-  const hits  = collectTabItems().filter(it => {
-    return String(it.id).includes(q) ||
-           normalizeForSearch(it.name).includes(normQ);
-  }).slice(0, 15);
+  const { idPart, namePart } = parseSearchQuery(q);
+  const normName = normalizeForSearch(namePart);
+
+  const hits = collectTabItems().filter(it => {
+    const idMatch   = idPart   ? String(it.id).includes(idPart) : true;
+    const nameMatch = namePart ? normalizeForSearch(it.name).includes(normName) : true;
+    return idMatch && nameMatch;
+  });
+  // ※ 無制限表示（上限なし）
 
   if (hits.length === 0) { box.style.display = 'none'; return; }
 
   suggestIdx = -1;
-  box.innerHTML = hits.map((it, i) =>
-    `<div class="suggestion-item" data-idx="${i}"
-          onmousedown="selectSuggestion(${JSON.stringify(it.name)})">
+  // 候補表示テキスト: "1148 開眼のネコフラワー襲来！"
+  // クリックすると検索欄にそのまま "1148 開眼のネコフラワー襲来！" を入れる
+  box.innerHTML = hits.map((it, i) => {
+    const label = `${it.id} ${it.name}`;
+    return `<div class="suggestion-item" data-idx="${i}"
+          onmousedown="selectSuggestion(${JSON.stringify(label)})">
        <span style="opacity:.55;margin-right:6px;">${it.id}</span>${it.name}
-     </div>`
-  ).join('');
+     </div>`;
+  }).join('');
   box.style.display = 'block';
 }
 
@@ -1295,9 +1306,10 @@ function closeSuggestions() {
   suggestIdx = -1;
 }
 
-function selectSuggestion(name) {
-  document.getElementById('searchInput').value = name;
-  searchQuery = name;
+// 候補クリック: "1148 開眼のネコフラワー襲来！" をそのまま検索欄へセット
+function selectSuggestion(label) {
+  document.getElementById('searchInput').value = label;
+  searchQuery = label;
   closeSuggestions();
   renderAll();
 }
