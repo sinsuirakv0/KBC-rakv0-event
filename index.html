@@ -313,7 +313,7 @@
 // =============================================
 // ★ 現在のアプリバージョン設定
 // =============================================
-const CURRENT_VERSION = 150300;
+const CURRENT_VERSION = 150000;
 
 // =============================================
 // 状態管理
@@ -2004,27 +2004,24 @@ function getCalcNow() {
 }
 
 function updateNow() {
-  // ロケール表示: 現在:jp (en,kr,tw) 形式
-  const ALL_LOCALES = ['ja','en','kr','tw'];
   const LABEL = { ja:'jp', en:'en', kr:'kr', tw:'tw' };
   const activeLabel = LABEL[currentLocale] ?? currentLocale;
-  const otherLabels = ALL_LOCALES.filter(l => l !== currentLocale).map(l => LABEL[l]).join(',');
-  const localeEl = document.getElementById('locale-display');
-  if (localeEl) {
-    localeEl.innerHTML =
-      `現在:<span style="color:#f90;font-weight:bold;">${activeLabel}</span>` +
-      `<span style="opacity:.55;"> (${otherLabels})</span>`;
-  }
 
-  // 時刻表示
-  let displayStr;
+  // 時刻文字列
+  let timeStr;
   if (selectedUtcOffset === 'local') {
-    displayStr = formatDate(getAccurateDate());
+    timeStr = formatDate(getAccurateDate());
   } else {
     const label = Number(selectedUtcOffset) >= 0 ? `(UTC+${selectedUtcOffset})` : `(UTC${selectedUtcOffset})`;
-    displayStr  = `${label}${formatDateUtc(getDisplayDate())}`;
+    timeStr = `${label}${formatDateUtc(getDisplayDate())}`;
   }
-  document.getElementById('now-display').textContent = displayStr;
+
+  // locale-display: "地域: en　"
+  const localeEl = document.getElementById('locale-display');
+  if (localeEl) localeEl.textContent = `地域: ${activeLabel}　`;
+
+  // now-display: "現在時刻:2026/04/20 01:30:10"
+  document.getElementById('now-display').textContent = `現在時刻:${timeStr}`;
 }
 
 // =============================================
@@ -2274,6 +2271,7 @@ async function switchLocale() {
 // 固定背景・インラインスタイル展開した上で撮影する
 // =============================================
 let _ssTarget = null;
+let _ssRestoreFn = null; // オーバーレイ展開を元に戻すコールバック
 
 function confirmScreenshot() {
   _ssTarget = 'tab';
@@ -2317,6 +2315,36 @@ async function doScreenshot() {
     const titleText = document.getElementById('overlay-title').textContent
       .replace(/[^\w\u3040-\u9FFF]/g, '_').slice(0, 40);
     filename = `detail_${titleText}.png`;
+
+    // オーバーレイはスクロール可能なため、撮影前に高さ制約を解除して全体を展開する
+    // 元のスタイルを保存して撮影後に復元
+    const _origMaxH   = targetEl.style.maxHeight;
+    const _origOverY  = targetEl.style.overflowY;
+    const _origH      = targetEl.style.height;
+    targetEl.style.maxHeight  = 'none';
+    targetEl.style.overflowY  = 'visible';
+    targetEl.style.height     = 'auto';
+    // pre要素（生データ表示）も展開
+    targetEl.querySelectorAll('pre').forEach(pre => {
+      pre._origMaxH = pre.style.maxHeight;
+      pre._origOY   = pre.style.overflowY;
+      pre.style.maxHeight = 'none';
+      pre.style.overflowY = 'visible';
+    });
+
+    // 撮影後に復元するための cleanup を登録
+    const _restore = () => {
+      targetEl.style.maxHeight  = _origMaxH;
+      targetEl.style.overflowY  = _origOverY;
+      targetEl.style.height     = _origH;
+      targetEl.querySelectorAll('pre').forEach(pre => {
+        pre.style.maxHeight = pre._origMaxH ?? '';
+        pre.style.overflowY = pre._origOY   ?? '';
+      });
+    };
+    // try/finally で必ず復元するため _restore を外側スコープに渡す
+    // ここでは _ssRestoreFn にセット
+    _ssRestoreFn = _restore;
   }
 
   // ── onclone 方式 ──────────────────────────────────────────────
@@ -2387,6 +2415,7 @@ async function doScreenshot() {
     console.error('Screenshot error:', err);
     alert('スクリーンショットに失敗しました: ' + err.message);
   } finally {
+    if (_ssRestoreFn) { _ssRestoreFn(); _ssRestoreFn = null; }
     _ssTarget = null;
   }
 }
