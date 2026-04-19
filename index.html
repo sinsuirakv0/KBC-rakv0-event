@@ -205,7 +205,7 @@
 // =============================================
 // ★ 現在のアプリバージョン設定
 // =============================================
-const CURRENT_VERSION = 150000;
+const CURRENT_VERSION = 150300;
 
 // =============================================
 // 状態管理
@@ -224,6 +224,7 @@ let selectedUtcOffset = 'local';
 let _overlayEntries = [];
 let _currentJson    = null;
 let _currentRaw     = null;
+let _currentSuggestions = []; // サジェスト候補キャッシュ（インデックス参照用）
 
 function storeOverlayEntry(entry) {
   const raw = entry.raw ?? null;
@@ -585,7 +586,7 @@ function generateOccurrenceSlots(block, periodStart, periodEnd, now, searchTo) {
 }
 
 function getNextOccurrences(header, timeBlocks, count = 5) {
-  const now         = getAccurateDate();
+  const now         = getCalcNow();
   const periodStart = parseDateTime(header.startDate, header.startTime);
   const periodEnd   = parseDateTime(header.endDate,   header.endTime);
   if (periodEnd <= now) return [];
@@ -613,7 +614,7 @@ function getNextOccurrences(header, timeBlocks, count = 5) {
 // 次の開催フォーマット（タイムゾーン対応・新フォーマット）
 // =============================================
 function formatOccurrences(header, timeBlocks) {
-  const now   = getAccurateDate();
+  const now   = getCalcNow();
   const slots = getNextOccurrences(header, timeBlocks, 5);
   if (slots.length === 0) return '';
 
@@ -733,7 +734,7 @@ function matchesSearch(id, name, query) {
 // 検索中は日付/状態フィルタを全無視
 // =============================================
 function filterAndSort(events) {
-  const now      = getAccurateDate();
+  const now      = getCalcNow();
   const sortByDate = document.getElementById('sortByDate').checked;
   const sortById   = document.getElementById('sortById').checked;
 
@@ -806,9 +807,26 @@ function expandSaleEntry(entry, missionOnly) {
 
     const start      = parseDateTime(entry.header.startDate, entry.header.startTime);
     const end        = parseDateTime(entry.header.endDate,   entry.header.endTime);
-    const baseName   = saleNames.get(id) ?? `ID:${id}`;
+    const rawName    = saleNames.get(id) ?? `ID:${id}`;
+
+    // mission の場合: <br> 前をカード表示名、全体を詳細に表示
+    let cardBaseName, missionDesc;
+    if (isMission) {
+      const brIdx = rawName.indexOf('<br>');
+      if (brIdx !== -1) {
+        cardBaseName = rawName.slice(0, brIdx).trim();
+        missionDesc  = rawName.replace(/<br>/g, '\n');
+      } else {
+        cardBaseName = rawName;
+        missionDesc  = null;
+      }
+    } else {
+      cardBaseName = rawName;
+      missionDesc  = null;
+    }
+
     const verBadge   = getVersionBadgeHtml(entry.header);
-    const name       = verBadge ? `${baseName}${verBadge}` : baseName;
+    const name       = verBadge ? `${cardBaseName}${verBadge}` : cardBaseName;
     const period     = formatCardPeriod(
       entry.header.startDate, entry.header.startTime,
       entry.header.endDate,   entry.header.endTime
@@ -821,6 +839,7 @@ function expandSaleEntry(entry, missionOnly) {
       schedule: formatTimeBlocks(entry.timeBlocks, entry.header),
       stageProxyUrl: getStageProxyUrl(id),
       steady: isSteadyEntry(entry.header),
+      missionDesc: missionDesc, // mission名の全文（<br>→\n済み）
       _entryIdx: entryIdx,
     };
     result.push({ start, end, name, period, detail });
@@ -907,6 +926,11 @@ function openOverlay(jsonStr) {
         <div class="overlay-value">${d.schedule}</div>
       </div>
       ${occSection}
+      ${d.missionDesc ? `<hr class="overlay-divider">
+      <div class="overlay-section">
+        <div class="overlay-label">ミッション内容</div>
+        <div class="overlay-value" style="white-space:pre-wrap;line-height:1.7;">${d.missionDesc}</div>
+      </div>` : ''}
       ${d.stageProxyUrl ? `<hr class="overlay-divider">
       <div id="overlay-iframe-wrap" class="overlay-iframe-wrap">
         <div class="overlay-iframe-loading" id="overlay-iframe-loading">読み込み中...</div>
@@ -1131,21 +1155,18 @@ function renderItem() {
 }
 
 // =============================================
-// ミッションタブ描画（仮）
+// ミッションタブ描画
+// sale と同様に expandSaleEntry(entry, true) でミッションIDのみ展開
+// 名前は sale_name.csv の同じマップを使用
 // =============================================
 function renderMission() {
   const cont = document.getElementById('mission');
-  cont.innerHTML = `
-    <div class="placeholder-notice">
-      <div class="placeholder-label">仮</div>
-      <p>missionの表示は現在準備中です。</p>
-      <p>現在は下記のサイトをご利用ください。</p>
-      <a class="placeholder-link"
-         href="https://bc-event.vercel.app/"
-         target="_blank" rel="noopener">
-        bc-event.vercel.app ›
-      </a>
-    </div>`;
+  const events = saleData.flatMap(entry => expandSaleEntry(entry, true));
+  const filtered = filterAndSort(events);
+  if (filtered.length === 0) {
+    cont.innerHTML = '<div class="empty">🐈 表示するミッションがありません</div>'; return;
+  }
+  cont.innerHTML = `<div class="count-label">${filtered.length} 件</div>` + buildCards(filtered);
 }
 
 // =============================================
@@ -1264,6 +1285,7 @@ function collectTabItems() {
     for (const entry of saleData) {
       for (const id of (entry.stageIds || [])) {
         if (seen.has(id)) continue;
+        if (isMissionId(id)) continue; // mission は sale サジェストから除外
         seen.add(id);
         items.push({ id, name: saleNames.get(id) ?? `ID:${id}` });
       }
@@ -1284,20 +1306,28 @@ function showSuggestions(q) {
     const nameMatch = namePart ? normalizeForSearch(it.name).includes(normName) : true;
     return idMatch && nameMatch;
   });
-  // ※ 無制限表示（上限なし）
+  // ※ 無制限表示
 
   if (hits.length === 0) { box.style.display = 'none'; return; }
 
+  _currentSuggestions = hits;
   suggestIdx = -1;
-  // 候補表示テキスト: "1148 開眼のネコフラワー襲来！"
-  // クリックすると検索欄にそのまま "1148 開眼のネコフラワー襲来！" を入れる
-  box.innerHTML = hits.map((it, i) => {
-    const label = `${it.id} ${it.name}`;
-    return `<div class="suggestion-item" data-idx="${i}"
-          onmousedown="selectSuggestion(${JSON.stringify(label)})">
-       <span style="opacity:.55;margin-right:6px;">${it.id}</span>${it.name}
-     </div>`;
-  }).join('');
+
+  // innerHTML でのインライン onmousedown は引用符衝突でバグるため
+  // data-idx 属性 + addEventListener 方式で実装する
+  box.innerHTML = hits.map((it, i) =>
+    `<div class="suggestion-item" data-idx="${i}">` +
+    `<span style="opacity:.55;margin-right:6px;">${it.id}</span>${it.name}` +
+    `</div>`
+  ).join('');
+
+  box.querySelectorAll('.suggestion-item').forEach((el, i) => {
+    el.addEventListener('mousedown', e => {
+      e.preventDefault(); // blur を防いでフォーカスを維持
+      selectSuggestion(_currentSuggestions[i]);
+    });
+  });
+
   box.style.display = 'block';
 }
 
@@ -1306,8 +1336,9 @@ function closeSuggestions() {
   suggestIdx = -1;
 }
 
-// 候補クリック: "1148 開眼のネコフラワー襲来！" をそのまま検索欄へセット
-function selectSuggestion(label) {
+// 候補を確定: "1148 開眼のネコフラワー襲来！" 形式で検索欄にセット
+function selectSuggestion(item) {
+  const label = `${item.id} ${item.name}`;
   document.getElementById('searchInput').value = label;
   searchQuery = label;
   closeSuggestions();
@@ -1402,6 +1433,26 @@ function formatDateUtc(d) {
   const min = String(d.getUTCMinutes()).padStart(2,'0');
   const sec = String(d.getUTCSeconds()).padStart(2,'0');
   return `${y}/${mon}/${day} ${h}:${min}:${sec}`;
+}
+
+// =============================================
+// 計算用「今」の取得
+// 時計に表示されている時刻をブラウザ（JST）のローカルDateとして再構築する
+// → イベント時刻（JST固定）と同じ基準で差分計算できる
+// 例: UTC-7選択で時計が 2026/04/18 23:21 と表示されているなら
+//     new Date(2026,3,18,23,21) を返す（JST 23:21 として計算）
+// =============================================
+function getCalcNow() {
+  if (selectedUtcOffset === 'local') return getAccurateDate();
+  const d = getDisplayDate(); // getUTCHours()で表示時刻を読む
+  return new Date(
+    d.getUTCFullYear(),
+    d.getUTCMonth(),
+    d.getUTCDate(),
+    d.getUTCHours(),
+    d.getUTCMinutes(),
+    d.getUTCSeconds()
+  );
 }
 
 function updateNow() {
