@@ -215,7 +215,7 @@
       </div>
       <span id="lastmod-toggle" class="now-display" onclick="toggleLastmod()" style="cursor:pointer;">前回の更新時間を表示▶</span>
       <div id="lastmod-detail" class="now-display" style="display:none;"></div>
-      <span id="now-display" class="now-display"></span>
+      <span id="locale-display" class="now-display" style="margin-right:4px;"></span><span id="now-display" class="now-display"></span>
     </div>
 
     <main>
@@ -313,7 +313,7 @@
 // =============================================
 // ★ 現在のアプリバージョン設定
 // =============================================
-const CURRENT_VERSION = 150000;
+const CURRENT_VERSION = 150300;
 
 // =============================================
 // 状態管理
@@ -2004,12 +2004,25 @@ function getCalcNow() {
 }
 
 function updateNow() {
+  // ロケール表示: 現在:jp (en,kr,tw) 形式
+  const ALL_LOCALES = ['ja','en','kr','tw'];
+  const LABEL = { ja:'jp', en:'en', kr:'kr', tw:'tw' };
+  const activeLabel = LABEL[currentLocale] ?? currentLocale;
+  const otherLabels = ALL_LOCALES.filter(l => l !== currentLocale).map(l => LABEL[l]).join(',');
+  const localeEl = document.getElementById('locale-display');
+  if (localeEl) {
+    localeEl.innerHTML =
+      `現在:<span style="color:#f90;font-weight:bold;">${activeLabel}</span>` +
+      `<span style="opacity:.55;"> (${otherLabels})</span>`;
+  }
+
+  // 時刻表示
   let displayStr;
   if (selectedUtcOffset === 'local') {
-    displayStr = '現在: ' + formatDate(getAccurateDate());
+    displayStr = formatDate(getAccurateDate());
   } else {
     const label = Number(selectedUtcOffset) >= 0 ? `(UTC+${selectedUtcOffset})` : `(UTC${selectedUtcOffset})`;
-    displayStr  = `現在: ${label}${formatDateUtc(getDisplayDate())}`;
+    displayStr  = `${label}${formatDateUtc(getDisplayDate())}`;
   }
   document.getElementById('now-display').textContent = displayStr;
 }
@@ -2209,27 +2222,45 @@ async function downloadTsv() {
 
 // =============================================
 // 海外スケジュール切り替え
+// ja → 元の data/*.json を再ロード
+// 他 → TSVを取得してブラウザ内パーサーで変換
 // =============================================
 async function switchLocale() {
   const locale = document.getElementById('overseas-locale').value;
   const status = document.getElementById('overseas-status');
+  const LABEL  = { ja:'jp', en:'en', kr:'kr', tw:'tw' };
   status.textContent = '取得中...';
   try {
-    const [gatyaTsv, saleTsv, itemTsv] = await Promise.all([
-      _fetchTsv('gatya', locale),
-      _fetchTsv('sale',  locale),
-      _fetchTsv('item',  locale),
-    ]);
-    // パース
-    gatyaData = parseGatyaBrowser(gatyaTsv);
-    saleData  = parseSaleBrowser(saleTsv);
-    itemData  = parseItemBrowser(itemTsv);
-    // _overlayEntries をリセット
+    if (locale === 'ja') {
+      // 元のGitHub JSONを再ロード（loadDataと同じ処理）
+      const BASE = 'https://raw.githubusercontent.com/sinsuirakv0/KBC-rakv0-event/main/data';
+      const [gatyaRes, saleRes, itemRes] = await Promise.all([
+        fetch(`${BASE}/gatya.json`),
+        fetch(`${BASE}/sale.json`),
+        fetch(`${BASE}/item.json`),
+      ]);
+      const gatyaJson = await gatyaRes.json();
+      const saleJson  = await saleRes.json();
+      const itemJson  = await itemRes.json();
+      gatyaData = Array.isArray(gatyaJson) ? gatyaJson : (gatyaJson.data ?? []);
+      saleData  = Array.isArray(saleJson)  ? saleJson  : (saleJson.data  ?? []);
+      itemData  = Array.isArray(itemJson)  ? itemJson  : (itemJson.data  ?? []);
+    } else {
+      // 海外TSVを取得してブラウザ内パーサーで変換
+      const [gatyaTsv, saleTsv, itemTsv] = await Promise.all([
+        _fetchTsv('gatya', locale),
+        _fetchTsv('sale',  locale),
+        _fetchTsv('item',  locale),
+      ]);
+      gatyaData = parseGatyaBrowser(gatyaTsv);
+      saleData  = parseSaleBrowser(saleTsv);
+      itemData  = parseItemBrowser(itemTsv);
+    }
     _overlayEntries = [];
-    currentLocale = locale;
-    const labelMap = { ja:'jp', en:'en', kr:'kr', tw:'tw' };
-    document.getElementById('current-locale-label').textContent = labelMap[locale] ?? locale;
-    status.textContent = `✓ ${labelMap[locale] ?? locale} に切り替えました`;
+    currentLocale   = locale;
+    document.getElementById('current-locale-label').textContent = LABEL[locale] ?? locale;
+    status.textContent = `✓ ${LABEL[locale] ?? locale} に切り替えました`;
+    updateNow(); // ロケール表示を即時更新
     renderAll();
   } catch(e) {
     status.textContent = '✗ 失敗: ' + e.message;
@@ -2288,49 +2319,66 @@ async function doScreenshot() {
     filename = `detail_${titleText}.png`;
   }
 
-  // ── クローン方式 ─────────────────────────────────────────
-  // 1. 要素をクローンしてスクリーン外に配置
-  // 2. 全 CSS変数を resolvedValue に展開
-  // 3. html2canvas で撮影 → 削除
-  const clone = targetEl.cloneNode(true);
-  const cs    = window.getComputedStyle(document.documentElement);
+  // ── onclone 方式 ──────────────────────────────────────────────
+  // html2canvas が DOM をクローンした直後に呼ばれる onclone コールバックで
+  // CSS変数をすべて実値に解決した <style> を注入する。
+  // これにより dark テーマの色が真っ白にならず正しく描画される。
+  // ─────────────────────────────────────────────────────────────
 
-  // テーマの背景色を解決
-  const bgColor = cs.getPropertyValue('--bg-primary').trim()
-    || cs.getPropertyValue('background-color')
-    || '#0a1931';
+  // 現在の :root の CSS変数を収集
+  const rootCs = window.getComputedStyle(document.documentElement);
 
-  Object.assign(clone.style, {
-    position:   'fixed',
-    top:        '-9999px',
-    left:       '0',
-    width:      targetEl.offsetWidth + 'px',
-    background: bgColor || '#0a1931',
-    color:      cs.getPropertyValue('--text-primary').trim() || '#eee',
-    zIndex:     '-1',
-    overflow:   'visible',
+  // サイトで使われうる変数名を列挙（外部CSSの変数も含めて広めに取る）
+  const CSS_VAR_NAMES = [
+    '--bg-primary','--bg-secondary','--bg-tertiary',
+    '--card','--border','--text-primary','--text-secondary',
+    '--accent','--link',
+    '--tag-current-bg','--tag-current-color',
+    '--tag-future-bg','--tag-future-color',
+    '--tag-past-bg','--tag-past-color',
+  ];
+
+  // 実際に値が存在するものだけ収集
+  const resolvedVars = {};
+  CSS_VAR_NAMES.forEach(v => {
+    const val = rootCs.getPropertyValue(v).trim();
+    if (val) resolvedVars[v] = val;
   });
 
-  // クローン内の全要素にインライン背景・色を適用（CSS変数が効かない場合の保険）
-  clone.querySelectorAll('*').forEach(el => {
-    const elCs = window.getComputedStyle(el);
-    if (elCs.backgroundColor && elCs.backgroundColor !== 'rgba(0, 0, 0, 0)') {
-      el.style.backgroundColor = elCs.backgroundColor;
-    }
-    if (elCs.color) el.style.color = elCs.color;
-  });
-
-  document.body.appendChild(clone);
+  // 背景色：変数 or body の実際の背景色 or フォールバック
+  const bodyBg = window.getComputedStyle(document.body).backgroundColor;
+  const bgColor = resolvedVars['--bg-primary'] || bodyBg || '#0a1931';
+  const textColor = resolvedVars['--text-primary'] || '#eeeeee';
 
   try {
-    const canvas = await html2canvas(clone, {
+    const canvas = await html2canvas(targetEl, {
       allowTaint:      true,
       useCORS:         true,
-      backgroundColor: bgColor || '#0a1931',
+      backgroundColor: bgColor,
       scale:           Math.min(window.devicePixelRatio || 1, 2),
       logging:         false,
-      removeContainer: true,
+      onclone: (clonedDoc, clonedEl) => {
+        // 1. 解決済み CSS変数を :root に注入
+        let css = ':root {';
+        Object.entries(resolvedVars).forEach(([k, v]) => { css += `${k}:${v};`; });
+        css += '}';
+
+        // 2. body 全体の背景・色を明示的に固定
+        css += `body { background:${bgColor} !important; color:${textColor} !important; }`;
+
+        // 3. backdrop-filter / filter をリセット（白くなる原因になる）
+        css += `* { backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }`;
+
+        const styleEl = clonedDoc.createElement('style');
+        styleEl.textContent = css;
+        clonedDoc.head.appendChild(styleEl);
+
+        // 4. クローン要素自体の背景を強制設定
+        clonedEl.style.background = bgColor;
+        clonedEl.style.color = textColor;
+      },
     });
+
     const link = document.createElement('a');
     link.download = filename;
     link.href = canvas.toDataURL('image/png');
@@ -2339,7 +2387,6 @@ async function doScreenshot() {
     console.error('Screenshot error:', err);
     alert('スクリーンショットに失敗しました: ' + err.message);
   } finally {
-    document.body.removeChild(clone);
     _ssTarget = null;
   }
 }
