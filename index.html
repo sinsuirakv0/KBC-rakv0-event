@@ -119,8 +119,26 @@
   padding: 6px 18px; font-size: 0.82rem; cursor: pointer;
   border: 1px solid #555; border-radius: 4px;
   background: rgba(255,255,255,0.08); color: #eee; transition: background 0.2s;
+  display: inline-block;
 }
 .settings-btn:hover { background: rgba(255,153,0,0.3); border-color: #f90; }
+/* アップロードファイル名 */
+.upload-filename {
+  font-size: 0.75rem; color: #aaa; margin-left: 8px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;
+}
+/* rawファイル一覧チェックボックス */
+.raw-file-item {
+  display: flex; align-items: center; gap: 6px;
+  padding: 3px 6px; border-radius: 3px; cursor: pointer;
+}
+.raw-file-item:hover { background: rgba(255,255,255,0.06); }
+.raw-file-item input[type="checkbox"] { accent-color: #f90; flex-shrink: 0; }
+.raw-file-label { font-size: 0.75rem; color: #ccc; }
+.raw-file-group-header {
+  font-size: 0.72rem; color: #f90; padding: 4px 6px 2px;
+  border-bottom: 1px solid rgba(255,153,0,0.2); margin-bottom: 2px;
+}
 .all-section-header {
   font-size:0.85rem; color:#f90; border-top:1px solid rgba(255,153,0,0.3);
   border-bottom:1px solid rgba(255,153,0,0.3); padding:4px 8px;
@@ -229,7 +247,7 @@
         <div class="settings-section">
           <h3>⚙ 設定</h3>
           <div class="settings-row">
-            <span class="settings-label">🕐 表示タイムゾーン</span>
+            <span class="settings-label">タイムゾーン変更</span>
             <select id="utc-select" onchange="onUtcChange(this.value)">
               <option value="local">ローカル時間</option>
             </select>
@@ -238,7 +256,7 @@
 
         <!-- カード2: TSVダウンロード -->
         <div class="settings-section">
-          <h3>📥 TSVダウンロード</h3>
+          <h3>TSVダウンロード</h3>
           <div class="settings-row">
             <span class="settings-label">国コード</span>
             <select id="tsv-locale">
@@ -265,7 +283,7 @@
 
         <!-- カード3: 海外スケジュール -->
         <div class="settings-section">
-          <h3>🌐 海外スケジュールに変更</h3>
+          <h3>海外スケジュールに変更</h3>
           <div class="settings-row">
             <span class="settings-label">現在</span>
             <span id="current-locale-label" style="font-size:0.85rem;color:#f90;">jp</span>
@@ -282,6 +300,56 @@
           <div class="settings-row">
             <button class="settings-btn" onclick="switchLocale()">切り替え</button>
             <span id="overseas-status" style="font-size:0.8rem;color:#aaa;margin-left:8px;"></span>
+          </div>
+        </div>
+
+        <!-- カード4: TSV読み込み -->
+        <div class="settings-section">
+          <h3>📂 TSV読み込み</h3>
+
+          <!-- セクション A: 一覧から選ぶ -->
+          <div style="margin-bottom:12px;">
+            <div style="font-size:0.82rem;color:#aaa;margin-bottom:6px;">一覧から選ぶ</div>
+            <div class="settings-row">
+              <button class="settings-btn" onclick="fetchRawFileList()">ファイル一覧を取得</button>
+              <span id="raw-list-status" style="font-size:0.8rem;color:#aaa;margin-left:8px;"></span>
+            </div>
+            <div id="raw-file-list" style="margin-top:8px;max-height:200px;overflow-y:auto;font-size:0.78rem;"></div>
+            <div class="settings-row" style="margin-top:6px;">
+              <button class="settings-btn" id="raw-load-btn" style="display:none;" onclick="loadSelectedRawFiles()">選択したファイルを読み込む</button>
+              <span id="raw-load-status" style="font-size:0.8rem;color:#aaa;margin-left:8px;"></span>
+            </div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:10px 0;">
+
+          <!-- セクション B: TSVを読み込む（ローカルファイル） -->
+          <div>
+            <div style="font-size:0.82rem;color:#aaa;margin-bottom:8px;">TSVを読み込む</div>
+            <div class="settings-row tsv-upload-row">
+              <span class="settings-label">gatyaを読み込む</span>
+              <label class="settings-btn" style="cursor:pointer;">
+                ファイル選択
+                <input type="file" accept=".tsv" id="upload-gatya" style="display:none;" onchange="handleTsvUpload('gatya',this)">
+              </label>
+              <span id="upload-gatya-name" class="upload-filename"></span>
+            </div>
+            <div class="settings-row tsv-upload-row">
+              <span class="settings-label">saleを読み込む</span>
+              <label class="settings-btn" style="cursor:pointer;">
+                ファイル選択
+                <input type="file" accept=".tsv" id="upload-sale" style="display:none;" onchange="handleTsvUpload('sale',this)">
+              </label>
+              <span id="upload-sale-name" class="upload-filename"></span>
+            </div>
+            <div class="settings-row tsv-upload-row">
+              <span class="settings-label">itemを読み込む</span>
+              <label class="settings-btn" style="cursor:pointer;">
+                ファイル選択
+                <input type="file" accept=".tsv" id="upload-item" style="display:none;" onchange="handleTsvUpload('item',this)">
+              </label>
+              <span id="upload-item-name" class="upload-filename"></span>
+            </div>
           </div>
         </div>
       </div>
@@ -2261,6 +2329,138 @@ async function switchLocale() {
     renderAll();
   } catch(e) {
     status.textContent = '✗ 失敗: ' + e.message;
+    console.error(e);
+  }
+}
+
+// =============================================
+// TSV読み込み: 一覧から選ぶ（GitHub raw/フォルダ）
+// =============================================
+const GITHUB_RAW_API = 'https://api.github.com/repos/sinsuirakv0/KBC-rakv0-event/contents/raw';
+const GITHUB_RAW_DL  = 'https://raw.githubusercontent.com/sinsuirakv0/KBC-rakv0-event/main/raw';
+
+// rawフォルダのファイル一覧をGitHub APIで取得し、チェックボックスリストを生成
+async function fetchRawFileList() {
+  const status  = document.getElementById('raw-list-status');
+  const listDiv = document.getElementById('raw-file-list');
+  const loadBtn = document.getElementById('raw-load-btn');
+  status.textContent = '取得中...';
+  listDiv.innerHTML  = '';
+  loadBtn.style.display = 'none';
+
+  try {
+    const res   = await fetch(GITHUB_RAW_API);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const files = await res.json();
+
+    // (gatya|sale|item)_数字.tsv だけを抽出してタイプ別に分類
+    const groups = { gatya: [], sale: [], item: [] };
+    for (const f of files) {
+      const m = f.name.match(/^(gatya|sale|item)_(\d+)\.tsv$/);
+      if (!m) continue;
+      groups[m[1]].push({ name: f.name, type: m[1], unix: Number(m[2]) });
+    }
+
+    // unix時刻を降順ソート（新しいものを上に）
+    for (const t of ['gatya','sale','item']) groups[t].sort((a,b) => b.unix - a.unix);
+
+    const total = groups.gatya.length + groups.sale.length + groups.item.length;
+    if (total === 0) { status.textContent = 'ファイルが見つかりません'; return; }
+
+    // チェックボックス付きリストを生成
+    let html = '';
+    for (const type of ['gatya','sale','item']) {
+      if (groups[type].length === 0) continue;
+      html += `<div class="raw-file-group-header">${type}</div>`;
+      for (const f of groups[type]) {
+        const date = new Date(f.unix * 1000);
+        const dateStr = `${date.getFullYear()}/${String(date.getMonth()+1).padStart(2,'0')}/${String(date.getDate()).padStart(2,'0')} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
+        html += `<label class="raw-file-item">
+          <input type="checkbox" class="raw-file-cb" data-name="${f.name}" data-type="${f.type}">
+          <span class="raw-file-label">${f.name} <span style="opacity:.55;">(${dateStr})</span></span>
+        </label>`;
+      }
+    }
+    listDiv.innerHTML = html;
+    loadBtn.style.display = 'inline-block';
+    status.textContent = `${total} 件`;
+  } catch(e) {
+    status.textContent = '✗ 失敗: ' + e.message;
+    console.error(e);
+  }
+}
+
+// 選択されたrawファイルを読み込んでパース・反映
+async function loadSelectedRawFiles() {
+  const checked = [...document.querySelectorAll('.raw-file-cb:checked')];
+  const loadStatus = document.getElementById('raw-load-status');
+  if (checked.length === 0) { loadStatus.textContent = 'ファイルを選択してください'; return; }
+
+  loadStatus.textContent = `${checked.length} 件取得中...`;
+
+  // タイプ別に最後に選んだファイルで上書き（複数選択時は最後の1つが有効）
+  // ただし同タイプ複数選択時は最新のものを使う
+  const selected = { gatya: null, sale: null, item: null };
+  for (const cb of checked) {
+    const type = cb.dataset.type;
+    const name = cb.dataset.name;
+    const unix = Number(name.match(/_(\d+)\.tsv$/)?.[1] ?? 0);
+    if (!selected[type] || unix > selected[type].unix) {
+      selected[type] = { name, unix };
+    }
+  }
+
+  try {
+    const fetches = Object.entries(selected)
+      .filter(([, v]) => v !== null)
+      .map(async ([type, { name }]) => {
+        const url  = `${GITHUB_RAW_DL}/${name}`;
+        const res  = await fetch(url);
+        if (!res.ok) throw new Error(`${name}: HTTP ${res.status}`);
+        const text = await res.text();
+        return { type, text };
+      });
+
+    const results = await Promise.all(fetches);
+    _overlayEntries = [];
+
+    for (const { type, text } of results) {
+      if (type === 'gatya') gatyaData = parseGatyaBrowser(text);
+      else if (type === 'sale') saleData  = parseSaleBrowser(text);
+      else if (type === 'item') itemData  = parseItemBrowser(text);
+    }
+
+    const loadedTypes = results.map(r => r.type).join(', ');
+    loadStatus.textContent = `✓ ${loadedTypes} を読み込みました`;
+    renderAll();
+  } catch(e) {
+    loadStatus.textContent = '✗ 失敗: ' + e.message;
+    console.error(e);
+  }
+}
+
+// =============================================
+// TSV読み込み: ローカルファイルアップロード
+// =============================================
+async function handleTsvUpload(type, input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const nameEl = document.getElementById(`upload-${type}-name`);
+  nameEl.textContent = '読み込み中...';
+
+  try {
+    const text = await file.text();
+    _overlayEntries = [];
+
+    if (type === 'gatya')      gatyaData = parseGatyaBrowser(text);
+    else if (type === 'sale')  saleData  = parseSaleBrowser(text);
+    else if (type === 'item')  itemData  = parseItemBrowser(text);
+
+    nameEl.textContent = `✓ ${file.name}`;
+    renderAll();
+  } catch(e) {
+    nameEl.textContent = '✗ 失敗: ' + e.message;
     console.error(e);
   }
 }
