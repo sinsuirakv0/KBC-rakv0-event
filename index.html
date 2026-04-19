@@ -7,20 +7,20 @@
   <link rel="stylesheet" href="https://kbc-rakv0.vercel.app/assets/style.css" />
   <link rel="stylesheet" href="https://kbc-rakv0.vercel.app/assets/event.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-<link rel="icon" href="https://kbc-rakv0.vercel.app/assets/favicon.ico">
-<meta property="og:title" content="KBC スケジュール">
-<meta property="og:description" content="スケジュールを閲覧することができます。">
-<meta property="og:image" content="https://kbc-rakv0.vercel.app/assets/preview.png">
-<meta property="og:url" content="https:/kbc-rakv0.vercel.app/">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="https://kbc-rakv0.vercel.app/assets/favicon.ico">
+  <meta property="og:title" content="KBC スケジュール">
+  <meta property="og:description" content="スケジュールを閲覧することができます。">
+  <meta property="og:image" content="https://kbc-rakv0.vercel.app/assets/preview.png">
+  <meta property="og:url" content="https://kbc-rakv0.vercel.app/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="KBC スケジュール">
-<meta name="twitter:description" content="スケジュールを閲覧することができます。">
-<meta name="twitter:image" content="https://kbc-rakv0.vercel.app/assets/preview.png">
-<script src="https://kbc-rakv0.vercel.app/js/theme.js"></script>
+  <meta name="twitter:description" content="スケジュールを閲覧することができます。">
+  <meta name="twitter:image" content="https://kbc-rakv0.vercel.app/assets/preview.png">
+  <script src="https://kbc-rakv0.vercel.app/js/theme.js"></script>
   <script>
   (function(){var t=localStorage.getItem('kbc-theme');if(t&&t!=='original')document.documentElement.setAttribute('data-theme',t);})();
-</script>
+  </script>
 <style>
 /* 検索ボックス */
 #search-wrap {
@@ -86,32 +86,42 @@
 .ver-badge  { font-size:0.6rem; padding:1px 4px; border-radius:3px; vertical-align:middle; margin-left:3px; }
 .ver-need   { background:rgba(255,80,80,0.2); color:#f99; }
 .ver-limit  { background:rgba(255,200,0,0.15); color:#fc8; }
-/* ハンバーガーメニュー */
-.tabs-row { display:flex; align-items:center; gap:6px; }
-.hamburger-btn {
-  background:none; border:1px solid #555; color:#ccc;
-  font-size:1.1rem; padding:3px 8px; border-radius:4px;
-  cursor:pointer; flex-shrink:0; line-height:1;
-}
-.hamburger-btn:hover { border-color:#f90; color:#f90; }
-.hamburger-menu {
-  display:none; background:var(--card,#0a1931);
-  border:1px solid var(--border,rgba(255,255,255,0.1));
-  border-radius:8px; padding:12px 16px; margin-bottom:8px;
-  animation:fadeIn 0.2s ease;
-}
-.hmenu-section { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-.hmenu-label   { font-size:0.8rem; color:#aaa; }
-#utc-select    { font-size:0.8rem; padding:3px 6px; }
 /* 次の開催リスト */
 .occ-list { font-size:0.7rem; color:#bbb; white-space:pre-wrap; line-height:1.8; }
 .occ-current { color:#4f8; font-weight:bold; }
+/* 設定タブ */
+.settings-section {
+  padding: 16px;
+  background: var(--card, #0a1931);
+  border: 1px solid var(--border, rgba(255,255,255,0.1));
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.settings-section h3 {
+  font-size: 0.95rem;
+  color: var(--text-primary, #eee);
+  margin: 0 0 12px 0;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 6px 0;
+}
+.settings-label {
+  font-size: 0.82rem;
+  color: #aaa;
+  min-width: 160px;
+}
+#utc-select { font-size: 0.8rem; padding: 3px 6px; }
 </style>
+</head>
 <body>
   <div class="container fade-in">
     <header class="header">
       <div class="header-left">
-        <img src="../assets/logo.png" alt="ロゴ" id="logo">
+        <img src="https://kbc-rakv0.vercel.app/assets/logo.png" alt="ロゴ" id="logo">
         <h1 class="site-title">KBC</h1>
       </div>
       <nav class="nav">
@@ -119,22 +129,12 @@
       </nav>
     </header>
 
-    <div class="tabs-row">
-      <div class="tabs">
-        <div class="tab active" data-tab="gatya">ガチャ</div>
-        <div class="tab" data-tab="sale">イベント</div>
-        <div class="tab" data-tab="item">アイテム</div>
-        <div class="tab" data-tab="mission">ミッション</div>
-      </div>
-      <button class="hamburger-btn" id="hamburger-btn" onclick="toggleHamburger()" title="設定">☰</button>
-    </div>
-    <div id="hamburger-menu" class="hamburger-menu">
-      <div class="hmenu-section">
-        <span class="hmenu-label">🕐 表示タイムゾーン</span>
-        <select id="utc-select" onchange="onUtcChange(this.value)">
-          <option value="local">ローカル時間</option>
-        </select>
-      </div>
+    <div class="tabs">
+      <div class="tab active" data-tab="gatya">gatya</div>
+      <div class="tab" data-tab="sale">sale</div>
+      <div class="tab" data-tab="item">item</div>
+      <div class="tab" data-tab="mission">mission</div>
+      <div class="tab" data-tab="settings">⚙</div>
     </div>
 
     <div class="controls">
@@ -177,6 +177,17 @@
       <div id="sale"    class="content"><div class="loading">読み込み中...</div></div>
       <div id="item"    class="content"><div class="loading">読み込み中...</div></div>
       <div id="mission" class="content"><div class="loading">読み込み中...</div></div>
+      <div id="settings" class="content">
+        <div class="settings-section">
+          <h3>⚙ 設定</h3>
+          <div class="settings-row">
+            <span class="settings-label">🕐 表示タイムゾーン</span>
+            <select id="utc-select" onchange="onUtcChange(this.value)">
+              <option value="local">ローカル時間</option>
+            </select>
+          </div>
+        </div>
+      </div>
     </main>
   </div><!-- /.container ここで閉じる -->
 
@@ -193,10 +204,8 @@
 <script>
 // =============================================
 // ★ 現在のアプリバージョン設定
-//    例: 150300 = ver.15.3.0
-//    イベントの minVersion/maxVersion との比較に使用
 // =============================================
-const CURRENT_VERSION = 150000;
+const CURRENT_VERSION = 150300;
 
 // =============================================
 // 状態管理
@@ -204,31 +213,19 @@ const CURRENT_VERSION = 150000;
 let gatyaData = [];
 let saleData  = [];
 let itemData  = [];
-let saleNames    = new Map(); // stageId -> 名前
-let gatyaRNames  = new Map(); // gacha id -> 名前（レア: type 1）
-let gatyaNNames  = new Map(); // gacha id -> 名前（ノーマル: type 0）
-let gatyaENames  = new Map(); // gacha id -> 名前（イベント: type 4）
+let saleNames    = new Map();
+let gatyaRNames  = new Map();
+let gatyaNNames  = new Map();
+let gatyaENames  = new Map();
 
-// =============================================
-// 検索状態
-// searchQuery: 現在のクエリ（空=全表示）
-// activeTab:   現在表示中のタブ名
-// suggestIdx:  キーボードナビ用インデックス
-// =============================================
 let searchQuery      = '';
-let selectedUtcOffset = 'local'; // 'local' or number (e.g. 9 for UTC+9)
+let selectedUtcOffset = 'local';
 
-// =============================================
-// オーバーレイ用エントリ保持
-// エントリ全体をここに保存し index で参照する
-// （onclick属性に大きなJSONを入れるのを避けるため）
-// =============================================
-let _overlayEntries = []; // [{ json: string, raw: string|null }]
+let _overlayEntries = [];
 let _currentJson    = null;
 let _currentRaw     = null;
 
 function storeOverlayEntry(entry) {
-  // 同じエントリが複数回登録されるのを防ぐため raw をキーにキャッシュ
   const raw = entry.raw ?? null;
   const idx = _overlayEntries.findIndex(e => e.raw === raw && raw !== null);
   if (idx !== -1) return idx;
@@ -242,7 +239,6 @@ function storeOverlayEntry(entry) {
 function toggleRawView(type) {
   const pre     = document.getElementById('overlay-raw-content');
   const content = type === 'json' ? _currentJson : _currentRaw;
-  // 同じボタンを押したら閉じる
   if (pre.style.display !== 'none' && pre.dataset.type === type) {
     pre.style.display = 'none';
     return;
@@ -261,22 +257,19 @@ const WEEKDAY_JP = { Mon:'月', Tue:'火', Wed:'水', Thu:'木', Fri:'金', Sat:
 const DOW_JP     = ['日','月','火','水','木','金','土'];
 
 // =============================================
-// sale 非表示設定（常設イベントなど）
-// デフォルトで非表示にしたいIDを設定する
-// ranges: { from, to } の形式で範囲指定
-// ids:    個別IDを指定
+// sale 非表示設定（無効化）
 // =============================================
 const SALE_HIDDEN_CONFIG = {
-  ranges: [
-   
-  ],
-  ids: [  ],
+  ranges: [],
+  ids: [],
 };
+
+function isSaleHidden(id) {
+  return false; // SALE_HIDDEN_CONFIG 無効化
+}
 
 // =============================================
 // sale ステージタイプマップ
-// IDの範囲からタイプ文字列とナンバーを生成
-// URL: /api/stage-proxy?type=XX&num=NNN
 // =============================================
 const STAGE_TYPE_MAP = [
   { from:  1000, to:  1999, type: 'S'  },
@@ -308,7 +301,7 @@ function getStageProxyUrl(id) {
 }
 
 // =============================================
-// バージョンユーティリティ
+// バージョンユーティリティ（表示用のみ、フィルタリングしない）
 // =============================================
 function fmtVer(v) {
   const major = Math.floor(v / 10000);
@@ -317,14 +310,7 @@ function fmtVer(v) {
   return patch > 0 ? `${major}.${minor}.${patch}` : `${major}.${minor}`;
 }
 
-// バージョンが現在に対して有効か
-// maxVersion < CURRENT_VERSION かつ 999999 以外 → 非表示
-function isVersionVisible(header) {
-  const max = Number(header.maxVersion);
-  return max === 999999 || max >= CURRENT_VERSION;
-}
-
-// カード名に付けるバージョンバッジ HTML
+// バージョンバッジ HTML（表示のみ、フィルタには使わない）
 function getVersionBadgeHtml(header) {
   const min = Number(header.minVersion);
   const max = Number(header.maxVersion);
@@ -336,23 +322,14 @@ function getVersionBadgeHtml(header) {
 }
 
 // =============================================
-// 常設判定: endDate が "20300101" のエントリを常設とみなす
-// 常設は開催中タブでは非表示、予定・過去では通常表示
+// 常設判定
 // =============================================
 function isSteadyEntry(header) {
   return header.endDate === '20300101';
 }
 
-function isSaleHidden(id) {
-  for (const r of SALE_HIDDEN_CONFIG.ranges) {
-    if (id >= r.from && id <= r.to) return true;
-  }
-  return SALE_HIDDEN_CONFIG.ids.includes(id);
-}
-
 // =============================================
 // ミッション判定
-// 対象: 8000台, 9000台, 15000台, 17000台
 // =============================================
 function isMissionId(id) {
   return (id >= 8000  && id <= 8999)  ||
@@ -363,14 +340,12 @@ function isMissionId(id) {
 
 // =============================================
 // 時刻文字列パース
-// "800" → "08:00", "1100" → "11:00", "0" → "00:00"
 // =============================================
 function parseTimeStr(t) {
   const s = String(t).padStart(4, '0');
   return `${s.slice(0,2)}:${s.slice(2,4)}`;
 }
 
-// 11:00かどうか（表示省略判定）
 function isMidnight(t) {
   const s = String(t).padStart(4, '0');
   return s === '1100';
@@ -378,7 +353,6 @@ function isMidnight(t) {
 
 // =============================================
 // ヘッダー日付パース → Date
-// dateStr: "20260216", timeStr: "1100"
 // =============================================
 function parseDateTime(dateStr, timeStr) {
   const y   = parseInt(dateStr.slice(0, 4));
@@ -390,8 +364,6 @@ function parseDateTime(dateStr, timeStr) {
 
 // =============================================
 // カード用期間文字列
-// 例: "02/16〜03/03"  "02/16(11:00)〜03/03"
-// 11:00は省略
 // =============================================
 function formatCardPeriod(dateStr, timeStr, eDateStr, eTimeStr) {
   const sm = dateStr.slice(4,6);
@@ -405,7 +377,6 @@ function formatCardPeriod(dateStr, timeStr, eDateStr, eTimeStr) {
 
 // =============================================
 // 詳細用日付文字列（曜日付き）
-// 例: "2026/02/16(月) 11:00"
 // =============================================
 function formatDetailDate(dateStr, timeStr) {
   const dt  = parseDateTime(dateStr, timeStr);
@@ -419,18 +390,14 @@ function formatDetailDate(dateStr, timeStr) {
 
 // =============================================
 // dateRanges の文字列パース
-// "223 0" → 2月23日 00:00
-// "1023 1100" → 10月23日 11:00
 // =============================================
 function parseDateRangePart(str) {
   const [datePart, timePart = '0'] = str.trim().split(' ');
   let month, day;
   if (datePart.length <= 3) {
-    // 3桁: 先頭1桁=月, 残2桁=日
     month = parseInt(datePart[0]);
     day   = parseInt(datePart.slice(1));
   } else {
-    // 4桁: 先頭2桁=月, 残2桁=日
     month = parseInt(datePart.slice(0,2));
     day   = parseInt(datePart.slice(2));
   }
@@ -446,14 +413,10 @@ function formatTimeRanges(ranges) {
   return ranges.map(([s, e]) => `${parseTimeStr(s)}~${parseTimeStr(e)}`).join(' & ');
 }
 
-// =============================================
-// 曜日配列 → "月・水・金"（短縮形）
-// =============================================
 function formatWeekdays(days) {
   return days.map(d => WEEKDAY_JP[d] || d).join('・');
 }
 
-// 曜日配列 → "月曜日・火曜日"（フル形）
 const WEEKDAY_FULL = { Mon:'月曜日', Tue:'火曜日', Wed:'水曜日', Thu:'木曜日',
                        Fri:'金曜日', Sat:'土曜日', Sun:'日曜日' };
 function formatWeekdaysFull(days) {
@@ -461,7 +424,7 @@ function formatWeekdaysFull(days) {
 }
 
 // =============================================
-// 1つの timeBlock を人間が読める形に変換（改善版）
+// 1つの timeBlock を人間が読める形に変換
 // =============================================
 function formatTimeBlock(block) {
   const { dateRanges, monthDays, weekdays, timeRanges } = block;
@@ -478,22 +441,15 @@ function formatTimeBlock(block) {
       lines.push(`${sStr}~${eStr}${hasTime ? ' ' + timeStr : ''}`);
     }
   }
-
   if (monthDays && monthDays.length > 0) {
     lines.push(`毎月${monthDays.join(',')}日${hasTime ? ' ' + timeStr : ''}`);
   }
-
   if (weekdays && weekdays.length > 0) {
     lines.push(`毎週 ${formatWeekdaysFull(weekdays)}${hasTime ? ' ' + timeStr : ''}`);
   }
-
   return lines.join('\n');
 }
 
-// =============================================
-// 全 timeBlocks → 開催期間テキスト（改善版）
-// header を渡すと常時開催に期間を表示
-// =============================================
 function formatTimeBlocks(blocks, header) {
   if (!blocks || blocks.length === 0) {
     if (header) {
@@ -507,6 +463,54 @@ function formatTimeBlocks(blocks, header) {
 }
 
 // =============================================
+// タイムゾーン対応ヘルパー
+// =============================================
+
+// date の各フィールドを選択中タイムゾーンで返す
+function getDateParts(date) {
+  if (selectedUtcOffset === 'local') {
+    return {
+      y:       date.getFullYear(),
+      mon:     String(date.getMonth()+1).padStart(2,'0'),
+      day:     String(date.getDate()).padStart(2,'0'),
+      dow:     DOW_JP[date.getDay()],
+      h:       String(date.getHours()).padStart(2,'0'),
+      min:     String(date.getMinutes()).padStart(2,'0'),
+      dateKey: `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+    };
+  } else {
+    // UTC ms に選択オフセット(h)を加算してUTCメソッドで読む
+    const shifted = new Date(date.getTime() + Number(selectedUtcOffset) * 3600000);
+    return {
+      y:       shifted.getUTCFullYear(),
+      mon:     String(shifted.getUTCMonth()+1).padStart(2,'0'),
+      day:     String(shifted.getUTCDate()).padStart(2,'0'),
+      dow:     DOW_JP[shifted.getUTCDay()],
+      h:       String(shifted.getUTCHours()).padStart(2,'0'),
+      min:     String(shifted.getUTCMinutes()).padStart(2,'0'),
+      dateKey: `${shifted.getUTCFullYear()}-${shifted.getUTCMonth()}-${shifted.getUTCDate()}`
+    };
+  }
+}
+
+// "2026/04/21(火)"
+function fmtDateStrTz(date) {
+  const p = getDateParts(date);
+  return `${p.y}/${p.mon}/${p.day}(${p.dow})`;
+}
+
+// "11:00"
+function fmtTimeStrTz(date) {
+  const p = getDateParts(date);
+  return `${p.h}:${p.min}`;
+}
+
+// 選択タイムゾーンで同日か判定
+function isSameDayTz(d1, d2) {
+  return getDateParts(d1).dateKey === getDateParts(d2).dateKey;
+}
+
+// =============================================
 // 次の開催スロット計算
 // =============================================
 function parseDateRangeStr(str, refDate) {
@@ -514,7 +518,6 @@ function parseDateRangeStr(str, refDate) {
   const [hh, mm] = timeStr.split(':').map(Number);
   let year = refDate.getFullYear();
   let d    = new Date(year, month - 1, day, hh, mm, 0, 0);
-  // 半年以上前なら翌年で試す
   if (d < refDate && (refDate - d) > 180 * 86400000)
     d = new Date(year + 1, month - 1, day, hh, mm, 0, 0);
   return d;
@@ -625,33 +628,68 @@ function getNextOccurrences(header, timeBlocks, count = 5) {
   return result;
 }
 
+// =============================================
+// 次の開催フォーマット（タイムゾーン対応・新フォーマット）
+// =============================================
 function formatOccurrences(header, timeBlocks) {
   const now   = getAccurateDate();
   const slots = getNextOccurrences(header, timeBlocks, 5);
   if (slots.length === 0) return '';
 
-  const DOW = ['日','月','火','水','木','金','土'];
-  const fmt  = d => `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}(${DOW[d.getDay()]}) ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-  const fmtT = d => `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  function formatDuration(ms) {
+    const days  = Math.floor(ms / 86400000);
+    const hours = Math.floor((ms % 86400000) / 3600000);
+    const mins  = Math.floor((ms % 3600000) / 60000);
+    let s = '';
+    if (days > 0)  s += `${days}day`;
+    if (hours > 0) s += `${hours}h`;
+    if (mins > 0 && days === 0 && hours === 0) s += `${mins}m`;
+    return s || '0m';
+  }
+
+  function formatWait(ms) {
+    const days = Math.floor(ms / 86400000);
+    const h    = Math.floor((ms % 86400000) / 3600000);
+    const m    = Math.floor((ms % 3600000) / 60000);
+    let s = '';
+    if (days > 0) s += `${days}日`;
+    if (h > 0)    s += `${h}時間`;
+    s += `${m}分`;
+    return s;
+  }
 
   return slots.map(({ start, end, isCurrent }) => {
     if (isCurrent) {
       const rem  = end - now;
-      const h    = Math.floor(rem / 3600000);
+      const days = Math.floor(rem / 86400000);
+      const h    = Math.floor((rem % 86400000) / 3600000);
       const m    = Math.floor((rem % 3600000) / 60000);
-      return `<span class="occ-current">開催中 |${fmtT(end)}まで| (残り${h}時間${m}分)</span>`;
+      const remParts = [];
+      if (days > 0) remParts.push(`${days}日`);
+      remParts.push(`${h}時間`);
+      remParts.push(`${m}分`);
+      return `<span class="occ-current">開催中 |${fmtDateStrTz(end)} ${fmtTimeStrTz(end)}まで| (残り${remParts.join('')})</span>`;
     }
-    const diff = start - now;
-    const days = Math.floor(diff / 86400000);
-    const hrs  = Math.floor((diff % 86400000) / 3600000);
-    const mins = Math.floor((diff % 3600000) / 60000);
-    const label = days > 0 ? `${days}日と${hrs}時間${mins}分後` : hrs > 0 ? `${hrs}時間${mins}分後` : `${mins}分後`;
-    return `${fmt(start)} ~ ${fmtT(end)} (${label})`;
+
+    const diff    = start - now;
+    const waitStr = formatWait(diff);
+    const dur     = end - start;
+    const durStr  = formatDuration(dur);
+
+    const startStr = `${fmtDateStrTz(start)} ${fmtTimeStrTz(start)}`;
+    let endStr;
+    if (isSameDayTz(start, end)) {
+      endStr = `~${fmtTimeStrTz(end)}`;
+    } else {
+      endStr = `~${fmtDateStrTz(end)} ${fmtTimeStrTz(end)}`;
+    }
+
+    return `${startStr} ${endStr} <${durStr}> (${waitStr}後に開催)`;
   }).join('\n');
 }
 
 // =============================================
-// CSV パース: id,名前
+// CSV パース
 // =============================================
 function parseCSV(text) {
   const map = new Map();
@@ -666,49 +704,71 @@ function parseCSV(text) {
 }
 
 // =============================================
+// 検索ユーティリティ
+// =============================================
+
+// ひらがな → カタカナ変換
+function toKatakana(str) {
+  return str.replace(/[\u3041-\u3096]/g, ch =>
+    String.fromCharCode(ch.charCodeAt(0) + 0x60));
+}
+
+// 検索用正規化（小文字化 + ひらがな→カタカナ）
+function normalizeForSearch(str) {
+  return toKatakana(str.toLowerCase());
+}
+
+// HTML タグ除去
+function stripHtml(str) {
+  return str.replace(/<[^>]*>/g, '');
+}
+
+// =============================================
 // フィルタリング & ソート
+// 検索中は日付/状態フィルタを全無視
 // =============================================
 function filterAndSort(events) {
-  const now         = new Date();
-  const showCurrent = document.getElementById('showCurrent').checked;
-  const showPast    = document.getElementById('showPast').checked;
-  const sortByDate  = document.getElementById('sortByDate').checked;
+  const now      = getAccurateDate();
+  const sortByDate = document.getElementById('sortByDate').checked;
+  const sortById   = document.getElementById('sortById').checked;
 
-  const filtered = events.filter(e => {
-    const isPast    = e.end   <= now;
-    const isCurrent = e.start <= now && e.end > now;
-    const isFuture  = e.start >  now;
-    const isSteady  = e.detail?.steady ?? false; // 常設フラグ
+  let filtered;
 
-    // 検索クエリがあればID/名前でフィルタ
-    if (searchQuery) {
-      const q       = searchQuery.toLowerCase();
-      const idMatch = String(e.detail?.id ?? '').includes(q);
-      const nmMatch = (e.name ?? '').toLowerCase().includes(q);
-      if (!idMatch && !nmMatch) return false;
-    }
+  if (searchQuery) {
+    // 検索中: 過去・常設・バージョン外問わず全て表示（IDと名前でマッチ）
+    const q = normalizeForSearch(searchQuery);
+    filtered = events.filter(e => {
+      const idStr   = String(e.detail?.id ?? '');
+      const nameStr = normalizeForSearch(stripHtml(e.name ?? ''));
+      return idStr.includes(searchQuery) || nameStr.includes(q);
+    });
+  } else {
+    const showCurrent = document.getElementById('showCurrent').checked;
+    const showPast    = document.getElementById('showPast').checked;
+    const showAll     = document.getElementById('showAllSale').checked;
 
-    // 常設（endDate=20300101）は開催中では表示しない
-    // 「常設を含む全イベントを表示」がONのときは例外
-    const showAll = document.getElementById('showAllSale').checked;
-    if (isSteady && isCurrent && !showAll) return false;
+    filtered = events.filter(e => {
+      const isPast    = e.end   <= now;
+      const isCurrent = e.start <= now && e.end > now;
+      const isFuture  = e.start >  now;
+      const isSteady  = e.detail?.steady ?? false;
 
-    if (showPast)  return true;
-    if (isPast)    return false;
-    if (isCurrent) return showCurrent;
-    if (isFuture)  return true;
-    return false;
-  });
+      if (showPast)  return true;
+      if (isPast)    return false;
+      if (isSteady && isCurrent && !showAll) return false;
+      if (isCurrent) return showCurrent;
+      if (isFuture)  return true;
+      return false;
+    });
+  }
 
-  const sortById = document.getElementById('sortById').checked;
   if (sortByDate) filtered.sort((a, b) => a.start - b.start);
   else if (sortById) filtered.sort((a, b) => (a.detail?.id ?? 0) - (b.detail?.id ?? 0));
   return filtered;
 }
 
 // =============================================
-// カード HTML 生成（新レイアウト）
-// クリックで openOverlay(detail) を呼ぶ
+// カード HTML 生成
 // =============================================
 function makeCard(period, name, isCurrent, isPast, detail) {
   const tagClass = isPast ? 'tag-past' : isCurrent ? 'tag-current' : 'tag-future';
@@ -727,33 +787,28 @@ function makeCard(period, name, isCurrent, isPast, detail) {
 
 // =============================================
 // sale/mission エントリ → イベント配列に展開
-// stageIds を1つずつ別オブジェクトに分割
-// missionOnly: true=ミッションのみ, false=ミッション除外
 // =============================================
 function expandSaleEntry(entry, missionOnly) {
-  // バージョンフィルタ: maxVersion < CURRENT_VERSION かつ 999999 以外は非表示
-  if (!isVersionVisible(entry.header)) return [];
+  // バージョンフィルタ削除: 全バージョン表示
 
   const now      = new Date();
-  const entryIdx = storeOverlayEntry(entry); // エントリ全体を保持
+  const entryIdx = storeOverlayEntry(entry);
   const result   = [];
   for (const id of (entry.stageIds || [])) {
     const isMission = isMissionId(id);
     if (missionOnly !== isMission) continue;
 
-    // sale タブ: 非表示設定IDはチェックなければスキップ
-    if (!missionOnly && !document.getElementById('showAllSale').checked && isSaleHidden(id)) continue;
+    // SALE_HIDDEN_CONFIG 無効化済み: isSaleHidden は常に false
 
-    const start   = parseDateTime(entry.header.startDate, entry.header.startTime);
-    const end     = parseDateTime(entry.header.endDate,   entry.header.endTime);
+    const start      = parseDateTime(entry.header.startDate, entry.header.startTime);
+    const end        = parseDateTime(entry.header.endDate,   entry.header.endTime);
     const baseName   = saleNames.get(id) ?? `ID:${id}`;
     const verBadge   = getVersionBadgeHtml(entry.header);
     const name       = verBadge ? `${baseName}${verBadge}` : baseName;
-    const period  = formatCardPeriod(
+    const period     = formatCardPeriod(
       entry.header.startDate, entry.header.startTime,
       entry.header.endDate,   entry.header.endTime
     );
-    // 詳細データ
     const detail = {
       name,
       id,
@@ -761,7 +816,7 @@ function expandSaleEntry(entry, missionOnly) {
       ver:    `${entry.header.minVersion}~${entry.header.maxVersion}`,
       schedule: formatTimeBlocks(entry.timeBlocks, entry.header),
       stageProxyUrl: getStageProxyUrl(id),
-      steady: isSteadyEntry(entry.header), // 常設フラグ
+      steady: isSteadyEntry(entry.header),
       _entryIdx: entryIdx,
     };
     result.push({ start, end, name, period, detail });
@@ -771,11 +826,12 @@ function expandSaleEntry(entry, missionOnly) {
 
 // =============================================
 // オーバーレイ 開く
+// 順序: 期間 → ver → 開催期間 → 次の開催 → 公式リンク
 // =============================================
 function openOverlay(jsonStr) {
   const d  = JSON.parse(jsonStr);
   const el = document.getElementById('overlay');
-  document.getElementById('overlay-title').textContent = `${d.name}　ID: ${d.id}`;
+  document.getElementById('overlay-title').textContent = `${stripHtml(d.name)}　ID: ${d.id}`;
 
   let bodyHtml = '';
 
@@ -817,6 +873,22 @@ function openOverlay(jsonStr) {
       </div>` : ''}`;
   } else {
     // sale/item/mission 詳細
+    // 次の開催を先に計算
+    const entryForOcc  = _overlayEntries[d._entryIdx] ?? null;
+    const entryObjOcc  = entryForOcc ? JSON.parse(entryForOcc.json) : null;
+    let occSection = '';
+    if (entryObjOcc?.header && entryObjOcc?.timeBlocks !== undefined) {
+      const occHtml = formatOccurrences(entryObjOcc.header, entryObjOcc.timeBlocks);
+      if (occHtml) {
+        occSection = `<hr class="overlay-divider">
+        <div class="overlay-section">
+          <div class="overlay-label">次の開催</div>
+          <div class="overlay-value occ-list">${occHtml}</div>
+        </div>`;
+      }
+    }
+
+    // 順序: 期間 → ver → 開催期間 → 次の開催 → 公式リンク(iframe)
     bodyHtml = `
       <div class="overlay-section">
         <div class="overlay-label">期間</div>
@@ -830,6 +902,7 @@ function openOverlay(jsonStr) {
         <div class="overlay-label">開催期間</div>
         <div class="overlay-value">${d.schedule}</div>
       </div>
+      ${occSection}
       ${d.stageProxyUrl ? `<hr class="overlay-divider">
       <div id="overlay-iframe-wrap" class="overlay-iframe-wrap">
         <div class="overlay-iframe-loading" id="overlay-iframe-loading">読み込み中...</div>
@@ -840,28 +913,13 @@ function openOverlay(jsonStr) {
           onerror="handleIframeError(this)">
         </iframe>
       </div>` : ''}`;
-
-    // 次の開催日時（エントリデータから計算）
-    const entryForOcc  = _overlayEntries[d._entryIdx] ?? null;
-    const entryObjOcc  = entryForOcc ? JSON.parse(entryForOcc.json) : null;
-    if (entryObjOcc?.header && entryObjOcc?.timeBlocks !== undefined) {
-      const occHtml = formatOccurrences(entryObjOcc.header, entryObjOcc.timeBlocks);
-      if (occHtml) {
-        bodyHtml += `<hr class="overlay-divider">
-      <div class="overlay-section">
-        <div class="overlay-label">次の開催</div>
-        <div class="overlay-value occ-list">${occHtml}</div>
-      </div>`;
-      }
-    }
   }
 
-  // エントリデータをセット（生データ・JSONボタン用）
+  // エントリデータをセット
   const entryData  = _overlayEntries[d._entryIdx] ?? null;
   _currentJson     = entryData?.json ?? null;
   _currentRaw      = entryData?.raw  ?? null;
 
-  // ボタンと表示エリアを末尾に追加
   const hasData = _currentJson || _currentRaw;
   if (hasData) {
     bodyHtml += `
@@ -884,8 +942,6 @@ function openOverlay(jsonStr) {
 
 // =============================================
 // iframe ロードハンドラ
-// クロスオリジンで正常なら loading を非表示
-// アクセス拒否(X-Frame-Options)などは wrap を削除
 // =============================================
 function handleIframeLoad(iframe) {
   try {
@@ -895,7 +951,7 @@ function handleIframeLoad(iframe) {
       return;
     }
   } catch(e) {
-    // SecurityError = クロスオリジンで正常読み込み → loading非表示
+    // SecurityError = クロスオリジンで正常読み込み
   }
   const loading = document.getElementById('overlay-iframe-loading');
   if (loading) loading.style.display = 'none';
@@ -914,7 +970,7 @@ function closeOverlay() {
 // 汎用: イベント配列からカードHTML生成
 // =============================================
 function buildCards(events) {
-  const now = new Date();
+  const now = getAccurateDate();
   return events.map(e => {
     const isCurrent = e.start <= now && e.end > now;
     const isPast    = e.end   <= now;
@@ -933,7 +989,7 @@ const FLAGS_LABEL = {
 };
 
 // =============================================
-// rates → 表示テキスト（0は非表示）
+// rates → 表示テキスト
 // =============================================
 const RATE_LABELS = [
   ['normal',     'ノーマル'],
@@ -949,42 +1005,32 @@ function formatRates(rates) {
     .join('\n');
 }
 
-// =============================================
-// ガチャタイプ → サブタブID
-// =============================================
 function gachaTypeToSub(t) {
   if (t === 0) return 'normal';
   if (t === 4) return 'event';
-  return 'rare'; // 1 and others
+  return 'rare';
 }
 
 // =============================================
 // ガチャタブ描画
-// type 0: ノーマル, 1: レア, 4: イベント
-// type 2, 3: 非表示
-// セクションヘッダーで区切って1ページに表示
 // =============================================
 function renderGatya() {
   const cont = document.getElementById('gatya');
-
   const buckets = { normal: [], rare: [], event: [] };
 
   for (const entry of gatyaData) {
     const h    = entry.header;
     const type = h.gachaType;
-
     if (type === 2 || type === 3) continue;
-    // バージョンフィルタ
-    if (!isVersionVisible(h)) continue;
+    // バージョンフィルタ削除: 全バージョン表示
 
     const sub      = gachaTypeToSub(type);
     const start    = parseDateTime(h.startDate, h.startTime);
     const end      = parseDateTime(h.endDate,   h.endTime);
-    const entryIdx = storeOverlayEntry(entry); // エントリ全体を保持
+    const entryIdx = storeOverlayEntry(entry);
 
     for (const g of (entry.gachas || [])) {
-      // type に応じて異なるCSVから名前を取得
-      const nameMap = type === 0 ? gatyaNNames : type === 4 ? gatyaENames : gatyaRNames;
+      const nameMap   = type === 0 ? gatyaNNames : type === 4 ? gatyaENames : gatyaRNames;
       const csvName   = nameMap.get(g.id);
       const flagLabel = FLAGS_LABEL[g.flags] || '';
       const guarLabel = g.guaranteed ? '＜確定＞' : '';
@@ -995,11 +1041,12 @@ function renderGatya() {
       const rateText  = formatRates(g.rates || {});
       const msgText   = (g.message && g.message !== '0') ? g.message : '';
 
-      // type別に公式URLを生成
+      // 公式URL: 正しいパス + 3桁ID
+      const idStr = String(g.id).padStart(3, '0');
       let infoUrl = null;
-      if (type === 1)      infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/rare/R${g.id}.html`;
-      else if (type === 4) infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/event/E${g.id}.html`;
-      else if (type === 0) infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/normal/N${g.id}.html`;
+      if (type === 1)      infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/rare/R${idStr}.html`;
+      else if (type === 4) infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/event/E${idStr}.html`;
+      else if (type === 0) infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/normal/N${idStr}.html`;
 
       const detail = {
         type: 'gatya',
@@ -1013,7 +1060,7 @@ function renderGatya() {
         guaranteed: g.guaranteed,
         flagLabel,
         infoUrl,
-        steady: isSteadyEntry(h),  // 常設フラグ
+        steady: isSteadyEntry(h),
         _entryIdx: entryIdx,
       };
 
@@ -1049,7 +1096,7 @@ function renderGatya() {
 }
 
 // =============================================
-// セールタブ描画（ミッション除外）
+// セールタブ描画
 // =============================================
 function renderSale() {
   const cont   = document.getElementById('sale');
@@ -1098,7 +1145,7 @@ function renderMission() {
 }
 
 // =============================================
-// 全タブ再描画
+// 全タブ再描画（settingsタブは静的なので除外）
 // =============================================
 function renderAll() {
   renderGatya();
@@ -1111,14 +1158,15 @@ function renderAll() {
 // タブ切り替え
 // =============================================
 function showTab(tabName) {
-  activeTab = tabName; // 現在のタブを記録
+  activeTab = tabName;
   document.querySelectorAll('.tab').forEach(t => {
     t.classList.toggle('active', t.dataset.tab === tabName);
   });
   document.querySelectorAll('.content').forEach(c => {
     c.classList.toggle('active', c.id === tabName);
   });
-  // タブ切り替え時は検索クエリをリセット
+  // settingsタブは再描画不要
+  if (tabName === 'settings') return;
   searchQuery = '';
   document.getElementById('searchInput').value = '';
   closeSuggestions();
@@ -1141,12 +1189,11 @@ async function loadData() {
       fetch(`${BASE}/gatya_e_name.csv`),
     ]);
 
-    _overlayEntries = []; // エントリキャッシュをリセット
+    _overlayEntries = [];
     const gatyaJson = await gatyaRes.json();
     const saleJson  = await saleRes.json();
     const itemJson  = await itemRes.json();
 
-    // { updatedAt, data } 形式に対応（旧フォーマットの配列もフォールバック）
     gatyaData = Array.isArray(gatyaJson) ? gatyaJson : (gatyaJson.data ?? []);
     saleData  = Array.isArray(saleJson)  ? saleJson  : (saleJson.data  ?? []);
     itemData  = Array.isArray(itemJson)  ? itemJson  : (itemJson.data  ?? []);
@@ -1161,13 +1208,11 @@ async function loadData() {
     const gatyaNameText  = await gatyaNameRes.text().catch(() => '');
     const gatyaNNameText = await gatyaNNameRes.text().catch(() => '');
     const gatyaENameText = await gatyaENameRes.text().catch(() => '');
-    gatyaRNames = parseCSV(gatyaNameText);   // レア (type 1)
-    gatyaNNames = parseCSV(gatyaNNameText);  // ノーマル (type 0)
-    gatyaENames = parseCSV(gatyaENameText);  // イベント (type 4)
+    gatyaRNames = parseCSV(gatyaNameText);
+    gatyaNNames = parseCSV(gatyaNNameText);
+    gatyaENames = parseCSV(gatyaENameText);
 
-    // updatedAt 表示（Last-Modified の代わりに JSON 内のタイムスタンプを使用）
     updateLastModified(gatyaUpdatedAt, saleUpdatedAt, itemUpdatedAt);
-
     renderAll();
   } catch (err) {
     console.error('データ読み込みエラー:', err);
@@ -1179,26 +1224,7 @@ async function loadData() {
 
 // =============================================
 // 最終更新時刻表示
-// gatya と sale の Last-Modified ヘッダを取得して表示
-// 同じ時刻 → "(gatya&sale)"、異なる → 新しい方のみ表示
 // =============================================
-// =============================================
-// 最終更新時刻表示
-// gatya / sale / item それぞれ独立して表示
-// 折りたたみ: ▶閉じ / ▼開き
-// 日付フォーマット: YY/MM/DD HH:MM:SS
-// =============================================
-function formatDateShort(date) {
-  const y   = String(date.getFullYear()).slice(2); // 西暦2桁
-  const mon = String(date.getMonth()+1).padStart(2,'0');
-  const d   = String(date.getDate()).padStart(2,'0');
-  const h   = String(date.getHours()).padStart(2,'0');
-  const min = String(date.getMinutes()).padStart(2,'0');
-  const sec = String(date.getSeconds()).padStart(2,'0');
-  return `${y}/${mon}/${d} ${h}:${min}:${sec}`;
-}
-
-// entries: gatya/sale/item それぞれの Last-Modified を独立表示
 function updateLastModified(gatyaAt, saleAt, itemAt) {
   const sources = [
     { label: 'gatya', mod: gatyaAt },
@@ -1208,15 +1234,13 @@ function updateLastModified(gatyaAt, saleAt, itemAt) {
   const valid = sources.filter(s => s.mod);
   const detail = document.getElementById('lastmod-detail');
   if (valid.length === 0) { detail.innerHTML = ''; return; }
-
-  // 各行: "YY/MM/DD HH:MM:SS(label)"
   detail.innerHTML = valid
     .map(s => `${s.mod}(${s.label})`)
     .join('<br>');
 }
 
 // =============================================
-// 検索: 現在のタブのアイテムを収集
+// 検索サジェスト
 // =============================================
 function collectTabItems() {
   const items = [];
@@ -1227,11 +1251,9 @@ function collectTabItems() {
       const type    = entry.header?.gachaType ?? 1;
       const nameMap = type === 0 ? gatyaNNames : type === 4 ? gatyaENames : gatyaRNames;
       for (const g of (entry.gachas || [])) {
-        const key  = g.id;
-        if (seen.has(key)) continue;
-        seen.add(key);
-        const name = nameMap.get(g.id) ?? `ID:${g.id}`;
-        items.push({ id: g.id, name });
+        if (seen.has(g.id)) continue;
+        seen.add(g.id);
+        items.push({ id: g.id, name: nameMap.get(g.id) ?? `ID:${g.id}` });
       }
     }
   } else if (activeTab === 'sale') {
@@ -1239,25 +1261,22 @@ function collectTabItems() {
       for (const id of (entry.stageIds || [])) {
         if (seen.has(id)) continue;
         seen.add(id);
-        const name = saleNames.get(id) ?? `ID:${id}`;
-        items.push({ id, name });
+        items.push({ id, name: saleNames.get(id) ?? `ID:${id}` });
       }
     }
   }
-  // item / mission はプレースホルダーのため検索対象外
-
   return items;
 }
 
-// 候補を最大15件表示
 function showSuggestions(q) {
   const box = document.getElementById('search-suggestions');
   if (!q) { box.style.display = 'none'; return; }
 
-  const lower = q.toLowerCase();
-  const hits  = collectTabItems().filter(it =>
-    String(it.id).includes(lower) || it.name.toLowerCase().includes(lower)
-  ).slice(0, 15);
+  const normQ = normalizeForSearch(q);
+  const hits  = collectTabItems().filter(it => {
+    return String(it.id).includes(q) ||
+           normalizeForSearch(it.name).includes(normQ);
+  }).slice(0, 15);
 
   if (hits.length === 0) { box.style.display = 'none'; return; }
 
@@ -1276,7 +1295,6 @@ function closeSuggestions() {
   suggestIdx = -1;
 }
 
-// 候補を確定してカードを絞り込む
 function selectSuggestion(name) {
   document.getElementById('searchInput').value = name;
   searchQuery = name;
@@ -1284,7 +1302,6 @@ function selectSuggestion(name) {
   renderAll();
 }
 
-// 入力のたびに候補更新 & リアルタイム絞り込み
 function onSearchInput() {
   const q   = document.getElementById('searchInput').value.trim();
   searchQuery = q;
@@ -1293,7 +1310,6 @@ function onSearchInput() {
   renderAll();
 }
 
-// ↑↓で候補ナビ、Enterで確定、Escで閉じる
 function onSearchKeydown(e) {
   const box   = document.getElementById('search-suggestions');
   const items = box.querySelectorAll('.suggestion-item');
@@ -1313,11 +1329,9 @@ function onSearchKeydown(e) {
     closeSuggestions();
     return;
   }
-  // アクティブスタイル更新
   items.forEach((el, i) => el.classList.toggle('active', i === suggestIdx));
 }
 
-// 折りたたみトグル
 function toggleLastmod() {
   const detail = document.getElementById('lastmod-detail');
   const toggle = document.getElementById('lastmod-toggle');
@@ -1326,37 +1340,27 @@ function toggleLastmod() {
   toggle.textContent = isOpen ? '前回の更新時間を表示▶' : '前回の更新時間を表示▼';
 }
 
-
 // =============================================
 // 現在時刻表示
 // =============================================
 let offset = 0;
 
-// 遅延補正付きで正確な時刻を取得
 async function syncAccurateTime() {
-  const t0 = Date.now(); // リクエスト送信時刻
-
+  const t0 = Date.now();
   const res = await fetch("https://worldtimeapi.org/api/timezone/Asia/Tokyo");
-  const t1 = Date.now(); // レスポンス受信時刻
-
+  const t1  = Date.now();
   const data = await res.json();
-  const serverTime = new Date(data.datetime).getTime();
-
-  const rtt = t1 - t0;          // 往復遅延
-  const oneWayDelay = rtt / 2;  // 片道遅延（推定）
-
-  const correctedServerTime = serverTime + oneWayDelay;
-
-  // offset を更新（表示は止めない）
-  offset = correctedServerTime - Date.now();
+  const serverTime  = new Date(data.datetime).getTime();
+  const rtt         = t1 - t0;
+  const oneWayDelay = rtt / 2;
+  offset = serverTime + oneWayDelay - Date.now();
 }
 
-// 補正後の正確な現在時刻
+// 常に UTC ms ベースで補正済み現在時刻を返す
 function getAccurateDate() {
   return new Date(Date.now() + offset);
 }
 
-// yyyy/mm/dd hh:mm:ss
 function formatDate(date) {
   const y   = date.getFullYear();
   const mon = String(date.getMonth()+1).padStart(2,'0');
@@ -1367,27 +1371,41 @@ function formatDate(date) {
   return `${y}/${mon}/${d} ${h}:${min}:${sec}`;
 }
 
-// 表示更新（1秒ごとに必ず進む）
+// =============================================
+// 表示用 Date 取得（タイムゾーンバグ修正）
+// Date.now() は常に UTC ms なのでそのまま使う
+// =============================================
+function getDisplayDate() {
+  const accurateMs = Date.now() + offset; // UTC ms
+  if (selectedUtcOffset === 'local') return new Date(accurateMs);
+  // UTC ms に選択オフセット(h)を加算 → getUTCHours() で正しい表示時刻になる
+  return new Date(accurateMs + Number(selectedUtcOffset) * 3600000);
+}
+
+function formatDateUtc(d) {
+  const y   = d.getUTCFullYear();
+  const mon = String(d.getUTCMonth()+1).padStart(2,'0');
+  const day = String(d.getUTCDate()).padStart(2,'0');
+  const h   = String(d.getUTCHours()).padStart(2,'0');
+  const min = String(d.getUTCMinutes()).padStart(2,'0');
+  const sec = String(d.getUTCSeconds()).padStart(2,'0');
+  return `${y}/${mon}/${day} ${h}:${min}:${sec}`;
+}
+
 function updateNow() {
   let displayStr;
   if (selectedUtcOffset === 'local') {
     displayStr = '現在: ' + formatDate(getAccurateDate());
   } else {
-    const label = selectedUtcOffset >= 0 ? `(UTC+${selectedUtcOffset})` : `(UTC${selectedUtcOffset})`;
+    const label = Number(selectedUtcOffset) >= 0 ? `(UTC+${selectedUtcOffset})` : `(UTC${selectedUtcOffset})`;
     displayStr  = `現在: ${label}${formatDateUtc(getDisplayDate())}`;
   }
   document.getElementById('now-display').textContent = displayStr;
 }
 
 // =============================================
-// ハンバーガーメニュー
+// UTC セレクター初期化
 // =============================================
-function toggleHamburger() {
-  const m = document.getElementById('hamburger-menu');
-  m.style.display = m.style.display === 'none' || m.style.display === '' ? 'block' : 'none';
-}
-
-// UTC セレクターを初期化（-12～+14）
 function initUtcSelect() {
   const sel = document.getElementById('utc-select');
   for (let u = -12; u <= 14; u++) {
@@ -1399,41 +1417,18 @@ function initUtcSelect() {
   }
 }
 
+// タイムゾーン変更: 表示更新 + イベント再描画
 function onUtcChange(val) {
   selectedUtcOffset = val === 'local' ? 'local' : parseInt(val);
   updateNow();
+  renderAll();
 }
 
-// UTC オフセット適用済みの表示用 Date を生成
-function getDisplayDate() {
-  const accurateMs = Date.now() + offset;
-  if (selectedUtcOffset === 'local') return new Date(accurateMs);
-  // ローカル → UTC → 目標オフセット
-  const utcMs = accurateMs + new Date().getTimezoneOffset() * 60000;
-  return new Date(utcMs + selectedUtcOffset * 3600000);
-}
-
-// UTC オフセット表示時刻のフォーマット（UTC メソッドで読む）
-function formatDateUtc(d) {
-  const y   = d.getUTCFullYear();
-  const mon = String(d.getUTCMonth()+1).padStart(2,'0');
-  const day = String(d.getUTCDate()).padStart(2,'0');
-  const h   = String(d.getUTCHours()).padStart(2,'0');
-  const min = String(d.getUTCMinutes()).padStart(2,'0');
-  const sec = String(d.getUTCSeconds()).padStart(2,'0');
-  return `${y}/${mon}/${day} ${h}:${min}:${sec}`;
-}
-
-// 初期化して1秒ごとに更新
 async function startClock() {
   initUtcSelect();
-  await syncAccurateTime(); // 初回同期
+  await syncAccurateTime();
   updateNow();
-
-  // 秒を進めるループ（絶対に止まらない）
   setInterval(updateNow, 1000);
-
-  // 5分ごとに裏で再同期（表示は止めない）
   setInterval(syncAccurateTime, 5 * 60 * 1000);
 }
 
@@ -1448,7 +1443,6 @@ document.querySelectorAll('.tab').forEach(tab => {
 ['showCurrent', 'showPast', 'sortByDate', 'sortById'].forEach(id => {
   document.getElementById(id).addEventListener('change', renderAll);
 });
-// 日付順・ID順の排他制御
 document.getElementById('sortByDate').addEventListener('change', function() {
   if (this.checked) document.getElementById('sortById').checked = false;
 });
