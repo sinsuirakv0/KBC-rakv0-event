@@ -17,6 +17,7 @@
   <meta name="twitter:title" content="KBC スケジュール">
   <meta name="twitter:description" content="スケジュールを閲覧することができます。">
   <meta name="twitter:image" content="https://kbc-rakv0.vercel.app/assets/preview.png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://kbc-rakv0.vercel.app/js/theme.js"></script>
   <script>
   (function(){var t=localStorage.getItem('kbc-theme');if(t&&t!=='original')document.documentElement.setAttribute('data-theme',t);})();
@@ -89,6 +90,43 @@
 /* 次の開催リスト */
 .occ-list { font-size:0.7rem; color:#bbb; white-space:pre-wrap; line-height:1.8; }
 .occ-current { color:#4f8; font-weight:bold; }
+/* スクリーンショット確認オーバーレイ */
+#ss-confirm-overlay {
+  display:none; position:fixed; inset:0; z-index:3000;
+  background:rgba(0,0,0,0.7); align-items:center; justify-content:center;
+}
+#ss-confirm-overlay.show { display:flex; }
+#ss-confirm-box {
+  background:var(--card,#0a1931); border:1px solid var(--border,rgba(255,255,255,0.1));
+  border-radius:12px; padding:24px 28px; min-width:280px; max-width:90vw; text-align:center;
+}
+#ss-confirm-msg { font-size:0.95rem; color:#eee; margin-bottom:18px; line-height:1.5; }
+.ss-confirm-btns { display:flex; gap:12px; justify-content:center; }
+.ss-btn-yes, .ss-btn-no {
+  padding:8px 28px; border-radius:6px; font-size:0.9rem; cursor:pointer; border:none;
+}
+.ss-btn-yes { background:#f90; color:#000; font-weight:bold; }
+.ss-btn-no  { background:rgba(255,255,255,0.12); color:#eee; }
+/* カメラボタン */
+.camera-btn {
+  background:none; border:1px solid #555; color:#ccc;
+  font-size:1rem; padding:2px 8px; border-radius:4px;
+  cursor:pointer; margin-left:4px; vertical-align:middle; line-height:1;
+}
+.camera-btn:hover { border-color:#f90; color:#f90; }
+/* 全てタブ用セクションヘッダー */
+.all-section-header {
+  font-size:0.85rem; color:#f90; border-top:1px solid rgba(255,153,0,0.3);
+  border-bottom:1px solid rgba(255,153,0,0.3); padding:4px 8px;
+  margin:12px 0 4px 0; letter-spacing:0.1em; text-align:center;
+}
+/* 詳細スクショボタン */
+.overlay-ss-btn {
+  padding:4px 12px; font-size:0.75rem; cursor:pointer;
+  border:1px solid #555; border-radius:4px;
+  background:rgba(255,255,255,0.08); color:#eee; transition:background 0.2s;
+}
+.overlay-ss-btn:hover { background:rgba(255,153,0,0.3); border-color:#f90; }
 /* 設定タブ */
 .settings-section {
   padding: 16px;
@@ -134,6 +172,7 @@
       <div class="tab" data-tab="sale">sale</div>
       <div class="tab" data-tab="item">item</div>
       <div class="tab" data-tab="mission">mission</div>
+      <div class="tab" data-tab="all">全て</div>
       <div class="tab" data-tab="settings">⚙</div>
     </div>
 
@@ -156,15 +195,16 @@
       </label>
       <label id="label-showAllSale">
         <input type="checkbox" id="showAllSale">
-        常設を含む全イベントを表示
+        全イベントを表示
       </label>
+      <button class="camera-btn" onclick="confirmScreenshot()" title="スクリーンショット">📷</button>
       <div id="search-wrap">
         <input type="text" id="searchInput" placeholder="ID or ステージ名..."
                autocomplete="off"
                oninput="onSearchInput()"
                onkeydown="onSearchKeydown(event)"
-               onfocus="onSearchInput()"
-               onblur="setTimeout(()=>closeSuggestions(),150)">
+               onfocus="showSuggestions(document.getElementById('searchInput').value.trim())"
+               onblur="setTimeout(()=>closeSuggestions(),200)">
         <div id="search-suggestions"></div>
       </div>
       <span id="lastmod-toggle" class="now-display" onclick="toggleLastmod()" style="cursor:pointer;">前回の更新時間を表示▶</span>
@@ -177,6 +217,7 @@
       <div id="sale"    class="content"><div class="loading">読み込み中...</div></div>
       <div id="item"    class="content"><div class="loading">読み込み中...</div></div>
       <div id="mission" class="content"><div class="loading">読み込み中...</div></div>
+      <div id="all"     class="content"><div class="loading">読み込み中...</div></div>
       <div id="settings" class="content">
         <div class="settings-section">
           <h3>⚙ 設定</h3>
@@ -190,6 +231,17 @@
       </div>
     </main>
   </div><!-- /.container ここで閉じる -->
+
+  <!-- スクリーンショット確認オーバーレイ -->
+  <div id="ss-confirm-overlay">
+    <div id="ss-confirm-box">
+      <div id="ss-confirm-msg"></div>
+      <div class="ss-confirm-btns">
+        <button class="ss-btn-yes" onclick="doScreenshot()">Yes</button>
+        <button class="ss-btn-no"  onclick="cancelScreenshot()">No</button>
+      </div>
+    </div>
+  </div>
 
   <!-- オーバーレイは container の外 → position:fixed がビューポート基準になる -->
   <div id="overlay" class="overlay-backdrop">
@@ -1090,19 +1142,24 @@ function openOverlay(jsonStr) {
       <div class="overlay-raw-buttons">
         ${_currentJson ? '<button class="overlay-raw-btn" onclick="toggleRawView(\'json\')">📄 JSONを見る</button>' : ''}
         ${_currentRaw  ? '<button class="overlay-raw-btn" onclick="toggleRawView(\'raw\')">📋 生データを見る</button>' : ''}
+        <button class="overlay-ss-btn" onclick="screenshotOverlay()">📷</button>
       </div>
       <pre id="overlay-raw-content"
            style="display:none;white-space:pre-wrap;word-break:break-all;
                   font-size:0.65rem;max-height:300px;overflow-y:auto;
                   background:rgba(0,0,0,0.3);padding:8px;border-radius:4px;
                   margin-top:8px;color:#ccc;"></pre>`;
+  } else {
+    bodyHtml += `
+      <hr class="overlay-divider">
+      <div class="overlay-raw-buttons">
+        <button class="overlay-ss-btn" onclick="screenshotOverlay()">📷</button>
+      </div>`;
   }
 
   document.getElementById('overlay-body').innerHTML = bodyHtml;
   document.body.classList.add('overlay-open');
   el.classList.add('show');
-  // オーバーレイを開いたことをHistoryに積む
-  _historyPush(activeTab, true);
 }
 
 // =============================================
@@ -1127,12 +1184,8 @@ function handleIframeError(iframe) {
 }
 
 function closeOverlay() {
-  _closeOverlayNoHistory();
-  // popstateで来た場合は二重にpopしないよう、現在のstate確認
-  // 通常のxボタン・背景クリックは history.back() で対応
-  if (history.state && history.state.overlay) {
-    history.back();
-  }
+  document.body.classList.remove('overlay-open');
+  document.getElementById('overlay').classList.remove('show');
 }
 
 // =============================================
@@ -1412,21 +1465,142 @@ function renderMission() {
 }
 
 // =============================================
-// 全タブ再描画（settingsタブは静的なので除外）
+// 全タブ再描画（settings/allタブは別管理）
 // =============================================
 function renderAll() {
   renderGatya();
   renderSale();
   renderItem();
   renderMission();
+  renderAllTab();
+}
+
+// =============================================
+// 「全て」タブ描画: gatya→sale→item→mission の順
+// =============================================
+function renderAllTab() {
+  const cont = document.getElementById('all');
+
+  const SECTIONS = [
+    {
+      label: 'gatya',
+      getEvents: () => {
+        const buckets = { normal: [], rare: [], event: [] };
+        for (const entry of gatyaData) {
+          const h    = entry.header;
+          const type = h.gachaType;
+          if (type === 2 || type === 3) continue;
+          const sub      = gachaTypeToSub(type);
+          const start    = parseDateTime(h.startDate, h.startTime);
+          const end      = parseDateTime(h.endDate,   h.endTime);
+          const entryIdx = storeOverlayEntry(entry);
+          for (const g of (entry.gachas || [])) {
+            const nameMap   = type === 0 ? gatyaNNames : type === 4 ? gatyaENames : gatyaRNames;
+            const csvName   = nameMap.get(g.id);
+            const flagLabel = FLAGS_LABEL[g.flags] || '';
+            const guarLabel = g.guaranteed ? '＜確定＞' : '';
+            const verBadge  = getVersionBadgeHtml(h);
+            const nameParts = [csvName ?? `ID:${g.id}`, guarLabel, flagLabel].filter(Boolean);
+            if (verBadge) nameParts.push(verBadge);
+            const period    = formatCardPeriod(h.startDate, h.startTime, h.endDate, h.endTime);
+            const rateText  = formatRates(g.rates || {});
+            const idStr     = String(g.id).padStart(3, '0');
+            let infoUrl = null;
+            if (type === 1)      infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/rare/R${idStr}.html`;
+            else if (type === 4) infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/event/E${idStr}.html`;
+            else if (type === 0) infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/normal/N${idStr}.html`;
+            const detail = {
+              type: 'gatya', name: csvName ?? `ID:${g.id}`, id: g.id,
+              period: `${formatDetailDate(h.startDate, h.startTime)} ~ ${formatDetailDate(h.endDate, h.endTime)}`,
+              ver: `${h.minVersion}~${h.maxVersion}`, gachaCount: h.gachaCount,
+              rates: rateText, message: (g.message && g.message !== '0') ? g.message : '',
+              guaranteed: g.guaranteed, flagLabel, infoUrl, steady: isSteadyEntry(h), _entryIdx: entryIdx,
+            };
+            buckets[sub].push({ start, end, name: nameParts.join(' '), period, detail });
+          }
+        }
+        // 301/302
+        for (const entry of itemData) {
+          const h = entry.header; const g = entry.gift;
+          if (!g || (g.giftType !== 301 && g.giftType !== 302)) continue;
+          const start    = parseDateTime(h.startDate, h.startTime);
+          const end      = parseDateTime(h.endDate,   h.endTime);
+          const giftName = itemNames.get(g.giftType) ?? `giftType:${g.giftType}`;
+          const verBadge = getVersionBadgeHtml(h);
+          const cardName = verBadge ? `${giftName}${verBadge}` : giftName;
+          const period   = formatCardPeriod(h.startDate, h.startTime, h.endDate, h.endTime);
+          const entryIdx = storeOverlayEntry(entry);
+          const detail = {
+            type: 'item', name: cardName, id: g.giftType,
+            period: `${formatDetailDate(h.startDate, h.startTime)} ~ ${formatDetailDate(h.endDate, h.endTime)}`,
+            ver: `${h.minVersion}~${h.maxVersion}`, schedule: formatTimeBlocks(entry.timeBlocks, h),
+            eventId: g.eventId, message: (g.message ?? '').replace(/<br>/g,'\n').trim(),
+            url: (g.url ?? '').trim(), giftTypeId: g.giftType, giftTypeName: giftName,
+            giftAmountStr: g.giftAmount > 0 ? `${g.giftAmount}個` : '',
+            giftDetailStr: itemDetails.get(g.giftType) ?? '', giftPackUrl: null, giftTsvText: null,
+            steady: isSteadyEntry(h), _entryIdx: entryIdx,
+          };
+          buckets.rare.push({ start, end, name: cardName, period, detail });
+        }
+        return [...filterAndSort(buckets.normal), ...filterAndSort(buckets.rare), ...filterAndSort(buckets.event)];
+      }
+    },
+    {
+      label: 'sale',
+      getEvents: () => filterAndSort(saleData.flatMap(e => expandSaleEntry(e, false)))
+    },
+    {
+      label: 'item',
+      getEvents: () => filterAndSort(itemData.flatMap(e => expandItemEntry(e)))
+    },
+    {
+      label: 'mission',
+      getEvents: () => filterAndSort(saleData.flatMap(e => expandSaleEntry(e, true)))
+    },
+  ];
+
+  let html = '';
+  let total = 0;
+  const now = getAccurateDate();
+
+  for (const sec of SECTIONS) {
+    const events = sec.getEvents();
+    if (events.length === 0) continue;
+    total += events.length;
+    const cards = events.map(e => {
+      const isCurrent = e.start <= now && e.end > now;
+      const isPast    = e.end   <= now;
+      return makeCard(e.period, e.name, isCurrent, isPast, e.detail);
+    }).join('');
+    html += `<div class="all-section-header">----- ${sec.label} -----</div>${cards}`;
+  }
+
+  if (html === '') {
+    cont.innerHTML = '<div class="empty">🐈 表示するイベントがありません</div>';
+  } else {
+    cont.innerHTML = `<div class="count-label" id="all-count">${total} 件</div>` + html;
+  }
 }
 
 // =============================================
 // タブ切り替え
 // =============================================
 function showTab(tabName) {
-  _showTabNoHistory(tabName);
-  _historyPush(tabName, false);
+  activeTab = tabName;
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.tab === tabName);
+  });
+  document.querySelectorAll('.content').forEach(c => {
+    c.classList.toggle('active', c.id === tabName);
+  });
+  if (tabName === 'settings' || tabName === 'all') {
+    if (tabName === 'all') renderAll();
+    return;
+  }
+  searchQuery = '';
+  document.getElementById('searchInput').value = '';
+  closeSuggestions();
+  renderAll();
 }
 
 // =============================================
