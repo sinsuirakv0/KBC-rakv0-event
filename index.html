@@ -205,7 +205,7 @@
 // =============================================
 // ★ 現在のアプリバージョン設定
 // =============================================
-const CURRENT_VERSION = 150300;
+const CURRENT_VERSION = 150000;
 
 // =============================================
 // 状態管理
@@ -214,6 +214,7 @@ let gatyaData = [];
 let saleData  = [];
 let itemData  = [];
 let saleNames    = new Map();
+let itemNames    = new Map(); // giftType id → 名前
 let gatyaRNames  = new Map();
 let gatyaNNames  = new Map();
 let gatyaENames  = new Map();
@@ -894,8 +895,66 @@ function openOverlay(jsonStr) {
           onerror="handleIframeError(this)">
         </iframe>
       </div>` : ''}`;
+  } else if (d.type === 'item') {
+    // item 詳細
+    const entryForOcc = _overlayEntries[d._entryIdx] ?? null;
+    const entryObjOcc = entryForOcc ? JSON.parse(entryForOcc.json) : null;
+    let occSection = '';
+    if (entryObjOcc?.header && entryObjOcc?.timeBlocks !== undefined) {
+      const occHtml = formatOccurrences(entryObjOcc.header, entryObjOcc.timeBlocks);
+      if (occHtml) {
+        occSection = `<hr class="overlay-divider">
+        <div class="overlay-section">
+          <div class="overlay-label">次の開催</div>
+          <div class="overlay-value occ-list">${occHtml}</div>
+        </div>`;
+      }
+    }
+
+    const msgSection = d.message || d.url ? `<hr class="overlay-divider">
+      <div class="overlay-section">
+        <div class="overlay-label">メッセージ</div>
+        <div class="overlay-value" style="white-space:pre-wrap;line-height:1.7;">${d.message || '（なし）'}</div>
+      </div>
+      ${d.url ? `<div class="overlay-section">
+        <div class="overlay-label">URL</div>
+        <div class="overlay-value"><a href="${d.url}" target="_blank" rel="noopener" style="color:#f90;">${d.url}</a></div>
+      </div>` : ''}` : `<hr class="overlay-divider">
+      <div class="overlay-section">
+        <div class="overlay-label">メッセージ</div>
+        <div class="overlay-value" style="opacity:.6;">なし</div>
+      </div>`;
+
+    const giftStr = d.giftAmountStr
+      ? `${d.giftTypeName} (ID:${d.giftTypeId}) × ${d.giftAmountStr}`
+      : `${d.giftTypeName} (ID:${d.giftTypeId})`;
+
+    bodyHtml = `
+      <div class="overlay-section">
+        <div class="overlay-label">期間</div>
+        <div class="overlay-value">${d.period}</div>
+      </div>
+      <div class="overlay-section">
+        <div class="overlay-label">ver</div>
+        <div class="overlay-value">${d.ver}</div>
+      </div>
+      <div class="overlay-section">
+        <div class="overlay-label">開催期間</div>
+        <div class="overlay-value">${d.schedule}</div>
+      </div>
+      <div class="overlay-section">
+        <div class="overlay-label">イベントID</div>
+        <div class="overlay-value">${d.eventId}</div>
+      </div>
+      ${msgSection}
+      <hr class="overlay-divider">
+      <div class="overlay-section">
+        <div class="overlay-label">ギフト</div>
+        <div class="overlay-value">${giftStr}</div>
+      </div>
+      ${occSection}`;
   } else {
-    // sale/item/mission 詳細
+    // sale/mission 詳細
     // 次の開催を先に計算
     const entryForOcc  = _overlayEntries[d._entryIdx] ?? null;
     const entryObjOcc  = entryForOcc ? JSON.parse(entryForOcc.json) : null;
@@ -1137,21 +1196,70 @@ function renderSale() {
 }
 
 // =============================================
-// アイテムタブ描画（仮）
+// アイテムエントリ展開
+// 各エントリは gift が1つ → カード1枚
+// カード名: gift.title が空なら itemNames.get(giftType) にフォールバック
+// =============================================
+function expandItemEntry(entry) {
+  const h    = entry.header;
+  const g    = entry.gift;
+  if (!g) return [];
+
+  const start = parseDateTime(h.startDate, h.startTime);
+  const end   = parseDateTime(h.endDate,   h.endTime);
+
+  // カード表示名の決定
+  const titleRaw = (g.title ?? '').trim();
+  let cardName;
+  if (titleRaw) {
+    cardName = titleRaw;
+  } else {
+    cardName = itemNames.get(g.giftType) ?? `giftType:${g.giftType}`;
+  }
+
+  const verBadge = getVersionBadgeHtml(h);
+  const displayName = verBadge ? `${cardName}${verBadge}` : cardName;
+
+  const period = formatCardPeriod(h.startDate, h.startTime, h.endDate, h.endTime);
+
+  // ギフトタイプ名
+  const giftTypeName = itemNames.get(g.giftType) ?? `ID:${g.giftType}`;
+  // giftAmount が 0 なら個数表示なし
+  const giftAmountStr = g.giftAmount > 0 ? `${g.giftAmount}個` : '';
+
+  const entryIdx = storeOverlayEntry(entry);
+
+  const detail = {
+    type: 'item',
+    name: displayName,
+    id:   g.eventId,
+    period: `${formatDetailDate(h.startDate, h.startTime)} ~ ${formatDetailDate(h.endDate, h.endTime)}`,
+    ver:    `${h.minVersion}~${h.maxVersion}`,
+    schedule: formatTimeBlocks(entry.timeBlocks, h),
+    eventId:      g.eventId,
+    message:      (g.message ?? '').replace(/<br>/g, '\n').trim(),
+    url:          (g.url ?? '').trim(),
+    giftTypeId:   g.giftType,
+    giftTypeName: giftTypeName,
+    giftAmountStr: giftAmountStr,
+    steady: isSteadyEntry(h),
+    _entryIdx: entryIdx,
+  };
+
+  return [{ start, end, name: displayName, period, detail }];
+}
+
+// =============================================
+// アイテムタブ描画
 // =============================================
 function renderItem() {
   const cont = document.getElementById('item');
-  cont.innerHTML = `
-    <div class="placeholder-notice">
-      <div class="placeholder-label">仮</div>
-      <p>itemの表示は現在準備中です。</p>
-      <p>現在は下記のサイトをご利用ください。</p>
-      <a class="placeholder-link"
-         href="https://bc-event.vercel.app/"
-         target="_blank" rel="noopener">
-        bc-event.vercel.app ›
-      </a>
-    </div>`;
+  const events = itemData.flatMap(entry => expandItemEntry(entry));
+  const filtered = filterAndSort(events);
+  if (filtered.length === 0) {
+    cont.innerHTML = '<div class="empty">🐈 表示するアイテムイベントがありません</div>'; return;
+  }
+  cont.innerHTML = `<div class="count-label">${filtered.length} 件</div>` + buildCards(filtered);
 }
 
 // =============================================
@@ -1204,7 +1312,7 @@ function showTab(tabName) {
 async function loadData() {
   try {
     const BASE = 'https://raw.githubusercontent.com/sinsuirakv0/KBC-rakv0-event/main/data';
-    const [gatyaRes, saleRes, itemRes, saleNameRes, gatyaNameRes, gatyaNNameRes, gatyaENameRes] = await Promise.all([
+    const [gatyaRes, saleRes, itemRes, saleNameRes, gatyaNameRes, gatyaNNameRes, gatyaENameRes, itemNameRes] = await Promise.all([
       fetch(`${BASE}/gatya.json`),
       fetch(`${BASE}/sale.json`),
       fetch(`${BASE}/item.json`),
@@ -1212,6 +1320,7 @@ async function loadData() {
       fetch(`${BASE}/gatya_name.csv`),
       fetch(`${BASE}/gatya_n_name.csv`),
       fetch(`${BASE}/gatya_e_name.csv`),
+      fetch(`${BASE}/item_name.csv`).catch(() => new Response('')),
     ]);
 
     _overlayEntries = [];
@@ -1233,9 +1342,11 @@ async function loadData() {
     const gatyaNameText  = await gatyaNameRes.text().catch(() => '');
     const gatyaNNameText = await gatyaNNameRes.text().catch(() => '');
     const gatyaENameText = await gatyaENameRes.text().catch(() => '');
+    const itemNameText   = await itemNameRes.text().catch(() => '');
     gatyaRNames = parseCSV(gatyaNameText);
     gatyaNNames = parseCSV(gatyaNNameText);
     gatyaENames = parseCSV(gatyaENameText);
+    itemNames   = parseCSV(itemNameText);
 
     updateLastModified(gatyaUpdatedAt, saleUpdatedAt, itemUpdatedAt);
     renderAll();
@@ -1281,13 +1392,36 @@ function collectTabItems() {
         items.push({ id: g.id, name: nameMap.get(g.id) ?? `ID:${g.id}` });
       }
     }
+  } else if (activeTab === 'item') {
+    for (const entry of itemData) {
+      const g = entry.gift;
+      if (!g) continue;
+      const id = g.eventId;
+      if (seen.has(id)) continue;
+      seen.add(id);
+      const titleRaw = (g.title ?? '').trim();
+      const name = titleRaw || itemNames.get(g.giftType) || `giftType:${g.giftType}`;
+      items.push({ id, name });
+    }
   } else if (activeTab === 'sale') {
     for (const entry of saleData) {
       for (const id of (entry.stageIds || [])) {
         if (seen.has(id)) continue;
-        if (isMissionId(id)) continue; // mission は sale サジェストから除外
+        if (isMissionId(id)) continue;
         seen.add(id);
         items.push({ id, name: saleNames.get(id) ?? `ID:${id}` });
+      }
+    }
+  } else if (activeTab === 'mission') {
+    for (const entry of saleData) {
+      for (const id of (entry.stageIds || [])) {
+        if (!isMissionId(id)) continue;
+        if (seen.has(id)) continue;
+        seen.add(id);
+        const rawName = saleNames.get(id) ?? `ID:${id}`;
+        const brIdx   = rawName.indexOf('<br>');
+        const name    = brIdx !== -1 ? rawName.slice(0, brIdx).trim() : rawName;
+        items.push({ id, name });
       }
     }
   }
