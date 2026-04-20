@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/04/15 16:23:16",
+  "updatedAt": "26/04/20 16:52:13",
   "data": [
     {
       "header": {
@@ -14035,6 +14035,84 @@
         51
       ],
       "raw": "20260417\t1100\t20260522\t1100\t150300\t999999\t0\t0\t1\t51\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260422",
+        "startTime": "000",
+        "endDate": "20260423",
+        "endTime": "000",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        52
+      ],
+      "raw": "20260422\t000\t20260423\t000\t150300\t999999\t0\t0\t1\t52\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260422",
+        "startTime": "000",
+        "endDate": "20260423",
+        "endTime": "000",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        102,
+        -4
+      ],
+      "raw": "20260422\t000\t20260423\t000\t150300\t999999\t0\t0\t2\t102\t-4\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260422",
+        "startTime": "000",
+        "endDate": "20260423",
+        "endTime": "000",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        5011
+      ],
+      "raw": "20260422\t000\t20260423\t000\t150300\t999999\t0\t0\t1\t5011\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260422",
+        "startTime": "000",
+        "endDate": "20260427",
+        "endTime": "000",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        7010
+      ],
+      "raw": "20260422\t000\t20260427\t000\t150300\t999999\t0\t0\t1\t7010\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260422",
+        "startTime": "000",
+        "endDate": "20260427",
+        "endTime": "000",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        9554,
+        9555,
+        9556
+      ],
+      "raw": "20260422\t000\t20260427\t000\t150300\t999999\t0\t0\t3\t9554\t9555\t9556\t0"
     }
   ]
 }
