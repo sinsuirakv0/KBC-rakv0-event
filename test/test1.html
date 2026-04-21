@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ガチャTSVパーサー</title>
+  <style>
+    body { font-family: sans-serif; padding: 1em; max-width: 960px; margin: 0 auto; }
+    h1   { font-size: 1.3em; }
+
+    .controls { display: flex; gap: .6em; align-items: center; flex-wrap: wrap; margin-bottom: 1em; }
+    input[type="file"] { flex: 1; }
+
+    button {
+      padding: .4em 1em;
+      cursor: pointer;
+      background: #4a90e2;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: .95em;
+    }
+    button:disabled { background: #aaa; cursor: default; }
+    button#copyBtn  { background: #5cb85c; }
+
+    #status { font-size: .85em; color: #555; }
+
+    pre {
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1em;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 70vh;
+      overflow-y: auto;
+      font-size: .82em;
+    }
+  </style>
+</head>
+<body>
+
+<h1>ガチャTSVパーサー</h1>
+
+<div class="controls">
+  <input type="file" id="fileInput" accept=".txt,.tsv">
+  <button id="parseBtn" disabled>解析する</button>
+  <button id="copyBtn"  disabled>JSONをコピー</button>
+  <span   id="status">ファイルを選択してください</span>
+</div>
+
+<pre id="output">ここに解析結果が表示されます</pre>
+
+<script>
+// ─── パーサー本体 ────────────────────────────────────────────
+/**
+ * 1行の構造:
+ *   [ヘッダー 10フィールド]
+ *   [ガチャブロック×gachaCount (各15フィールド固定)]
+ *   [0 0ペア×gachaCount (各2フィールド: 不明, featuredRate)]
+ */
+function parseGatya(tsv) {
+  const lines   = tsv.trim().split("\n");
+  const results = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed === "[start]" || trimmed === "[end]") continue;
+
+    const cells = trimmed.split("\t");
+    if (cells.length < 10) continue;
+
+    const gachaCount = Number(cells[9]);
+
+    const header = {
+      startDate:  cells[0],
+      startTime:  cells[1],
+      endDate:    cells[2],
+      endTime:    cells[3],
+      minVersion: cells[4],
+      maxVersion: cells[5],
+      gachaType:  Number(cells[8]),
+      gachaCount,
+    };
+
+    // ── ガチャブロック (15フィールド固定 × gachaCount) ──
+    const blocks = [];
+    let offset = 10;
+    for (let i = 0; i < gachaCount; i++) {
+      blocks.push(cells.slice(offset, offset + 15));
+      offset += 15;
+    }
+
+    // ── 0 0ペア (2フィールド × gachaCount) ──
+    // ペア[i][0] = 不明, ペア[i][1] = featuredRate
+    const pairs = [];
+    for (let i = 0; i < gachaCount; i++) {
+      pairs.push({
+        unknown:      Number(cells[offset]     ?? 0),
+        featuredRate: Number(cells[offset + 1] ?? 0),
+      });
+      offset += 2;
+    }
+
+    // ── ブロック[i] と ペア[i] を対応付けてgachasを構築 ──
+    const gachas = [];
+    for (let i = 0; i < gachaCount; i++) {
+      const slice   = blocks[i];
+      const gachaId = Number(slice[0]);
+      if (gachaId === -1) continue; // プレースホルダーはスキップ
+
+      gachas.push({
+        id:    gachaId,
+        price: Number(slice[1]),
+        flags: Number(slice[3]),
+        rates: {
+          normal:     Number(slice[4]),
+          rare:       Number(slice[6]),
+          superRare:  Number(slice[8]),
+          uberRare:   Number(slice[10]),
+          legendRare: Number(slice[12]),
+          featured:   pairs[i]?.featuredRate ?? 0,
+        },
+        guaranteed: Number(slice[11]) === 1,
+        message:    slice[14] ?? "",
+      });
+    }
+
+    results.push({ header, gachas, raw: trimmed });
+  }
+
+  return results;
+}
+
+// ─── UI ──────────────────────────────────────────────────────
+let rawText   = "";
+let lastJson  = "";
+
+const fileInput = document.getElementById("fileInput");
+const parseBtn  = document.getElementById("parseBtn");
+const copyBtn   = document.getElementById("copyBtn");
+const statusEl  = document.getElementById("status");
+const outputEl  = document.getElementById("output");
+
+fileInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    rawText = ev.target.result;
+    parseBtn.disabled = false;
+    statusEl.textContent = `読込済: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+  };
+  reader.readAsText(file, "utf-8");
+});
+
+parseBtn.addEventListener("click", () => {
+  if (!rawText) return;
+
+  try {
+    const result = parseGatya(rawText);
+    lastJson = JSON.stringify(result, null, 2);
+    outputEl.textContent = lastJson;
+    copyBtn.disabled = false;
+    statusEl.textContent = `解析完了: ${result.length} エントリ`;
+  } catch (err) {
+    outputEl.textContent = "エラー: " + err.message;
+    statusEl.textContent = "解析失敗";
+  }
+});
+
+copyBtn.addEventListener("click", () => {
+  navigator.clipboard.writeText(lastJson).then(() => {
+    const orig = copyBtn.textContent;
+    copyBtn.textContent = "コピーしました！";
+    setTimeout(() => { copyBtn.textContent = orig; }, 1500);
+  });
+});
+</script>
+
+</body>
+</html>
