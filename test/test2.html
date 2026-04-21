@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>アイテムTSVパーサー</title>
+  <style>
+    body { font-family: sans-serif; padding: 1em; max-width: 960px; margin: 0 auto; }
+    h1   { font-size: 1.3em; }
+
+    .controls { display: flex; gap: .6em; align-items: center; flex-wrap: wrap; margin-bottom: 1em; }
+    input[type="file"] { flex: 1; }
+
+    button {
+      padding: .4em 1em;
+      cursor: pointer;
+      background: #4a90e2;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: .95em;
+    }
+    button:disabled { background: #aaa; cursor: default; }
+    button#copyBtn  { background: #5cb85c; }
+
+    #status { font-size: .85em; color: #555; }
+
+    pre {
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 1em;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 70vh;
+      overflow-y: auto;
+      font-size: .82em;
+    }
+  </style>
+</head>
+<body>
+
+<h1>アイテムTSVパーサー</h1>
+
+<div class="controls">
+  <input type="file" id="fileInput" accept=".txt,.tsv,.csv">
+  <button id="parseBtn" disabled>解析する</button>
+  <button id="copyBtn"  disabled>JSONをコピー</button>
+  <span   id="status">ファイルを選択してください</span>
+</div>
+
+<pre id="output">ここに解析結果が表示されます</pre>
+
+<script>
+// ─── パーサー本体 ────────────────────────────────────────────
+function decodeWeekdays(bitmask) {
+  if (bitmask === 0) return [];
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  return days.filter((_, i) => (bitmask >> i) & 1);
+}
+
+function parseItem(tsv) {
+  const lines = tsv
+    .trim()
+    .split("\n")
+    .filter(line => line.trim() && line !== "[start]" && line !== "[end]");
+
+  return lines.map(line => {
+    const trimmed = line.trim();
+    const parts   = trimmed.split("\t");
+
+    const header = {
+      startDate:  parts[0],
+      startTime:  parts[1],
+      endDate:    parts[2],
+      endTime:    parts[3],
+      minVersion: parts[4],
+      maxVersion: parts[5],
+    };
+
+    let index = 6;
+    index++; // 未使用フィールドをスキップ
+
+    const timeBlockCount = parseInt(parts[index++], 10);
+    const timeBlocks     = [];
+
+    for (let i = 0; i < timeBlockCount; i++) {
+      const block = { dateRanges: [], monthDays: [], weekdays: [], timeRanges: [] };
+
+      const yearCount = parseInt(parts[index++], 10);
+      for (let j = 0; j < yearCount; j++) {
+        block.dateRanges.push({
+          start: `${parts[index++]} ${parts[index++]}`,
+          end:   `${parts[index++]} ${parts[index++]}`,
+        });
+      }
+
+      const monthCount = parseInt(parts[index++], 10);
+      for (let j = 0; j < monthCount; j++) {
+        block.monthDays.push(parseInt(parts[index++], 10));
+      }
+
+      block.weekdays = decodeWeekdays(parseInt(parts[index++], 10));
+
+      const timeRangeCount = parseInt(parts[index++], 10);
+      for (let j = 0; j < timeRangeCount; j++) {
+        block.timeRanges.push([parts[index++], parts[index++]]);
+      }
+
+      timeBlocks.push(block);
+    }
+
+    // ギフト情報
+    const remaining = parts.slice(index);
+    let eventId = 0, giftType = 0, giftAmount = 0;
+    let title = "", message = "", url = "", repeatFlag = 0;
+
+    if (remaining.length >= 8) {
+      eventId    = parseInt(remaining[0], 10) || 0;
+      giftType   = parseInt(remaining[1], 10) || 0;
+      giftAmount = parseInt(remaining[2], 10) || 0;
+      repeatFlag = parseInt(remaining[7], 10) || 0;
+
+      const rawTitle      = remaining[3] || "";
+      const rawMessageUrl = remaining[4] || "";
+
+      if (rawMessageUrl.startsWith("http")) {
+        title = rawTitle;
+        url   = rawMessageUrl;
+      } else if (rawTitle.startsWith("http")) {
+        url = rawTitle;
+      } else {
+        title   = rawTitle;
+        message = rawMessageUrl;
+      }
+    }
+
+    return {
+      header,
+      timeBlocks,
+      gift: { eventId, giftType, giftAmount, title, message, url, repeatFlag },
+      raw: trimmed,
+    };
+  });
+}
+
+// ─── UI ──────────────────────────────────────────────────────
+let rawText  = "";
+let lastJson = "";
+
+const fileInput = document.getElementById("fileInput");
+const parseBtn  = document.getElementById("parseBtn");
+const copyBtn   = document.getElementById("copyBtn");
+const statusEl  = document.getElementById("status");
+const outputEl  = document.getElementById("output");
+
+fileInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    rawText = ev.target.result;
+    parseBtn.disabled = false;
+    statusEl.textContent = `読込済: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+  };
+  reader.readAsText(file, "utf-8");
+});
+
+parseBtn.addEventListener("click", () => {
+  if (!rawText) return;
+
+  try {
+    const result = parseItem(rawText);
+    lastJson = JSON.stringify(result, null, 2);
+    outputEl.textContent = lastJson;
+    copyBtn.disabled = false;
+    statusEl.textContent = `解析完了: ${result.length} エントリ`;
+  } catch (err) {
+    outputEl.textContent = "エラー: " + err.message;
+    statusEl.textContent = "解析失敗";
+  }
+});
+
+copyBtn.addEventListener("click", () => {
+  navigator.clipboard.writeText(lastJson).then(() => {
+    const orig = copyBtn.textContent;
+    copyBtn.textContent = "コピーしました！";
+    setTimeout(() => { copyBtn.textContent = orig; }, 1500);
+  });
+});
+</script>
+
+</body>
+</html>
