@@ -55,8 +55,11 @@
 /**
  * 1行の構造:
  *   [ヘッダー 10フィールド]
- *   [ガチャブロック×gachaCount (各15フィールド固定)]
+ *   [ガチャブロック×gachaCount (各15フィールド固定、ブロック間に空白あり)]
+ *   [空白 / カウンターテキスト (可変)]
  *   [0 0ペア×gachaCount (各2フィールド: 不明, featuredRate)]
+ *
+ * 注意: ガチャタイプによってはペアが存在しない場合もある (featuredRate=0 扱い)
  */
 function parseGatya(tsv) {
   const lines   = tsv.trim().split("\n");
@@ -83,11 +86,22 @@ function parseGatya(tsv) {
     };
 
     // ── ガチャブロック (15フィールド固定 × gachaCount) ──
+    // ブロック先頭の空白セルはスキップ (ブロック間セパレータ対策)
     const blocks = [];
     let offset = 10;
     for (let i = 0; i < gachaCount; i++) {
+      while (offset < cells.length && cells[offset] === "") offset++;
       blocks.push(cells.slice(offset, offset + 15));
       offset += 15;
+    }
+
+    // ── 0 0ペア到達まで空白・テキストをスキップ ──
+    // (gachaTypeによっては保証カウンター用テキストが挟まる)
+    while (
+      offset < cells.length &&
+      (cells[offset] === "" || isNaN(Number(cells[offset])))
+    ) {
+      offset++;
     }
 
     // ── 0 0ペア (2フィールド × gachaCount) ──
@@ -132,8 +146,8 @@ function parseGatya(tsv) {
 }
 
 // ─── UI ──────────────────────────────────────────────────────
-let rawText   = "";
-let lastJson  = "";
+let rawText  = "";
+let lastJson = "";
 
 const fileInput = document.getElementById("fileInput");
 const parseBtn  = document.getElementById("parseBtn");
