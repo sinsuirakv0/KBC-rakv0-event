@@ -247,7 +247,7 @@
         <div class="settings-section">
           <h3>⚙ 設定</h3>
           <div class="settings-row">
-            <span class="settings-label">タイムゾーン変更</span>
+            <span class="settings-label">🕐 表示タイムゾーン</span>
             <select id="utc-select" onchange="onUtcChange(this.value)">
               <option value="local">ローカル時間</option>
             </select>
@@ -256,7 +256,7 @@
 
         <!-- カード2: TSVダウンロード -->
         <div class="settings-section">
-          <h3>TSVダウンロード</h3>
+          <h3>📥 TSVダウンロード</h3>
           <div class="settings-row">
             <span class="settings-label">国コード</span>
             <select id="tsv-locale">
@@ -283,7 +283,7 @@
 
         <!-- カード3: 海外スケジュール -->
         <div class="settings-section">
-          <h3>海外スケジュールに変更</h3>
+          <h3>🌐 海外スケジュールに変更</h3>
           <div class="settings-row">
             <span class="settings-label">現在</span>
             <span id="current-locale-label" style="font-size:0.85rem;color:#f90;">jp</span>
@@ -1344,6 +1344,7 @@ const RATE_LABELS = [
   ['superRare',  '激レア'],
   ['uberRare',   '超激レア'],
   ['legendRare', '伝説レア'],
+  ['featured',   '目玉'],
 ];
 function formatRates(rates) {
   return RATE_LABELS
@@ -1734,6 +1735,7 @@ function showTab(tabName) {
 async function loadData() {
   try {
     const BASE = 'https://raw.githubusercontent.com/sinsuirakv0/KBC-rakv0-event/main/data';
+    // パーサー外部取得とデータ取得を並行実行
     const [gatyaRes, saleRes, itemRes, saleNameRes, gatyaNameRes, gatyaNNameRes, gatyaENameRes, itemNameRes] = await Promise.all([
       fetch(`${BASE}/gatya.json`),
       fetch(`${BASE}/sale.json`),
@@ -1743,6 +1745,7 @@ async function loadData() {
       fetch(`${BASE}/gatya_n_name.csv`),
       fetch(`${BASE}/gatya_e_name.csv`),
       fetch(`${BASE}/item_name.csv`).catch(() => new Response('')),
+      _loadParsers(), // パーサーを並行取得（失敗時はフォールバックを使用）
     ]);
 
     _overlayEntries = [];
@@ -2124,7 +2127,9 @@ async function startClock() {
 startClock();
 
 // =============================================
-// ブラウザ内 TSVパーサー（parsers/*.js 移植）
+// ブラウザ内 TSVパーサー
+// parsers/*.js を GitHub から動的取得して登録
+// 取得失敗時は内蔵フォールバックを使用
 // =============================================
 function _decodeWeekdays(bitmask) {
   if (!bitmask) return [];
@@ -2132,42 +2137,111 @@ function _decodeWeekdays(bitmask) {
   return days.filter((_, i) => (bitmask >> i) & 1);
 }
 
+// 外部パーサーJSをfetchしてexport関数をグローバルに登録
+// parsers/gatya.js → parseGatya(tsv) → window.parseGatyaBrowser
+// parsers/sale.js  → parseSale(tsv)  → window.parseSaleBrowser
+// parsers/item.js  → parseItem(tsv)  → window.parseItemBrowser
+const PARSER_BASE = 'https://raw.githubusercontent.com/sinsuirakv0/KBC-rakv0-event/refs/heads/main/parsers';
+
+async function _loadParsers() {
+  const map = [
+    { file: 'gatya', exportName: 'parseGatya', globalName: 'parseGatyaBrowser' },
+    { file: 'sale',  exportName: 'parseSale',  globalName: 'parseSaleBrowser'  },
+    { file: 'item',  exportName: 'parseItem',  globalName: 'parseItemBrowser'  },
+  ];
+  await Promise.all(map.map(async ({ file, exportName, globalName }) => {
+    try {
+      const res  = await fetch(`${PARSER_BASE}/${file}.js`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      let src = await res.text();
+      // ES Module の export 宣言を除去してから eval
+      // "export function parseGatya" → "function parseGatya"
+      // "export async function ..."  → "async function ..."
+      src = src.replace(/^export\s+/gm, '');
+      // eval してスコープに登録し、window に公開
+      // eslint-disable-next-line no-new-func
+      const fn = new Function(`${src}; return ${exportName};`)();
+      window[globalName] = fn;
+    } catch(e) {
+      console.warn(`Parser load failed (${file}), using fallback:`, e.message);
+      // フォールバックは下の内蔵実装を使う（上書きしない）
+    }
+  }));
+}
+
+// ── 内蔵フォールバックパーサー ────────────────────────────────
+// 外部取得に失敗した場合のみ使用される（最新 parsers/*.js に合わせて同期）
+
 function parseGatyaBrowser(tsv) {
   const lines   = tsv.trim().split('\n');
   const results = [];
+
   for (const line of lines) {
     const trimmed = line.trim();
     if (!trimmed || trimmed === '[start]' || trimmed === '[end]') continue;
+
     const cells = trimmed.split('\t');
     if (cells.length < 10) continue;
+
+    const gachaCount = Number(cells[9]);
     const header = {
       startDate:  cells[0], startTime:  cells[1],
       endDate:    cells[2], endTime:    cells[3],
       minVersion: cells[4], maxVersion: cells[5],
-      gachaType:  Number(cells[8]), gachaCount: Number(cells[9]),
+      gachaType:  Number(cells[8]), gachaCount,
     };
-    const gachas = [];
+
+    // ── ガチャブロック (15フィールド固定 × gachaCount) ──
+    const blocks = [];
     let offset = 10;
-    for (let i = 0; i < header.gachaCount; i++) {
+    for (let i = 0; i < gachaCount; i++) {
       while (offset < cells.length && cells[offset] === '') offset++;
-      const slice   = cells.slice(offset, offset + 15);
-      const gachaId = Number(slice[0]);
-      if (gachaId !== -1) {
-        gachas.push({
-          id:    gachaId, price: Number(slice[1]), flags: Number(slice[3]),
-          rates: {
-            normal:     Number(slice[4]), rare:       Number(slice[6]),
-            superRare:  Number(slice[8]), uberRare:   Number(slice[10]),
-            legendRare: Number(slice[12]),
-          },
-          guaranteed: Number(slice[11]) === 1,
-          message:    slice[14] ?? '',
-        });
-      }
+      blocks.push(cells.slice(offset, offset + 15));
       offset += 15;
     }
+
+    // ── 0 0ペア到達まで空白・テキストをスキップ ──
+    while (
+      offset < cells.length &&
+      (cells[offset] === '' || isNaN(Number(cells[offset])))
+    ) { offset++; }
+
+    // ── 0 0ペア (2フィールド × gachaCount): [unknown, featuredRate] ──
+    const pairs = [];
+    for (let i = 0; i < gachaCount; i++) {
+      pairs.push({
+        unknown:      Number(cells[offset]     ?? 0),
+        featuredRate: Number(cells[offset + 1] ?? 0),
+      });
+      offset += 2;
+    }
+
+    // ── ブロックとペアを対応付けて gachas 構築 ──
+    const gachas = [];
+    for (let i = 0; i < gachaCount; i++) {
+      const slice   = blocks[i];
+      const gachaId = Number(slice[0]);
+      if (gachaId === -1) continue;
+      gachas.push({
+        id:    gachaId,
+        price: Number(slice[1]),
+        flags: Number(slice[3]),
+        rates: {
+          normal:     Number(slice[4]),
+          rare:       Number(slice[6]),
+          superRare:  Number(slice[8]),
+          uberRare:   Number(slice[10]),
+          legendRare: Number(slice[12]),
+          featured:   pairs[i]?.featuredRate ?? 0,
+        },
+        guaranteed: Number(slice[11]) === 1,
+        message:    slice[14] ?? '',
+      });
+    }
+
     results.push({ header, gachas, raw: trimmed });
   }
+
   return results;
 }
 
@@ -2175,30 +2249,32 @@ function parseSaleBrowser(tsv) {
   const lines = tsv.trim().split('\n')
     .filter(l => l.trim() && l.trim() !== '[start]' && l.trim() !== '[end]');
   return lines.map(line => {
-    const parts = line.trim().split('\t').filter(x => x !== '');
+    const trimmed = line.trim();
+    const parts   = trimmed.split('\t').filter(x => x !== '');
     const header = {
       startDate:  parts[0], startTime:  parts[1],
       endDate:    parts[2], endTime:    parts[3],
       minVersion: parts[4], maxVersion: parts[5],
     };
-    let idx = 7; // skip index 6 (unused)
-    const timeBlockCount = parseInt(parts[idx++], 10);
+    let index = 6;
+    index++; // 未使用フィールドをスキップ
+    const timeBlockCount = parseInt(parts[index++], 10);
     const timeBlocks = [];
     for (let i = 0; i < timeBlockCount; i++) {
       const block = { dateRanges: [], monthDays: [], weekdays: [], timeRanges: [] };
-      const yearCount = parseInt(parts[idx++], 10);
+      const yearCount = parseInt(parts[index++], 10);
       for (let j = 0; j < yearCount; j++)
-        block.dateRanges.push({ start: `${parts[idx++]} ${parts[idx++]}`, end: `${parts[idx++]} ${parts[idx++]}` });
-      const monthCount = parseInt(parts[idx++], 10);
-      for (let j = 0; j < monthCount; j++) block.monthDays.push(parseInt(parts[idx++], 10));
-      block.weekdays = _decodeWeekdays(parseInt(parts[idx++], 10));
-      const trCount = parseInt(parts[idx++], 10);
-      for (let j = 0; j < trCount; j++) block.timeRanges.push([parts[idx++], parts[idx++]]);
+        block.dateRanges.push({ start: `${parts[index++]} ${parts[index++]}`, end: `${parts[index++]} ${parts[index++]}` });
+      const monthCount = parseInt(parts[index++], 10);
+      for (let j = 0; j < monthCount; j++) block.monthDays.push(parseInt(parts[index++], 10));
+      block.weekdays = _decodeWeekdays(parseInt(parts[index++], 10));
+      const trCount = parseInt(parts[index++], 10);
+      for (let j = 0; j < trCount; j++) block.timeRanges.push([parts[index++], parts[index++]]);
       timeBlocks.push(block);
     }
-    const stageCount = parseInt(parts[idx++], 10);
-    const stageIds   = parts.slice(idx, idx + stageCount).map(Number);
-    return { header, timeBlocks, stageIds, raw: line.trim() };
+    const stageCount = parseInt(parts[index++], 10);
+    const stageIds   = parts.slice(index, index + stageCount).map(Number);
+    return { header, timeBlocks, stageIds, raw: trimmed };
   });
 }
 
@@ -2206,41 +2282,47 @@ function parseItemBrowser(tsv) {
   const lines = tsv.trim().split('\n')
     .filter(l => l.trim() && l.trim() !== '[start]' && l.trim() !== '[end]');
   return lines.map(line => {
-    const parts = line.trim().split('\t');
+    const trimmed = line.trim();
+    const parts   = trimmed.split('\t');
     const header = {
       startDate:  parts[0], startTime:  parts[1],
       endDate:    parts[2], endTime:    parts[3],
       minVersion: parts[4], maxVersion: parts[5],
     };
-    let idx = 7;
-    const timeBlockCount = parseInt(parts[idx++], 10);
+    let index = 6;
+    index++; // 未使用フィールドをスキップ
+    const timeBlockCount = parseInt(parts[index++], 10);
     const timeBlocks = [];
     for (let i = 0; i < timeBlockCount; i++) {
       const block = { dateRanges: [], monthDays: [], weekdays: [], timeRanges: [] };
-      const yearCount = parseInt(parts[idx++], 10);
+      const yearCount = parseInt(parts[index++], 10);
       for (let j = 0; j < yearCount; j++)
-        block.dateRanges.push({ start: `${parts[idx++]} ${parts[idx++]}`, end: `${parts[idx++]} ${parts[idx++]}` });
-      const monthCount = parseInt(parts[idx++], 10);
-      for (let j = 0; j < monthCount; j++) block.monthDays.push(parseInt(parts[idx++], 10));
-      block.weekdays = _decodeWeekdays(parseInt(parts[idx++], 10));
-      const trCount = parseInt(parts[idx++], 10);
-      for (let j = 0; j < trCount; j++) block.timeRanges.push([parts[idx++], parts[idx++]]);
+        block.dateRanges.push({ start: `${parts[index++]} ${parts[index++]}`, end: `${parts[index++]} ${parts[index++]}` });
+      const monthCount = parseInt(parts[index++], 10);
+      for (let j = 0; j < monthCount; j++) block.monthDays.push(parseInt(parts[index++], 10));
+      block.weekdays = _decodeWeekdays(parseInt(parts[index++], 10));
+      const trCount = parseInt(parts[index++], 10);
+      for (let j = 0; j < trCount; j++) block.timeRanges.push([parts[index++], parts[index++]]);
       timeBlocks.push(block);
     }
-    const rem = parts.slice(idx);
+    const remaining = parts.slice(index);
     let eventId=0, giftType=0, giftAmount=0, title='', message='', url='', repeatFlag=0;
-    if (rem.length >= 8) {
-      eventId    = parseInt(rem[0],10)||0;
-      giftType   = parseInt(rem[1],10)||0;
-      giftAmount = parseInt(rem[2],10)||0;
-      repeatFlag = parseInt(rem[7],10)||0;
-      const rawTitle = rem[3]||'';
-      const rawMsgUrl= rem[4]||'';
-      if (rawMsgUrl.startsWith('http')) { title=rawTitle; url=rawMsgUrl; }
-      else if (rawTitle.startsWith('http')) { url=rawTitle; }
-      else { title=rawTitle; message=rawMsgUrl; }
+    if (remaining.length >= 8) {
+      eventId    = parseInt(remaining[0], 10) || 0;
+      giftType   = parseInt(remaining[1], 10) || 0;
+      giftAmount = parseInt(remaining[2], 10) || 0;
+      repeatFlag = parseInt(remaining[7], 10) || 0;
+      const rawTitle      = remaining[3] || '';
+      const rawMessageUrl = remaining[4] || '';
+      if (rawMessageUrl.startsWith('http')) { title = rawTitle; url = rawMessageUrl; }
+      else if (rawTitle.startsWith('http'))  { url = rawTitle; }
+      else { title = rawTitle; message = rawMessageUrl; }
     }
-    return { header, timeBlocks, gift: { eventId, giftType, giftAmount, title, message, url, repeatFlag } };
+    return {
+      header, timeBlocks,
+      gift: { eventId, giftType, giftAmount, title, message, url, repeatFlag },
+      raw: trimmed,
+    };
   });
 }
 
@@ -2494,7 +2576,11 @@ function cancelScreenshot() {
 }
 
 async function doScreenshot() {
+  // 確認オーバーレイを非表示にしてからリペイントを待つ
   document.getElementById('ss-confirm-overlay').classList.remove('show');
+  // 次のフレームまで待って暗転が完全に消えてからキャプチャ
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
   if (!_ssTarget) return;
 
   if (typeof html2canvas === 'undefined') {
