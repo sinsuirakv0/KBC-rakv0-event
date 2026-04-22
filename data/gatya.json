@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/04/17 11:04:17",
+  "updatedAt": "26/04/22 21:50:50",
   "data": [
     {
       "header": {
@@ -22,7 +22,8 @@
             "rare": 0,
             "superRare": 0,
             "uberRare": 0,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": ""
@@ -51,7 +52,8 @@
             "rare": 7500,
             "superRare": 2000,
             "uberRare": 500,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": ""
@@ -65,7 +67,8 @@
             "rare": 7500,
             "superRare": 2000,
             "uberRare": 500,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": ""
@@ -79,7 +82,8 @@
             "rare": 7500,
             "superRare": 2000,
             "uberRare": 500,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": ""
@@ -108,7 +112,8 @@
             "rare": 7500,
             "superRare": 2000,
             "uberRare": 500,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": ""
@@ -122,7 +127,8 @@
             "rare": 7500,
             "superRare": 2000,
             "uberRare": 500,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": ""
@@ -136,7 +142,8 @@
             "rare": 7500,
             "superRare": 2000,
             "uberRare": 500,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": ""
@@ -165,7 +172,8 @@
             "rare": 7400,
             "superRare": 2100,
             "uberRare": 500,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "ちびネコ達が手に入る特別仕様のイベントガチャ！"
@@ -194,7 +202,8 @@
             "rare": 5100,
             "superRare": 3500,
             "uberRare": 1400,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "ネコビタンとXPが手に入る特別仕様ガチャ！"
@@ -223,7 +232,8 @@
             "rare": 0,
             "superRare": 0,
             "uberRare": 0,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": ""
@@ -252,7 +262,8 @@
             "rare": 0,
             "superRare": 0,
             "uberRare": 9500,
-            "legendRare": 500
+            "legendRare": 500,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "超激レア以上のキャラクターが必ず１体手に入る「レジェンドガチャ」！"
@@ -281,7 +292,8 @@
             "rare": 0,
             "superRare": 0,
             "uberRare": 10000,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "超激レアのキャラクターが必ず１体手に入る「プラチナガチャ」！"
@@ -310,7 +322,8 @@
             "rare": 0,
             "superRare": 0,
             "uberRare": 9500,
-            "legendRare": 500
+            "legendRare": 500,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "超激レア以上のキャラクターが必ず１体手に入る「レジェンドガチャ」！"
@@ -339,7 +352,8 @@
             "rare": 0,
             "superRare": 0,
             "uberRare": 10000,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "超激レアのキャラクターが必ず１体手に入る「プラチナガチャ」！"
@@ -368,7 +382,8 @@
             "rare": 0,
             "superRare": 0,
             "uberRare": 9500,
-            "legendRare": 500
+            "legendRare": 500,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "超激レア以上のキャラクターが必ず１体手に入る「レジェンドガチャ」！"
@@ -397,7 +412,8 @@
             "rare": 0,
             "superRare": 0,
             "uberRare": 10000,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "超激レアのキャラクターが必ず１体手に入る「プラチナガチャ」！"
@@ -426,7 +442,8 @@
             "rare": 0,
             "superRare": 0,
             "uberRare": 9500,
-            "legendRare": 500
+            "legendRare": 500,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "超激レア以上のキャラクターが必ず１体手に入る「レジェンドガチャ」！"
@@ -455,7 +472,8 @@
             "rare": 0,
             "superRare": 0,
             "uberRare": 10000,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "超激レアのキャラクターが必ず１体手に入る「プラチナガチャ」！"
@@ -484,7 +502,8 @@
             "rare": 4500,
             "superRare": 3000,
             "uberRare": 1500,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 1000
           },
           "guaranteed": false,
           "message": "◀左右のボタンで【トキメキにゃんこ学園】イベントガチャに切り替え▶"
@@ -513,7 +532,8 @@
             "rare": 4500,
             "superRare": 3000,
             "uberRare": 1500,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 1000
           },
           "guaranteed": false,
           "message": "◀左右のボタンで【にゃんこレンジャー】イベントガチャに切り替え▶"
@@ -542,7 +562,8 @@
             "rare": 7000,
             "superRare": 2500,
             "uberRare": 500,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "春限定のキュートなキャラを手に入れよう！★詳細はバナーをタップ!!"
@@ -571,7 +592,8 @@
             "rare": 7000,
             "superRare": 2500,
             "uberRare": 500,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "春限定のキュートなキャラを手に入れよう！★詳細はバナーをタップ!!"
@@ -600,7 +622,8 @@
             "rare": 7000,
             "superRare": 2500,
             "uberRare": 500,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "春限定のキュートなキャラを手に入れよう！★詳細はバナーをタップ!!"
@@ -629,7 +652,8 @@
             "rare": 2000,
             "superRare": 7000,
             "uberRare": 600,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "高確率でマタタビが手に入るイベント限定特別ガチャ！"
@@ -658,7 +682,8 @@
             "rare": 7000,
             "superRare": 2500,
             "uberRare": 500,
-            "legendRare": 0
+            "legendRare": 0,
+            "featured": 0
           },
           "guaranteed": true,
           "message": "春限定のキュートなキャラを手に入れよう！★詳細はバナーをタップ!!"
@@ -687,7 +712,8 @@
             "rare": 6970,
             "superRare": 2500,
             "uberRare": 500,
-            "legendRare": 30
+            "legendRare": 30,
+            "featured": 0
           },
           "guaranteed": true,
           "message": "浮いてる敵にめっぽう強いキャラ「獅子番長ラクレス」登場！★詳細はバナーをタップ!!"
@@ -716,7 +742,8 @@
             "rare": 6970,
             "superRare": 2500,
             "uberRare": 500,
-            "legendRare": 30
+            "legendRare": 30,
+            "featured": 0
           },
           "guaranteed": true,
           "message": "波動攻撃と召喚能力を持つ「韋駄天スカンダ」登場！★詳細はバナーをタップ!!"
@@ -745,7 +772,8 @@
             "rare": 6900,
             "superRare": 2000,
             "uberRare": 500,
-            "legendRare": 100
+            "legendRare": 100,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "高確率でキャッツアイが手に入るイベント限定特別ガチャ！"
@@ -774,7 +802,8 @@
             "rare": 6500,
             "superRare": 2300,
             "uberRare": 1000,
-            "legendRare": 200
+            "legendRare": 200,
+            "featured": 0
           },
           "guaranteed": true,
           "message": "13と1/2周年記念！感謝の気持ちを込めた特別なガチャ！★5月22日まで！"
@@ -803,7 +832,8 @@
             "rare": 6470,
             "superRare": 2600,
             "uberRare": 900,
-            "legendRare": 30
+            "legendRare": 30,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "限定超激レアキャラクター「冥護の天女ルナーシャ」登場！★詳細はバナーをタップ!!"
@@ -832,7 +862,8 @@
             "rare": 6970,
             "superRare": 2500,
             "uberRare": 500,
-            "legendRare": 30
+            "legendRare": 30,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "召喚能力を持つキャラクター「特命機動アクセル」登場！★詳細はバナーをタップ!!"
@@ -861,7 +892,8 @@
             "rare": 6970,
             "superRare": 2500,
             "uberRare": 500,
-            "legendRare": 30
+            "legendRare": 30,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "召喚能力を持つキャラクター「砲龍ガンドロス」登場！★詳細はバナーをタップ!!"
@@ -890,7 +922,8 @@
             "rare": 6970,
             "superRare": 2500,
             "uberRare": 500,
-            "legendRare": 30
+            "legendRare": 30,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "進化後に召喚能力を持つキャラクター「花咲かじいさん」登場！★詳細はバナーをタップ!!"
@@ -919,7 +952,8 @@
             "rare": 6970,
             "superRare": 2500,
             "uberRare": 500,
-            "legendRare": 30
+            "legendRare": 30,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "進化後に召喚能力を持つ「樹の精霊コモリ」登場！★詳細はバナーをタップ!!"
@@ -948,7 +982,8 @@
             "rare": 6970,
             "superRare": 2500,
             "uberRare": 500,
-            "legendRare": 30
+            "legendRare": 30,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "13と1/2周年記念！感謝の気持ちを込めた特別なガチャ！★詳細はバナーをタップ!!"
@@ -977,7 +1012,8 @@
             "rare": 6970,
             "superRare": 2500,
             "uberRare": 500,
-            "legendRare": 30
+            "legendRare": 30,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "召喚能力を持つキャラクター「ネコダイナザウルス」登場！★詳細はバナーをタップ!!"
@@ -1006,7 +1042,8 @@
             "rare": 6970,
             "superRare": 2500,
             "uberRare": 500,
-            "legendRare": 30
+            "legendRare": 30,
+            "featured": 0
           },
           "guaranteed": false,
           "message": "爆波攻撃と召喚能力を持つ「曲射砲台ランチャーズ」登場！★詳細はバナーをタップ!!"
