@@ -11,7 +11,8 @@ export function parseItem(tsv) {
     .filter(line => line.trim() && line !== "[start]" && line !== "[end]");
 
   return lines.map(line => {
-    const parts = line.trim().split("\t");
+    const trimmed = line.trim();
+    const parts   = trimmed.split("\t");
 
     const header = {
       startDate:  parts[0],
@@ -83,6 +84,7 @@ export function parseItem(tsv) {
       header,
       timeBlocks,
       gift: { eventId, giftType, giftAmount, title, message, url, repeatFlag },
+      raw: trimmed,
     };
   });
 }
