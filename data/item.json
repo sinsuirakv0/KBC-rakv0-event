@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/04/20 16:52:15",
+  "updatedAt": "26/04/22 18:17:18",
   "data": [
     {
       "header": {
@@ -1485,9 +1485,9 @@
     {
       "header": {
         "startDate": "20260422",
-        "startTime": "000",
+        "startTime": "0",
         "endDate": "20260423",
-        "endTime": "000",
+        "endTime": "0",
         "minVersion": "150300",
         "maxVersion": "999999"
       },
@@ -1498,6 +1498,66 @@
         "giftAmount": 1,
         "title": "超水曜にゃんこDAY☆",
         "message": "22日の水曜日、奇跡の日限定の特別ボーナス！<br>プラチナチケットを1枚プレゼント！",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260423",
+        "startTime": "1100",
+        "endDate": "20260507",
+        "endTime": "000",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2498,
+        "giftType": 203,
+        "giftAmount": 3,
+        "title": "イベント不具合のお詫び",
+        "message": "「魅惑の堕天楼」と「黄金にゃんこ塔」の報酬取得不具合のお詫びでレアチケット3枚が送られました。<br>詳細はアプリ内「運営からのお知らせ」をご確認ください。",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260423",
+        "startTime": "1100",
+        "endDate": "20260507",
+        "endTime": "000",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2499,
+        "giftType": 220,
+        "giftAmount": 3,
+        "title": "イベント不具合のお詫び",
+        "message": "「魅惑の堕天楼」と「黄金にゃんこ塔」の報酬取得不具合のお詫びでリーダーシップ3枚が送られました。<br>詳細はアプリ内「運営からのお知らせ」をご確認ください。",
+        "url": "",
+        "repeatFlag": 0
+      }
+    },
+    {
+      "header": {
+        "startDate": "20260423",
+        "startTime": "1100",
+        "endDate": "20260507",
+        "endTime": "000",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2500,
+        "giftType": 200,
+        "giftAmount": 300,
+        "title": "イベント不具合のお詫び",
+        "message": "「魅惑の堕天楼」と「黄金にゃんこ塔」の報酬取得不具合のお詫びでネコカン300個が送られました。<br>詳細はアプリ内「運営からのお知らせ」をご確認ください。",
         "url": "",
         "repeatFlag": 0
       }
