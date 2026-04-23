@@ -77,12 +77,17 @@
   transition: background 0.2s;
 }
 .overlay-raw-btn:hover { background: rgba(255,153,0,0.3); border-color: #f90; }
-/* カードコンパクト化 */
-.event-card   { padding: 6px 10px !important; min-height: unset !important; }
-.card-period  { font-size: 0.7rem !important; }
-.card-name    { font-size: 0.7rem !important; }
-.card-tag     { font-size: 0.5rem !important; padding: 1px 5px !important; }
-.card-arrow   { font-size: 0.75rem !important; }
+/* =============================================
+   カード文字サイズ設定（ここで一括変更可能）
+   ============================================= */
+.card-period  { font-size: 0.7rem !important; }   /* 期間テキスト */
+.card-name    { font-size: 0.7rem !important; }   /* イベント名テキスト */
+.card-tag     { font-size: 0.5rem !important; padding: 1px 5px !important; }  /* 開催中/予定/終了バッジ */
+.card-arrow   { font-size: 0.75rem !important; }  /* カード右端の矢印 */
+/* ステージタグ（コラボ/イベント等） */
+.stage-tag    { font-size: 0.5rem !important; padding: 1px 4px !important;
+                border-radius: 3px; vertical-align: middle; margin-left: 3px;
+                font-weight: bold; display: inline-block; }
 /* バージョンバッジ */
 .ver-badge  { font-size:0.6rem; padding:1px 4px; border-radius:3px; vertical-align:middle; margin-left:3px; }
 .ver-need   { background:rgba(255,80,80,0.2); color:#f99; }
@@ -390,6 +395,7 @@ let gatyaData = [];
 let saleData  = [];
 let itemData  = [];
 let saleNames    = new Map();
+let missionNames = new Map(); // mission ID → 名前（Mission_Name.csv）
 let itemNames    = new Map(); // giftType id → 名前
 let itemDetails  = new Map(); // giftType id → 詳細文字列（3列目）
 let itemPackMap  = new Map(); // giftType id → URL（item_pack.csv）
@@ -521,8 +527,42 @@ function isMissionId(id) {
 }
 
 // =============================================
-// 時刻文字列パース
+// ステージタグ定義
+// 各レンジに label と color を設定（後から簡単に変更可能）
+// color: テキスト色, bg: 背景色
 // =============================================
+const STAGE_TAG_MAP = [
+  { from:  1000, to:  1999, label: 'イベント',   color: '#fff',  bg: '#3a7bd5' },
+  { from:  2000, to:  2999, label: 'コラボ',     color: '#fff',  bg: '#9b59b6' },
+  { from:  4000, to:  4999, label: 'EX',         color: '#fff',  bg: '#e67e22' },
+  { from:  5000, to:  5999, label: 'ガマトト',   color: '#000',  bg: '#f1c40f' },
+  { from:  6000, to:  6999, label: '道場',       color: '#fff',  bg: '#c0392b' },
+  { from:  7000, to:  7999, label: '塔',         color: '#fff',  bg: '#27ae60' },
+  { from:  8000, to:  8999, label: 'ウィークリー',color: '#fff', bg: '#16a085' },
+  { from:  9000, to:  9999, label: 'スペシャル', color: '#fff',  bg: '#8e44ad' },
+  { from: 10000, to: 10999, label: '進化権',     color: '#000',  bg: '#f39c12' },
+  { from: 11000, to: 11999, label: '道場',       color: '#fff',  bg: '#c0392b' },
+  { from: 14000, to: 14999, label: 'ビタン',     color: '#fff',  bg: '#2980b9' },
+  { from: 15000, to: 15999, label: 'メイン',     color: '#fff',  bg: '#1abc9c' },
+  { from: 17000, to: 17999, label: 'マンスリー', color: '#fff',  bg: '#d35400' },
+  { from: 18000, to: 18999, label: '缶',         color: '#fff',  bg: '#7f8c8d' },
+  { from: 24000, to: 24999, label: '強襲',       color: '#fff',  bg: '#e74c3c' },
+  { from: 25000, to: 25999, label: '地図ステ',   color: '#fff',  bg: '#2c3e50' },
+  { from: 26000, to: 26999, label: '地図グル',   color: '#fff',  bg: '#34495e' },
+  { from: 27000, to: 27999, label: 'コラボ強襲', color: '#fff',  bg: '#922b21' },
+  { from: 28000, to: 28999, label: '第三解放',   color: '#fff',  bg: '#1f618d' },
+  { from: 31000, to: 31999, label: '超獣',       color: '#000',  bg: '#abebc6' },
+  { from: 33000, to: 33999, label: '地底迷宮',   color: '#fff',  bg: '#512e5f' },
+  { from: 35000, to: 35999, label: 'ログボ',     color: '#000',  bg: '#fdebd0' },
+  { from: 36000, to: 36999, label: 'コロシアム', color: '#fff',  bg: '#b7950b' },
+  { from: 37000, to: 37999, label: '検定',       color: '#fff',  bg: '#148f77' },
+];
+
+function getStageTagHtml(id) {
+  const entry = STAGE_TAG_MAP.find(e => id >= e.from && id <= e.to);
+  if (!entry) return '';
+  return `<span class="stage-tag" style="color:${entry.color};background:${entry.bg};">${entry.label}</span>`;
+}
 function parseTimeStr(t) {
   const s = String(t).padStart(4, '0');
   return `${s.slice(0,2)}:${s.slice(2,4)}`;
@@ -1009,13 +1049,15 @@ function filterAndSort(events) {
 // カード HTML 生成
 // =============================================
 function makeCard(period, name, isCurrent, isPast, detail) {
-  const tagClass = isPast ? 'tag-past' : isCurrent ? 'tag-current' : 'tag-future';
-  const tagLabel = isPast ? '終了'     : isCurrent ? '開催中'     : '予定';
-  const dataAttr = encodeURIComponent(JSON.stringify(detail));
+  const tagClass  = isPast ? 'tag-past' : isCurrent ? 'tag-current' : 'tag-future';
+  const tagLabel  = isPast ? '終了'     : isCurrent ? '開催中'     : '予定';
+  // ステージタグ（sale/mission のみ生成、detail.id が範囲内なら表示）
+  const stageTagHtml = (detail.id != null) ? getStageTagHtml(detail.id) : '';
+  const dataAttr  = encodeURIComponent(JSON.stringify(detail));
   return `
     <div class="event-card ${isCurrent ? 'is-current' : ''}"
          onclick="openOverlay(decodeURIComponent('${dataAttr}'))">
-      <span class="card-tag ${tagClass}">${tagLabel}</span>
+      <span class="card-tag ${tagClass}">${tagLabel}</span>${stageTagHtml}
       <div class="card-body">
         <span class="card-period">${period}</span>　<span class="card-name">${name}</span>
       </div>
@@ -1040,7 +1082,17 @@ function expandSaleEntry(entry, missionOnly) {
 
     const start      = parseDateTime(entry.header.startDate, entry.header.startTime);
     const end        = parseDateTime(entry.header.endDate,   entry.header.endTime);
-    const rawName    = saleNames.get(id) ?? `ID:${id}`;
+
+    // ミッションは Mission_Name.csv から取得（15000-15999 はオフセット-15000で検索）
+    // saleはsale_name.csvから取得
+    let rawName;
+    if (isMission) {
+      let lookupId = id;
+      if (id >= 15000 && id <= 15999) lookupId = id - 15000;
+      rawName = missionNames.get(lookupId) ?? `ID:${id}`;
+    } else {
+      rawName = saleNames.get(id) ?? `ID:${id}`;
+    }
 
     // mission の場合: <br> 前をカード表示名、全体を詳細に表示
     let cardBaseName, missionDesc;
@@ -1745,8 +1797,11 @@ async function loadData() {
       fetch(`${BASE}/gatya_n_name.csv`),
       fetch(`${BASE}/gatya_e_name.csv`),
       fetch(`${BASE}/item_name.csv`).catch(() => new Response('')),
-      _loadParsers(), // パーサーを並行取得（失敗時はフォールバックを使用）
+      _loadParsers(),
     ]);
+
+    // Mission_Name.csv は別途取得（Promise.allに入れると分割代入がずれるため）
+    const missionNameText = await fetch(`${BASE}/Mission_Name.csv`).then(r => r.text()).catch(() => '');
 
     _overlayEntries = [];
     const gatyaJson = await gatyaRes.json();
@@ -1762,7 +1817,8 @@ async function loadData() {
     const itemUpdatedAt  = itemJson.updatedAt  ?? null;
 
     const saleNameText   = await saleNameRes.text();
-    saleNames = parseCSV(saleNameText);
+    saleNames    = parseCSV(saleNameText);
+    missionNames = parseCSV(missionNameText);
 
     const gatyaNameText  = await gatyaNameRes.text().catch(() => '');
     const gatyaNNameText = await gatyaNNameRes.text().catch(() => '');
@@ -1899,7 +1955,9 @@ function collectTabItems() {
         if (!isMissionId(id)) continue;
         if (seen.has(id)) continue;
         seen.add(id);
-        const rawName = saleNames.get(id) ?? `ID:${id}`;
+        let lookupId = id;
+        if (id >= 15000 && id <= 15999) lookupId = id - 15000;
+        const rawName = missionNames.get(lookupId) ?? `ID:${id}`;
         const brIdx   = rawName.indexOf('<br>');
         items.push({ id, name: brIdx !== -1 ? rawName.slice(0, brIdx).trim() : rawName });
       }
