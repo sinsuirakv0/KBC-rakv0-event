@@ -80,13 +80,14 @@
 /* =============================================
    カード文字サイズ設定（ここで一括変更可能）
    ============================================= */
-.card-period  { font-size: 0.7rem !important; }   /* 期間テキスト */
-.card-name    { font-size: 0.7rem !important; }   /* イベント名テキスト */
-.card-tag     { font-size: 0.5rem !important; padding: 1px 5px !important; }  /* 開催中/予定/終了バッジ */
-.card-arrow   { font-size: 0.75rem !important; }  /* カード右端の矢印 */
-/* ステージタグ（コラボ/イベント等） */
-.stage-tag    { font-size: 0.5rem !important; padding: 1px 4px !important;
-                border-radius: 3px; vertical-align: middle; margin-left: 3px;
+.event-card   { padding: 4px 8px !important; min-height: unset !important; } /* カード縦幅 */
+.card-period  { font-size: 0.62rem !important; }  /* 期間テキスト */
+.card-name    { font-size: 0.62rem !important; }  /* イベント名テキスト */
+.card-tag     { font-size: 0.48rem !important; padding: 1px 4px !important; } /* 開催中/予定/終了バッジ */
+.card-arrow   { font-size: 0.7rem !important; }   /* カード右端の矢印 */
+/* ステージタグ（コラボ/イベント等） / itemタグ（1回限り等） */
+.stage-tag    { font-size: 0.48rem !important; padding: 1px 3px !important;
+                border-radius: 3px; vertical-align: middle; margin-left: 2px;
                 font-weight: bold; display: inline-block; }
 /* バージョンバッジ */
 .ver-badge  { font-size:0.6rem; padding:1px 4px; border-radius:3px; vertical-align:middle; margin-left:3px; }
@@ -386,7 +387,7 @@
 // =============================================
 // ★ 現在のアプリバージョン設定
 // =============================================
-const CURRENT_VERSION = 150300;
+const CURRENT_VERSION = 150000;
 
 // =============================================
 // 状態管理
@@ -560,8 +561,11 @@ const STAGE_TAG_MAP = [
 
 function getStageTagHtml(id) {
   const entry = STAGE_TAG_MAP.find(e => id >= e.from && id <= e.to);
-  if (!entry) return '';
-  return `<span class="stage-tag" style="color:${entry.color};background:${entry.bg};">${entry.label}</span>`;
+  if (entry) {
+    return `<span class="stage-tag" style="color:${entry.color};background:${entry.bg};">${entry.label}</span>`;
+  }
+  // 範囲外は「その他」タグ
+  return `<span class="stage-tag" style="color:#ccc;background:#555;">その他</span>`;
 }
 function parseTimeStr(t) {
   const s = String(t).padStart(4, '0');
@@ -1049,15 +1053,27 @@ function filterAndSort(events) {
 // カード HTML 生成
 // =============================================
 function makeCard(period, name, isCurrent, isPast, detail) {
-  const tagClass  = isPast ? 'tag-past' : isCurrent ? 'tag-current' : 'tag-future';
-  const tagLabel  = isPast ? '終了'     : isCurrent ? '開催中'     : '予定';
-  // ステージタグ（sale/mission のみ生成、detail.id が範囲内なら表示）
-  const stageTagHtml = (detail.id != null) ? getStageTagHtml(detail.id) : '';
-  const dataAttr  = encodeURIComponent(JSON.stringify(detail));
+  const tagClass = isPast ? 'tag-past' : isCurrent ? 'tag-current' : 'tag-future';
+  const tagLabel = isPast ? '終了'     : isCurrent ? '開催中'     : '予定';
+
+  // タイプ別追加タグ
+  let extraTagHtml = '';
+  if (detail.type === 'sale' || detail.type === 'mission' || (!detail.type && detail.stageProxyUrl !== undefined)) {
+    // sale / mission: ステージIDベースのカテゴリタグ
+    if (detail.id != null) extraTagHtml = getStageTagHtml(detail.id);
+  } else if (detail.type === 'item') {
+    // item: repeatFlag === 0 なら「1回限り」タグ
+    if (detail.repeatFlag === 0) {
+      extraTagHtml = `<span class="stage-tag" style="color:#fff;background:#c0392b;">1回限り</span>`;
+    }
+  }
+  // gatya は追加タグなし
+
+  const dataAttr = encodeURIComponent(JSON.stringify(detail));
   return `
     <div class="event-card ${isCurrent ? 'is-current' : ''}"
          onclick="openOverlay(decodeURIComponent('${dataAttr}'))">
-      <span class="card-tag ${tagClass}">${tagLabel}</span>${stageTagHtml}
+      <span class="card-tag ${tagClass}">${tagLabel}</span>${extraTagHtml}
       <div class="card-body">
         <span class="card-period">${period}</span>　<span class="card-name">${name}</span>
       </div>
@@ -1117,6 +1133,7 @@ function expandSaleEntry(entry, missionOnly) {
       entry.header.endDate,   entry.header.endTime
     );
     const detail = {
+      type: isMission ? 'mission' : 'sale',
       name,
       id,
       period: `${formatDetailDate(entry.header.startDate, entry.header.startTime)} ~ ${formatDetailDate(entry.header.endDate, entry.header.endTime)}`,
@@ -1179,7 +1196,7 @@ function openOverlay(jsonStr) {
           onerror="handleIframeError(this)">
         </iframe>
       </div>` : ''}`;
-  } else if (d.type === 'item') {
+  } else if (d.type === 'item' || d.type === 'gatya_item') {
     // item 詳細
     const entryForOcc = _overlayEntries[d._entryIdx] ?? null;
     const entryObjOcc = entryForOcc ? JSON.parse(entryForOcc.json) : null;
@@ -1604,9 +1621,10 @@ function expandItemEntry(entry) {
     giftTypeId:   g.giftType,
     giftTypeName: giftTypeName,
     giftAmountStr: giftAmountStr,
-    giftDetailStr: giftDetailStr, // item_name.csv 3列目
-    giftPackUrl:   giftPackUrl,   // 800-899 公式URL
-    giftTsvText:   giftTsvText,   // 900-999/35000-35999 ログインテキスト
+    giftDetailStr: giftDetailStr,
+    giftPackUrl:   giftPackUrl,
+    giftTsvText:   giftTsvText,
+    repeatFlag:    g.repeatFlag ?? 1, // 0=1回限り, 1=繰り返し
     steady: isSteadyEntry(h),
     _entryIdx: entryIdx,
   };
@@ -1709,13 +1727,14 @@ function renderAllTab() {
           const period   = formatCardPeriod(h.startDate, h.startTime, h.endDate, h.endTime);
           const entryIdx = storeOverlayEntry(entry);
           const detail = {
-            type: 'item', name: cardName, id: g.giftType,
+            type: 'gatya_item', name: cardName, id: g.giftType,
             period: `${formatDetailDate(h.startDate, h.startTime)} ~ ${formatDetailDate(h.endDate, h.endTime)}`,
             ver: `${h.minVersion}~${h.maxVersion}`, schedule: formatTimeBlocks(entry.timeBlocks, h),
             eventId: g.eventId, message: (g.message ?? '').replace(/<br>/g,'\n').trim(),
             url: (g.url ?? '').trim(), giftTypeId: g.giftType, giftTypeName: giftName,
             giftAmountStr: g.giftAmount > 0 ? `${g.giftAmount}個` : '',
             giftDetailStr: itemDetails.get(g.giftType) ?? '', giftPackUrl: null, giftTsvText: null,
+            repeatFlag: g.repeatFlag ?? 1,
             steady: isSteadyEntry(h), _entryIdx: entryIdx,
           };
           buckets.rare.push({ start, end, name: cardName, period, detail });
