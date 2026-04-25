@@ -124,6 +124,47 @@
 .filter-btn-all  { background:rgba(255,153,0,0.2); color:#f90; }
 .filter-btn-none { background:rgba(255,255,255,0.06); color:#ccc; }
 .filter-btn-close{ background:rgba(255,255,255,0.06); color:#ccc; margin-left:auto; }
+/* 履歴タブ */
+.history-event-card {
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 6px;
+  padding: 8px 10px; margin-bottom: 6px;
+  background: var(--card, #0a1931);
+}
+.history-event-date { font-size: 0.72rem; color: #bbb; margin-bottom: 6px; }
+.history-badge {
+  font-size: 0.6rem; background: #f90; color: #000;
+  border-radius: 3px; padding: 1px 5px; margin-left: 6px; font-weight: bold;
+}
+.history-event-types { display: flex; gap: 6px; flex-wrap: wrap; }
+.history-type-btn {
+  font-size: 0.72rem; padding: 2px 10px; border-radius: 4px; cursor: pointer;
+  border: 1px solid #555; background: rgba(255,255,255,0.07); color: #ddd;
+  transition: background 0.15s;
+}
+.history-type-btn:hover { background: rgba(255,153,0,0.25); border-color: #f90; color: #fff; }
+/* 差分オーバーレイ */
+.hist-section { margin-bottom: 8px; }
+.hist-section-header {
+  font-size: 0.8rem; padding: 6px 10px; border-radius: 5px;
+  cursor: pointer; user-select: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(255,255,255,0.05);
+}
+.hist-section-header:hover { background: rgba(255,255,255,0.1); }
+.hist-section-header.added   { border-left: 3px solid #2ecc71; color: #2ecc71; }
+.hist-section-header.removed { border-left: 3px solid #e74c3c; color: #e74c3c; }
+.hist-section-header.changed { border-left: 3px solid #f39c12; color: #f39c12; }
+.hist-section-body { padding: 4px 0 4px 6px; }
+.hist-entry {
+  font-size: 0.68rem; color: #ccc; padding: 4px 6px; border-radius: 3px;
+  border-left: 2px solid rgba(255,255,255,0.15); margin: 3px 0;
+  line-height: 1.5; background: rgba(255,255,255,0.03);
+}
+.hist-entry-period { opacity: 0.65; font-size: 0.62rem; }
+.hist-entry-name   { color: #eee; }
+.hist-entry-change { font-size: 0.62rem; color: #f39c12; margin-top: 2px; white-space: pre-wrap; }
+.hist-no-prev { font-size: 0.75rem; color: #888; padding: 8px 4px; }
 /* フィルターボタン */
 .filter-open-btn {
   background:none; border:1px solid #555; color:#ccc; font-size:0.78rem;
@@ -236,6 +277,7 @@
       <div class="tab" data-tab="item">item</div>
       <div class="tab" data-tab="mission">mission</div>
       <div class="tab" data-tab="all">全て</div>
+      <div class="tab" data-tab="history">履歴</div>
       <div class="tab" data-tab="settings">⚙</div>
     </div>
 
@@ -283,6 +325,7 @@
       <div id="item"    class="content"><div class="loading">読み込み中...</div></div>
       <div id="mission" class="content"><div class="loading">読み込み中...</div></div>
       <div id="all"     class="content"><div class="loading">読み込み中...</div></div>
+      <div id="history" class="content"><div class="loading">読み込み中...</div></div>
       <div id="settings" class="content">
         <!-- カード1: タイムゾーン -->
         <div class="settings-section">
@@ -435,7 +478,7 @@
 // =============================================
 // ★ 現在のアプリバージョン設定
 // =============================================
-const CURRENT_VERSION = 150300;
+const CURRENT_VERSION = 150000;
 
 // =============================================
 // 状態管理
@@ -1732,6 +1775,217 @@ function renderMission() {
 // =============================================
 // 全タブ再描画（settings/allタブは別管理）
 // =============================================
+// =============================================
+// 履歴タブ
+// =============================================
+const HISTORY_GROUP_SEC = 120; // 秒以内のファイルは同一イベントとみなす
+
+// エントリの一意キーを返す（diff用）
+function _histKey(type, entry) {
+  if (type === 'item') return String(entry.gift?.eventId ?? JSON.stringify(entry.header));
+  return entry.raw ?? JSON.stringify(entry.header);
+}
+
+// エントリの表示用サマリー
+function _histSummary(type, entry) {
+  const h = entry.header;
+  const period = `${h.startDate.slice(0,4)}/${h.startDate.slice(4,6)}/${h.startDate.slice(6,8)} ～ ${h.endDate.slice(0,4)}/${h.endDate.slice(4,6)}/${h.endDate.slice(6,8)}`;
+  if (type === 'item') {
+    const g = entry.gift;
+    const name = (g.title?.trim()) || (itemNames.get(g.giftType) ?? `giftType:${g.giftType}`);
+    return { period, name };
+  }
+  if (type === 'gatya') {
+    const ids = (entry.gachas ?? []).map(g => {
+      const nm = gatyaRNames.get(g.id) ?? gatyaNNames.get(g.id) ?? gatyaENames.get(g.id) ?? `ID:${g.id}`;
+      return nm;
+    }).join(', ');
+    return { period, name: ids || '(不明)' };
+  }
+  // sale
+  const ids = (entry.stageIds ?? []).map(id => saleNames.get(id) ?? `ID:${id}`).join(', ');
+  return { period, name: ids || '(不明)' };
+}
+
+// 変更点のサマリーテキスト生成
+function _histChangeSummary(type, oldEntry, newEntry) {
+  const diffs = [];
+  const oh = oldEntry.header, nh = newEntry.header;
+  if (oh.startDate !== nh.startDate || oh.startTime !== nh.startTime)
+    diffs.push(`開始: ${oh.startDate} ${oh.startTime} → ${nh.startDate} ${nh.startTime}`);
+  if (oh.endDate !== nh.endDate || oh.endTime !== nh.endTime)
+    diffs.push(`終了: ${oh.endDate} ${oh.endTime} → ${nh.endDate} ${nh.endTime}`);
+  if (oh.minVersion !== nh.minVersion || oh.maxVersion !== nh.maxVersion)
+    diffs.push(`ver: ${oh.minVersion}~${oh.maxVersion} → ${nh.minVersion}~${nh.maxVersion}`);
+  if (type === 'item') {
+    const og = oldEntry.gift, ng = newEntry.gift;
+    if (og.giftType !== ng.giftType) diffs.push(`giftType: ${og.giftType} → ${ng.giftType}`);
+    if (og.giftAmount !== ng.giftAmount) diffs.push(`giftAmount: ${og.giftAmount} → ${ng.giftAmount}`);
+  }
+  return diffs.length ? diffs.join('\n') : '詳細変更あり';
+}
+
+// 差分計算
+function _diffEntries(type, oldEntries, newEntries) {
+  const oldMap = new Map(oldEntries.map(e => [_histKey(type, e), e]));
+  const newMap = new Map(newEntries.map(e => [_histKey(type, e), e]));
+  const added   = newEntries.filter(e => !oldMap.has(_histKey(type, e)));
+  const removed = oldEntries.filter(e => !newMap.has(_histKey(type, e)));
+  const changed = newEntries.filter(e => {
+    const k = _histKey(type, e);
+    if (!oldMap.has(k)) return false;
+    return JSON.stringify(e) !== JSON.stringify(oldMap.get(k));
+  }).map(e => ({ newEntry: e, oldEntry: oldMap.get(_histKey(type, e)) }));
+  return { added, removed, changed };
+}
+
+// 差分セクションHTML生成
+function _histSectionHtml(type, label, cls, entries, isChanged = false) {
+  const count = entries.length;
+  if (count === 0) return `<div class="hist-section">
+    <div class="hist-section-header ${cls}" onclick="toggleHistSection(this)">
+      <span>▶ ${label}</span><span style="opacity:.55;font-size:0.7rem;">${count}件</span>
+    </div>
+  </div>`;
+
+  const bodyHtml = entries.map(item => {
+    const entry = isChanged ? item.newEntry : item;
+    const { period, name } = _histSummary(type, entry);
+    const change = isChanged ? `\n${_histChangeSummary(type, item.oldEntry, item.newEntry)}` : '';
+    return `<div class="hist-entry">
+      <div class="hist-entry-period">${period}</div>
+      <div class="hist-entry-name">${name}</div>
+      ${change ? `<div class="hist-entry-change">${change}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  return `<div class="hist-section">
+    <div class="hist-section-header ${cls}" onclick="toggleHistSection(this)">
+      <span>▶ ${label}</span><span style="font-size:0.7rem;">${count}件</span>
+    </div>
+    <div class="hist-section-body" style="display:none;">${bodyHtml}</div>
+  </div>`;
+}
+
+function toggleHistSection(header) {
+  const body = header.nextElementSibling;
+  if (!body) return;
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  header.querySelector('span').textContent = (open ? '▶ ' : '▼ ') + header.querySelector('span').textContent.slice(2);
+}
+
+// 差分オーバーレイを開く
+async function openHistoryDiff(type, filename, prevFilename) {
+  const titleDate = filename.match(/_(\d+)\.tsv$/)?.[1];
+  const titleDateStr = titleDate ? new Date(Number(titleDate)*1000).toLocaleString('ja-JP') : filename;
+  document.getElementById('overlay-title').textContent = `${type}  ${titleDateStr}`;
+  document.getElementById('overlay-body').innerHTML = '<div style="padding:16px;color:#aaa;font-size:0.82rem;">差分を計算中...</div>';
+  document.body.classList.add('overlay-open');
+  document.getElementById('overlay').classList.add('show');
+
+  try {
+    const [newText, prevText] = await Promise.all([
+      fetch(`${GITHUB_RAW_DL}/${filename}`).then(r => { if(!r.ok) throw new Error(`HTTP ${r.status}`); return r.text(); }),
+      prevFilename ? fetch(`${GITHUB_RAW_DL}/${prevFilename}`).then(r => r.ok ? r.text() : null).catch(() => null) : Promise.resolve(null),
+    ]);
+
+    let newEntries, prevEntries;
+    if (type === 'gatya') {
+      newEntries  = parseGatyaBrowser(newText);
+      prevEntries = prevText ? parseGatyaBrowser(prevText) : [];
+    } else if (type === 'sale') {
+      newEntries  = parseSaleBrowser(newText);
+      prevEntries = prevText ? parseSaleBrowser(prevText) : [];
+    } else {
+      newEntries  = parseItemBrowser(newText);
+      prevEntries = prevText ? parseItemBrowser(prevText) : [];
+    }
+
+    const { added, removed, changed } = _diffEntries(type, prevEntries, newEntries);
+
+    let body = '';
+    if (!prevFilename) {
+      body += `<div class="hist-no-prev">⚠ 比較元ファイルがありません（最初の更新として表示）</div>`;
+    }
+    body += _histSectionHtml(type, '追加されたイベント', 'added',   added);
+    body += _histSectionHtml(type, '削除されたイベント', 'removed', removed);
+    body += _histSectionHtml(type, '変更されたイベント', 'changed', changed, true);
+
+    document.getElementById('overlay-body').innerHTML = body;
+  } catch(e) {
+    document.getElementById('overlay-body').innerHTML = `<div style="color:#e74c3c;padding:12px;">エラー: ${e.message}</div>`;
+    console.error(e);
+  }
+}
+
+// 履歴タブ描画
+async function renderHistory() {
+  const cont = document.getElementById('history');
+  cont.innerHTML = '<div class="loading">履歴を取得中...</div>';
+
+  try {
+    const res = await fetch(GITHUB_RAW_API);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const files = await res.json();
+
+    // (gatya|sale|item)_数字.tsv を抽出
+    const parsed = [];
+    for (const f of files) {
+      const m = f.name.match(/^(gatya|sale|item)_(\d+)\.tsv$/);
+      if (!m) continue;
+      parsed.push({ name: f.name, type: m[1], unix: Number(m[2]) });
+    }
+
+    if (parsed.length === 0) {
+      cont.innerHTML = '<div class="empty">🐈 履歴データがありません</div>';
+      return;
+    }
+
+    // タイプ別に昇順リスト作成（前のファイルを探すため）
+    const byType = { gatya: [], sale: [], item: [] };
+    for (const f of parsed) byType[f.type].push(f);
+    for (const t of ['gatya','sale','item']) byType[t].sort((a,b) => a.unix - b.unix);
+
+    // 新しい順でグループ化
+    parsed.sort((a, b) => b.unix - a.unix);
+    const events = [];
+    let group = null;
+    for (const f of parsed) {
+      if (!group || (group.unix - f.unix) > HISTORY_GROUP_SEC) {
+        group = { unix: f.unix, files: [] };
+        events.push(group);
+      }
+      group.files.push(f);
+    }
+
+    const DOW = ['日','月','火','水','木','金','土'];
+    let html = `<div style="padding:6px 4px 8px;font-size:0.72rem;color:#888;">${events.length} 件の更新履歴</div>`;
+
+    for (const ev of events) {
+      const d = new Date(ev.unix * 1000);
+      const dateStr = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}(${DOW[d.getDay()]}) ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+
+      const btns = ev.files.map(f => {
+        const arr  = byType[f.type];
+        const idx  = arr.findIndex(x => x.name === f.name);
+        const prev = idx > 0 ? arr[idx-1].name : '';
+        return `<button class="history-type-btn" onclick="openHistoryDiff('${f.type}','${f.name}','${prev}')">${f.type}</button>`;
+      }).join('');
+
+      html += `<div class="history-event-card">
+        <div class="history-event-date">📅 ${dateStr}<span class="history-badge">更新検知</span></div>
+        <div class="history-event-types">${btns}</div>
+      </div>`;
+    }
+
+    cont.innerHTML = html;
+  } catch(e) {
+    cont.innerHTML = `<div class="empty">取得失敗: ${e.message}</div>`;
+    console.error(e);
+  }
+}
+
 function renderAll() {
   renderGatya();
   renderSale();
@@ -1863,10 +2117,9 @@ function showTab(tabName) {
   document.getElementById('filter-btn-sale').style.display    = (tabName === 'sale')    ? '' : 'none';
   document.getElementById('filter-btn-mission').style.display = (tabName === 'mission') ? '' : 'none';
 
-  if (tabName === 'settings' || tabName === 'all') {
-    if (tabName === 'all') renderAll();
-    return;
-  }
+  if (tabName === 'settings') return;
+  if (tabName === 'all') { renderAll(); return; }
+  if (tabName === 'history') { renderHistory(); return; }
   searchQuery = '';
   document.getElementById('searchInput').value = '';
   closeSuggestions();
