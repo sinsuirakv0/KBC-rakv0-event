@@ -77,6 +77,72 @@
   transition: background 0.2s;
 }
 .overlay-raw-btn:hover { background: rgba(255,153,0,0.3); border-color: #f90; }
+/* テーマトグル */
+.theme-toggle-group {
+  display: flex; align-items: center; gap: 2px;
+  background: rgba(0,0,0,0.2); border-radius: 20px; padding: 3px;
+}
+.theme-btn {
+  background: none; border: none; cursor: pointer;
+  width: 28px; height: 28px; border-radius: 50%;
+  font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, transform 0.1s;
+  color: var(--text-primary, #eee); opacity: 0.5;
+}
+.theme-btn:hover { background: rgba(255,255,255,0.12); opacity: 0.85; }
+.theme-btn.active {
+  background: rgba(255,153,0,0.25); opacity: 1;
+  box-shadow: 0 0 0 1px rgba(255,153,0,0.6);
+}
+.theme-btn.active:hover { background: rgba(255,153,0,0.35); }
+
+/* ライトモード用CSS変数（data-theme="light"のとき適用） */
+[data-theme="light"] {
+  --bg-primary:   #f4f5f7;
+  --bg-secondary: #ffffff;
+  --bg-tertiary:  #e8eaed;
+  --card:         #ffffff;
+  --border:       rgba(0,0,0,0.1);
+  --text-primary: #1a1a2e;
+  --text-secondary: #555;
+  --accent:       #f90;
+}
+[data-theme="light"] body {
+  background: var(--bg-primary, #f4f5f7);
+  color: var(--text-primary, #1a1a2e);
+}
+[data-theme="light"] .event-card {
+  background: #fff; border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+[data-theme="light"] .event-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+[data-theme="light"] .card-period,
+[data-theme="light"] .card-name { color: #222; }
+[data-theme="light"] .overlay-panel { background: #fff; color: #1a1a2e; }
+[data-theme="light"] .overlay-label { color: #555; }
+[data-theme="light"] .overlay-value { color: #222; }
+[data-theme="light"] #searchInput {
+  background: #fff; color: #222; border-color: #ccc;
+}
+[data-theme="light"] .suggestion-item { color: #222; background: #fff; }
+[data-theme="light"] .now-display { color: #444; }
+[data-theme="light"] .count-label { color: #444; }
+[data-theme="light"] .loading { color: #666; }
+[data-theme="light"] .settings-section {
+  background: #fff; border-color: rgba(0,0,0,0.1);
+}
+[data-theme="light"] .history-event-card { background: #fff; border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .history-event-date { color: #555; }
+[data-theme="light"] .history-type-btn { color: #333; background: rgba(0,0,0,0.05); border-color: #ccc; }
+[data-theme="light"] .occ-list { color: #444; }
+[data-theme="light"] .ver-badge.ver-need { background: rgba(200,0,0,0.1); color: #c00; }
+[data-theme="light"] .ver-badge.ver-limit { background: rgba(180,120,0,0.12); color: #a07000; }
+[data-theme="light"] .theme-toggle-group { background: rgba(0,0,0,0.08); }
+[data-theme="light"] .theme-btn { color: #333; }
+[data-theme="light"] .hist-section-header { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: #333; }
+[data-theme="light"] .hist-section-header.added   { color: #1a8a3a; }
+[data-theme="light"] .hist-section-header.removed { color: #c0392b; }
+[data-theme="light"] .hist-section-header.changed { color: #d47000; }
 /* タブ横幅を狭く */
 .tab { padding: 4px 8px !important; font-size: 0.78rem !important; }
 /* =============================================
@@ -269,6 +335,11 @@
         <h1 class="site-title">KBC</h1>
       </div>
       <nav class="nav">
+        <div class="theme-toggle-group" id="theme-toggle-group">
+          <button class="theme-btn" id="theme-btn-original" onclick="setTheme('original')" title="オリジナル">🎨</button>
+          <button class="theme-btn" id="theme-btn-dark"     onclick="setTheme('dark')"     title="ダーク">🌙</button>
+          <button class="theme-btn" id="theme-btn-light"    onclick="setTheme('light')"    title="ライト">☀️</button>
+        </div>
         <a href="https://kbc-rakv0.vercel.app/index.html">Home</a>
       </nav>
     </header>
@@ -2583,6 +2654,40 @@ async function startClock() {
 }
 
 startClock();
+
+// =============================================
+// テーマ切り替え
+// original: data-theme なし（サイト本来のCSS）
+// dark:     data-theme="dark"
+// light:    data-theme="light"（自前CSS変数で定義）
+// =============================================
+function setTheme(theme) {
+  if (theme === 'original') {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', theme);
+  }
+  localStorage.setItem('kbc-theme', theme);
+  _updateThemeBtns(theme);
+}
+
+function _updateThemeBtns(theme) {
+  ['original', 'dark', 'light'].forEach(t => {
+    const btn = document.getElementById(`theme-btn-${t}`);
+    if (btn) btn.classList.toggle('active', t === theme);
+  });
+}
+
+function _initThemeBtns() {
+  // 現在のテーマを読み取ってボタンを初期化
+  const saved = localStorage.getItem('kbc-theme') || 'original';
+  const attr  = document.documentElement.getAttribute('data-theme');
+  // attrが存在してsavedと異なる場合（外部theme.jsが書き換えた可能性）はattrを優先
+  const current = attr || saved || 'original';
+  _updateThemeBtns(current);
+}
+
+_initThemeBtns();
 
 // =============================================
 // ブラウザ内 TSVパーサー
