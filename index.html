@@ -1787,24 +1787,52 @@ function _histKey(type, entry) {
 }
 
 // エントリの表示用サマリー
-function _histSummary(type, entry) {
+// =============================================
+// 履歴差分: エントリ → イベント配列変換
+// saleタブと同じ makeCard が使えるようにする
+// =============================================
+
+// gatya 単エントリ → events 配列
+function _histGatyaEntryToEvents(entry) {
   const h = entry.header;
-  const period = `${h.startDate.slice(0,4)}/${h.startDate.slice(4,6)}/${h.startDate.slice(6,8)} ～ ${h.endDate.slice(0,4)}/${h.endDate.slice(4,6)}/${h.endDate.slice(6,8)}`;
-  if (type === 'item') {
-    const g = entry.gift;
-    const name = (g.title?.trim()) || (itemNames.get(g.giftType) ?? `giftType:${g.giftType}`);
-    return { period, name };
+  if (h.gachaType === 2 || h.gachaType === 3) return [];
+  const start    = parseDateTime(h.startDate, h.startTime);
+  const end      = parseDateTime(h.endDate,   h.endTime);
+  const entryIdx = storeOverlayEntry(entry);
+  const events   = [];
+  for (const g of (entry.gachas || [])) {
+    const nameMap   = h.gachaType === 0 ? gatyaNNames : h.gachaType === 4 ? gatyaENames : gatyaRNames;
+    const csvName   = nameMap.get(g.id);
+    const flagLabel = FLAGS_LABEL[g.flags] || '';
+    const guarLabel = g.guaranteed ? '＜確定＞' : '';
+    const verBadge  = getVersionBadgeHtml(h);
+    const nameParts = [csvName ?? `ID:${g.id}`, guarLabel, flagLabel].filter(Boolean);
+    if (verBadge) nameParts.push(verBadge);
+    const period = formatCardPeriod(h.startDate, h.startTime, h.endDate, h.endTime);
+    const idStr  = String(g.id).padStart(3, '0');
+    let infoUrl  = null;
+    if (h.gachaType === 1) infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/rare/R${idStr}.html`;
+    else if (h.gachaType === 4) infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/event/E${idStr}.html`;
+    else if (h.gachaType === 0) infoUrl = `https://ponosgames.com/information/appli/battlecats/gacha/normal/N${idStr}.html`;
+    const detail = {
+      type: 'gatya', name: csvName ?? `ID:${g.id}`, id: g.id,
+      period: `${formatDetailDate(h.startDate, h.startTime)} ~ ${formatDetailDate(h.endDate, h.endTime)}`,
+      ver: `${h.minVersion}~${h.maxVersion}`, gachaCount: h.gachaCount,
+      rates: formatRates(g.rates || {}),
+      message: (g.message && g.message !== '0') ? g.message : '',
+      guaranteed: g.guaranteed, flagLabel, infoUrl, steady: isSteadyEntry(h), _entryIdx: entryIdx,
+    };
+    events.push({ start, end, name: nameParts.join(' '), period, detail });
   }
-  if (type === 'gatya') {
-    const ids = (entry.gachas ?? []).map(g => {
-      const nm = gatyaRNames.get(g.id) ?? gatyaNNames.get(g.id) ?? gatyaENames.get(g.id) ?? `ID:${g.id}`;
-      return nm;
-    }).join(', ');
-    return { period, name: ids || '(不明)' };
-  }
-  // sale
-  const ids = (entry.stageIds ?? []).map(id => saleNames.get(id) ?? `ID:${id}`).join(', ');
-  return { period, name: ids || '(不明)' };
+  return events;
+}
+
+// 任意タイプの単エントリ → events 配列
+function _histEntryToEvents(type, entry) {
+  if (type === 'gatya') return _histGatyaEntryToEvents(entry);
+  if (type === 'item')  return expandItemEntry(entry);
+  // sale: ミッション除外（stageIdが0件の場合でも空配列で安全）
+  return expandSaleEntry(entry, false);
 }
 
 // 変更点のサマリーテキスト生成
@@ -1819,7 +1847,7 @@ function _histChangeSummary(type, oldEntry, newEntry) {
     diffs.push(`ver: ${oh.minVersion}~${oh.maxVersion} → ${nh.minVersion}~${nh.maxVersion}`);
   if (type === 'item') {
     const og = oldEntry.gift, ng = newEntry.gift;
-    if (og.giftType !== ng.giftType) diffs.push(`giftType: ${og.giftType} → ${ng.giftType}`);
+    if (og.giftType !== ng.giftType)   diffs.push(`giftType: ${og.giftType} → ${ng.giftType}`);
     if (og.giftAmount !== ng.giftAmount) diffs.push(`giftAmount: ${og.giftAmount} → ${ng.giftAmount}`);
   }
   return diffs.length ? diffs.join('\n') : '詳細変更あり';
@@ -1839,40 +1867,63 @@ function _diffEntries(type, oldEntries, newEntries) {
   return { added, removed, changed };
 }
 
-// 差分セクションHTML生成
+// 差分セクション: makeCard ベースでカード表示
 function _histSectionHtml(type, label, cls, entries, isChanged = false) {
+  const now   = getCalcNow();
   const count = entries.length;
-  if (count === 0) return `<div class="hist-section">
-    <div class="hist-section-header ${cls}" onclick="toggleHistSection(this)">
-      <span>▶ ${label}</span><span style="opacity:.55;font-size:0.7rem;">${count}件</span>
-    </div>
+
+  // ヘッダー
+  const headerHtml = `<div class="hist-section-header ${cls}" onclick="toggleHistSection(this)">
+    <span>▶ ${label}</span><span style="font-size:0.7rem;">${count}件</span>
   </div>`;
 
-  const bodyHtml = entries.map(item => {
-    const entry = isChanged ? item.newEntry : item;
-    const { period, name } = _histSummary(type, entry);
-    const change = isChanged ? `\n${_histChangeSummary(type, item.oldEntry, item.newEntry)}` : '';
-    return `<div class="hist-entry">
-      <div class="hist-entry-period">${period}</div>
-      <div class="hist-entry-name">${name}</div>
-      ${change ? `<div class="hist-entry-change">${change}</div>` : ''}
-    </div>`;
-  }).join('');
+  if (count === 0) {
+    return `<div class="hist-section">${headerHtml}</div>`;
+  }
+
+  let bodyHtml = '';
+  for (const item of entries) {
+    const entry  = isChanged ? item.newEntry : item;
+    const events = _histEntryToEvents(type, entry);
+
+    // 変更ノート（変更セクションのみ）
+    if (isChanged) {
+      const summary = _histChangeSummary(type, item.oldEntry, item.newEntry);
+      bodyHtml += `<div style="font-size:0.6rem;color:#f39c12;padding:2px 8px 4px;
+                   border-left:2px solid #f39c12;margin:6px 0 2px;
+                   white-space:pre-wrap;">${summary}</div>`;
+    }
+
+    // events が空（type=2/3 など）ならフォールバック表示
+    if (events.length === 0) {
+      const h = entry.header;
+      bodyHtml += `<div class="hist-entry" style="opacity:.6;font-size:0.65rem;padding:4px 8px;">
+        ${h.startDate}～${h.endDate} (表示対象外のタイプ)
+      </div>`;
+      continue;
+    }
+
+    // 各イベントをカードとして表示
+    for (const e of events) {
+      const isCurrent = e.start <= now && e.end > now;
+      const isPast    = e.end   <= now;
+      bodyHtml += makeCard(e.period, e.name, isCurrent, isPast, e.detail);
+    }
+  }
 
   return `<div class="hist-section">
-    <div class="hist-section-header ${cls}" onclick="toggleHistSection(this)">
-      <span>▶ ${label}</span><span style="font-size:0.7rem;">${count}件</span>
-    </div>
+    ${headerHtml}
     <div class="hist-section-body" style="display:none;">${bodyHtml}</div>
   </div>`;
 }
 
 function toggleHistSection(header) {
   const body = header.nextElementSibling;
-  if (!body) return;
+  if (!body || !body.classList.contains('hist-section-body')) return;
   const open = body.style.display !== 'none';
   body.style.display = open ? 'none' : 'block';
-  header.querySelector('span').textContent = (open ? '▶ ' : '▼ ') + header.querySelector('span').textContent.slice(2);
+  const span = header.querySelector('span:first-child');
+  if (span) span.textContent = (open ? '▶ ' : '▼ ') + span.textContent.slice(2);
 }
 
 // 差分オーバーレイを開く
