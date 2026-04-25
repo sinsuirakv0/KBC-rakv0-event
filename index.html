@@ -96,7 +96,40 @@
 /* 次の開催リスト */
 .occ-list { font-size:0.7rem; color:#bbb; white-space:pre-wrap; line-height:1.8; }
 .occ-current { color:#4f8; font-weight:bold; }
-/* スクリーンショット確認オーバーレイ */
+/* フィルターオーバーレイ */
+#filter-overlay {
+  display:none; position:fixed; inset:0; z-index:2500;
+  background:rgba(0,0,0,0.65); align-items:flex-start; justify-content:center;
+  padding-top:60px;
+}
+#filter-overlay.show { display:flex; }
+#filter-panel {
+  background:var(--card,#0a1931); border:1px solid var(--border,rgba(255,255,255,0.15));
+  border-radius:12px; padding:16px 20px; width:min(92vw,420px);
+  max-height:80vh; overflow-y:auto;
+}
+#filter-panel h4 { margin:0 0 12px; font-size:0.9rem; color:#eee; }
+.filter-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:5px 4px; border-radius:4px; cursor:pointer;
+}
+.filter-row:hover { background:rgba(255,255,255,0.06); }
+.filter-row-left { display:flex; align-items:center; gap:6px; }
+.filter-count { font-size:0.68rem; color:#888; }
+.filter-row input[type="checkbox"] { accent-color:#f90; width:15px; height:15px; cursor:pointer; }
+.filter-actions { display:flex; gap:8px; margin-top:12px; border-top:1px solid rgba(255,255,255,0.08); padding-top:10px; }
+.filter-btn-all, .filter-btn-none, .filter-btn-close {
+  padding:5px 14px; font-size:0.78rem; border-radius:4px; cursor:pointer; border:1px solid #555;
+}
+.filter-btn-all  { background:rgba(255,153,0,0.2); color:#f90; }
+.filter-btn-none { background:rgba(255,255,255,0.06); color:#ccc; }
+.filter-btn-close{ background:rgba(255,255,255,0.06); color:#ccc; margin-left:auto; }
+/* フィルターボタン */
+.filter-open-btn {
+  background:none; border:1px solid #555; color:#ccc; font-size:0.78rem;
+  padding:2px 10px; border-radius:4px; cursor:pointer; margin-left:4px;
+}
+.filter-open-btn:hover { border-color:#f90; color:#f90; }
 #ss-confirm-overlay {
   display:none; position:fixed; inset:0; z-index:3000;
   background:rgba(0,0,0,0.7); align-items:center; justify-content:center;
@@ -237,6 +270,8 @@
                onblur="setTimeout(()=>closeSuggestions(),200)">
         <div id="search-suggestions"></div>
       </div>
+      <button class="filter-open-btn" onclick="openFilter('sale')" id="filter-btn-sale" style="display:none;">🔽 フィルター</button>
+      <button class="filter-open-btn" onclick="openFilter('mission')" id="filter-btn-mission" style="display:none;">🔽 フィルター</button>
       <span id="lastmod-toggle" class="now-display" onclick="toggleLastmod()" style="cursor:pointer;">前回の更新時間を表示▶</span>
       <div id="lastmod-detail" class="now-display" style="display:none;"></div>
       <span id="locale-display" class="now-display" style="margin-right:4px;"></span><span id="now-display" class="now-display"></span>
@@ -362,6 +397,19 @@
     </main>
   </div><!-- /.container ここで閉じる -->
 
+  <!-- フィルターオーバーレイ -->
+  <div id="filter-overlay">
+    <div id="filter-panel">
+      <h4 id="filter-title">フィルター</h4>
+      <div id="filter-list"></div>
+      <div class="filter-actions">
+        <button class="filter-btn-all"  onclick="filterSelectAll()">すべて選択</button>
+        <button class="filter-btn-none" onclick="filterSelectNone()">すべて解除</button>
+        <button class="filter-btn-close" onclick="closeFilter()">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <!-- スクリーンショット確認オーバーレイ -->
   <div id="ss-confirm-overlay">
     <div id="ss-confirm-box">
@@ -408,6 +456,13 @@ let gatyaENames  = new Map();
 let searchQuery      = '';
 let selectedUtcOffset = 'local';
 let currentLocale    = 'ja'; // 現在表示中のロケール（ja/en/kr/tw）
+
+// =============================================
+// フィルター状態（タグラベル → 表示/非表示）
+// sale と mission それぞれ独立
+// =============================================
+let saleTagFilter    = new Set(); // 非表示にするラベルセット（空=全表示）
+let missionTagFilter = new Set();
 
 let _overlayEntries = [];
 let _currentJson    = null;
@@ -533,30 +588,30 @@ function isMissionId(id) {
 // color: テキスト色, bg: 背景色
 // =============================================
 const STAGE_TAG_MAP = [
-  { from:  1000, to:  1999, label: 'イベント',   color: '#fff',  bg: '#3a7bd5' },
-  { from:  2000, to:  2999, label: 'コラボ',     color: '#fff',  bg: '#9b59b6' },
+  { from:  1000, to:  1999, label: 'イベント',   color: '#fff',  bg: '#FF2223' },
+  { from:  2000, to:  2999, label: 'コラボ',     color: '#fff',  bg: '#7700DD' },
   { from:  4000, to:  4999, label: 'EX',         color: '#fff',  bg: '#e67e22' },
-  { from:  5000, to:  5999, label: 'ガマトト',   color: '#000',  bg: '#f1c40f' },
-  { from:  6000, to:  6999, label: '道場',       color: '#fff',  bg: '#c0392b' },
+  { from:  5000, to:  5999, label: 'ガマトト',   color: '#fff',  bg: '#888800' },
+  { from:  6000, to:  6999, label: '道場',       color: '#fff',  bg: '#03BF0C' },
   { from:  7000, to:  7999, label: '塔',         color: '#fff',  bg: '#27ae60' },
-  { from:  8000, to:  8999, label: 'ウィークリー',color: '#fff', bg: '#16a085' },
-  { from:  9000, to:  9999, label: 'スペシャル', color: '#fff',  bg: '#8e44ad' },
-  { from: 10000, to: 10999, label: '進化権',     color: '#000',  bg: '#f39c12' },
-  { from: 11000, to: 11999, label: '道場',       color: '#fff',  bg: '#c0392b' },
-  { from: 14000, to: 14999, label: 'ビタン',     color: '#fff',  bg: '#2980b9' },
-  { from: 15000, to: 15999, label: 'メイン',     color: '#fff',  bg: '#1abc9c' },
-  { from: 17000, to: 17999, label: 'マンスリー', color: '#fff',  bg: '#d35400' },
-  { from: 18000, to: 18999, label: '缶',         color: '#fff',  bg: '#7f8c8d' },
-  { from: 24000, to: 24999, label: '強襲',       color: '#fff',  bg: '#e74c3c' },
-  { from: 25000, to: 25999, label: '地図ステ',   color: '#fff',  bg: '#2c3e50' },
-  { from: 26000, to: 26999, label: '地図グル',   color: '#fff',  bg: '#34495e' },
-  { from: 27000, to: 27999, label: 'コラボ強襲', color: '#fff',  bg: '#922b21' },
+  { from:  8000, to:  8999, label: 'ウィークリー',color: '#fff', bg: '#795C66' },
+  { from:  9000, to:  9999, label: 'スペシャル', color: '#fff',  bg: '#2C7BA2' },
+  { from: 10000, to: 10999, label: '進化権',     color: '#fff',  bg: '#f39c12' },
+  { from: 11000, to: 11999, label: '極道場',     color: '#fff',  bg: '#03C5CF' },
+  { from: 14000, to: 14999, label: 'ビタン',     color: '#fff',  bg: '#B24B1E' },
+  { from: 15000, to: 15999, label: 'メイン',     color: '#fff',  bg: '#2C5C66' },
+  { from: 17000, to: 17999, label: 'マンスリー', color: '#fff',  bg: '#428562' },
+  { from: 18000, to: 18999, label: '缶',         color: '#fff',  bg: '#EE7B00' },
+  { from: 24000, to: 24999, label: '強襲',       color: '#fff',  bg: '#FF2223' },
+  { from: 25000, to: 25999, label: '地図ステ',   color: '#000',  bg: '#C7C22A' },
+  { from: 26000, to: 26999, label: '地図グル',   color: '#000',  bg: '#C7C22A' },
+  { from: 27000, to: 27999, label: 'コラボ強襲', color: '#fff',  bg: '#7700DD' },
   { from: 28000, to: 28999, label: '第三解放',   color: '#fff',  bg: '#1f618d' },
-  { from: 31000, to: 31999, label: '超獣',       color: '#000',  bg: '#abebc6' },
-  { from: 33000, to: 33999, label: '地底迷宮',   color: '#fff',  bg: '#512e5f' },
-  { from: 35000, to: 35999, label: 'ログボ',     color: '#000',  bg: '#fdebd0' },
-  { from: 36000, to: 36999, label: 'コロシアム', color: '#fff',  bg: '#b7950b' },
-  { from: 37000, to: 37999, label: '検定',       color: '#fff',  bg: '#148f77' },
+  { from: 31000, to: 31999, label: '超獣',       color: '#fff',  bg: '#512e5f' },
+  { from: 33000, to: 33999, label: '地底迷宮',   color: '#fff',  bg: '#6554C0' },
+  { from: 35000, to: 35999, label: 'ログボ',     color: '#fff',  bg: '#7f8c8d' },
+  { from: 36000, to: 36999, label: 'コロシアム', color: '#fff',  bg: '#C9372C' },
+  { from: 37000, to: 37999, label: '検定',       color: '#fff',  bg: '#03BF0C' },
 ];
 
 function getStageTagHtml(id) {
@@ -1558,9 +1613,16 @@ function renderGatya() {
 // セールタブ描画
 // =============================================
 function renderSale() {
-  const cont   = document.getElementById('sale');
-  const events = saleData.flatMap(entry => expandSaleEntry(entry, false));
-  const filtered = filterAndSort(events);
+  const cont    = document.getElementById('sale');
+  const events  = saleData.flatMap(entry => expandSaleEntry(entry, false));
+  const sorted  = filterAndSort(events);
+  // タグフィルター適用
+  const filtered = sorted.filter(e => {
+    if (saleTagFilter.size === 0) return true;
+    const entry = STAGE_TAG_MAP.find(t => e.detail.id >= t.from && e.detail.id <= t.to);
+    const label = entry ? entry.label : 'その他';
+    return !saleTagFilter.has(label);
+  });
   if (filtered.length === 0) {
     cont.innerHTML = '<div class="empty">🐈 表示するイベントがありません</div>'; return;
   }
@@ -1651,9 +1713,16 @@ function renderItem() {
 // 名前は sale_name.csv の同じマップを使用
 // =============================================
 function renderMission() {
-  const cont = document.getElementById('mission');
-  const events = saleData.flatMap(entry => expandSaleEntry(entry, true));
-  const filtered = filterAndSort(events);
+  const cont    = document.getElementById('mission');
+  const events  = saleData.flatMap(entry => expandSaleEntry(entry, true));
+  const sorted  = filterAndSort(events);
+  // タグフィルター適用
+  const filtered = sorted.filter(e => {
+    if (missionTagFilter.size === 0) return true;
+    const entry = STAGE_TAG_MAP.find(t => e.detail.id >= t.from && e.detail.id <= t.to);
+    const label = entry ? entry.label : 'その他';
+    return !missionTagFilter.has(label);
+  });
   if (filtered.length === 0) {
     cont.innerHTML = '<div class="empty">🐈 表示するミッションがありません</div>'; return;
   }
@@ -1790,6 +1859,10 @@ function showTab(tabName) {
   document.querySelectorAll('.content').forEach(c => {
     c.classList.toggle('active', c.id === tabName);
   });
+  // フィルターボタンの表示制御
+  document.getElementById('filter-btn-sale').style.display    = (tabName === 'sale')    ? '' : 'none';
+  document.getElementById('filter-btn-mission').style.display = (tabName === 'mission') ? '' : 'none';
+
   if (tabName === 'settings' || tabName === 'all') {
     if (tabName === 'all') renderAll();
     return;
@@ -2449,6 +2522,91 @@ async function downloadTsv() {
 // ja → 元の data/*.json を再ロード
 // 他 → TSVを取得してブラウザ内パーサーで変換
 // =============================================
+// =============================================
+// フィルター機能（sale / mission）
+// =============================================
+let _filterTarget = 'sale'; // 現在開いているフィルターのタブ
+
+// タグラベルをキーに件数を集計（sale or mission）
+function _countByLabel(tabName) {
+  const counts = new Map(); // label → count
+  const entries = tabName === 'mission'
+    ? saleData.flatMap(e => expandSaleEntry(e, true))
+    : saleData.flatMap(e => expandSaleEntry(e, false));
+  for (const ev of entries) {
+    const entry = STAGE_TAG_MAP.find(t => ev.detail.id >= t.from && ev.detail.id <= t.to);
+    const label = entry ? entry.label : 'その他';
+    counts.set(label, (counts.get(label) ?? 0) + 1);
+  }
+  return counts;
+}
+
+function openFilter(tabName) {
+  _filterTarget = tabName;
+  const filterSet = tabName === 'mission' ? missionTagFilter : saleTagFilter;
+  document.getElementById('filter-title').textContent =
+    tabName === 'mission' ? 'mission フィルター' : 'sale フィルター';
+
+  const counts = _countByLabel(tabName);
+
+  // ラベルを STAGE_TAG_MAP 順 + 「その他」でリスト化
+  const labels = [];
+  for (const t of STAGE_TAG_MAP) {
+    if (counts.has(t.label)) labels.push(t.label);
+  }
+  if (counts.has('その他')) labels.push('その他');
+
+  const listEl = document.getElementById('filter-list');
+  listEl.innerHTML = labels.map(label => {
+    const checked = !filterSet.has(label);
+    const cnt     = counts.get(label) ?? 0;
+    const tagEntry = STAGE_TAG_MAP.find(t => t.label === label);
+    const tagHtml  = tagEntry
+      ? `<span class="stage-tag" style="color:${tagEntry.color};background:${tagEntry.bg};">${label}</span>`
+      : `<span class="stage-tag" style="color:#ccc;background:#555;">${label}</span>`;
+    return `<label class="filter-row">
+      <span class="filter-row-left">
+        ${tagHtml}
+        <span class="filter-count">${cnt}件</span>
+      </span>
+      <input type="checkbox" ${checked ? 'checked' : ''}
+             onchange="onFilterChange('${label}', this.checked)">
+    </label>`;
+  }).join('');
+
+  document.getElementById('filter-overlay').classList.add('show');
+}
+
+function closeFilter() {
+  document.getElementById('filter-overlay').classList.remove('show');
+}
+
+function onFilterChange(label, checked) {
+  const filterSet = _filterTarget === 'mission' ? missionTagFilter : saleTagFilter;
+  if (checked) filterSet.delete(label);
+  else         filterSet.add(label);
+  if (_filterTarget === 'mission') renderMission();
+  else renderSale();
+}
+
+function filterSelectAll() {
+  if (_filterTarget === 'mission') missionTagFilter.clear();
+  else saleTagFilter.clear();
+  // チェックボックスを全てONに
+  document.querySelectorAll('#filter-list input[type="checkbox"]').forEach(cb => cb.checked = true);
+  if (_filterTarget === 'mission') renderMission();
+  else renderSale();
+}
+
+function filterSelectNone() {
+  const counts  = _countByLabel(_filterTarget);
+  const filterSet = _filterTarget === 'mission' ? missionTagFilter : saleTagFilter;
+  counts.forEach((_, label) => filterSet.add(label));
+  document.querySelectorAll('#filter-list input[type="checkbox"]').forEach(cb => cb.checked = false);
+  if (_filterTarget === 'mission') renderMission();
+  else renderSale();
+}
+
 async function switchLocale() {
   const locale = document.getElementById('overseas-locale').value;
   const status = document.getElementById('overseas-status');
@@ -2803,7 +2961,10 @@ document.getElementById('overlay-close').addEventListener('click', closeOverlay)
 document.getElementById('overlay').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeOverlay();
 });
-// スクショ確認オーバーレイ：背景クリックでキャンセル
+// フィルターオーバーレイ：背景クリックで閉じる
+document.getElementById('filter-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeFilter();
+});
 document.getElementById('ss-confirm-overlay').addEventListener('click', e => {
   if (e.target === e.currentTarget) cancelScreenshot();
 });
