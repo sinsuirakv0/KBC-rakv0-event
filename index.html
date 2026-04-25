@@ -77,6 +77,8 @@
   transition: background 0.2s;
 }
 .overlay-raw-btn:hover { background: rgba(255,153,0,0.3); border-color: #f90; }
+/* タブ横幅を狭く */
+.tab { padding: 4px 8px !important; font-size: 0.78rem !important; }
 /* =============================================
    カード文字サイズ設定（ここで一括変更可能）
    ============================================= */
@@ -1831,8 +1833,10 @@ function _histGatyaEntryToEvents(entry) {
 function _histEntryToEvents(type, entry) {
   if (type === 'gatya') return _histGatyaEntryToEvents(entry);
   if (type === 'item')  return expandItemEntry(entry);
-  // sale: ミッション除外（stageIdが0件の場合でも空配列で安全）
-  return expandSaleEntry(entry, false);
+  // sale: ミッションも含めて全stageIdを展開
+  const saleEvents    = expandSaleEntry(entry, false);
+  const missionEvents = expandSaleEntry(entry, true);
+  return [...saleEvents, ...missionEvents];
 }
 
 // 変更点のサマリーテキスト生成
