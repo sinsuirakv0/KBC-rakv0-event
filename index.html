@@ -1335,6 +1335,24 @@ function openOverlay(jsonStr) {
     // ガチャ詳細
     const flagLine = d.flagLabel ? `<br>${d.flagLabel}` : '';
     const guarLine = d.guaranteed ? '<br>＜確定あり＞' : '';
+
+    // 次の開催（gatyaはtimeBlocksがないため常時→headerのみで計算）
+    let gatyaOccSection = '';
+    if (d._entryIdx != null) {
+      const entryForOcc = _overlayEntries[d._entryIdx] ?? null;
+      const entryObjOcc = entryForOcc ? JSON.parse(entryForOcc.json) : null;
+      if (entryObjOcc?.header) {
+        const occHtml = formatOccurrences(entryObjOcc.header, entryObjOcc.timeBlocks ?? []);
+        if (occHtml) {
+          gatyaOccSection = `<hr class="overlay-divider">
+          <div class="overlay-section">
+            <div class="overlay-label">次の開催</div>
+            <div class="overlay-value occ-list">${occHtml}</div>
+          </div>`;
+        }
+      }
+    }
+
     bodyHtml = `
       <div class="overlay-section">
         <div class="overlay-label">期間</div>
@@ -1352,6 +1370,7 @@ function openOverlay(jsonStr) {
         <div class="overlay-label">レート</div>
         <div class="overlay-value">${d.rates || '（データなし）'}</div>
       </div>
+      ${gatyaOccSection}
       ${d.message ? `<hr class="overlay-divider">
       <div class="overlay-section">
         <div class="overlay-label">【タイトル】</div>
@@ -1969,11 +1988,36 @@ function _histSectionHtml(type, label, cls, entries, isChanged = false) {
                    white-space:pre-wrap;">${summary}</div>`;
     }
 
-    // events が空（type=2/3 など）ならフォールバック表示
+    // events が空の場合（gachaType=2/3等）は生データからカード的に表示
     if (events.length === 0) {
-      const h = entry.header;
-      bodyHtml += `<div class="hist-entry" style="opacity:.6;font-size:0.65rem;padding:4px 8px;">
-        ${h.startDate}～${h.endDate} (表示対象外のタイプ)
+      const h   = entry.header;
+      const now2 = getCalcNow();
+      const start = parseDateTime(h.startDate, h.startTime);
+      const end   = parseDateTime(h.endDate,   h.endTime);
+      const isCurrent = start <= now2 && end > now2;
+      const isPast    = end   <= now2;
+      const tagClass  = isPast ? 'tag-past' : isCurrent ? 'tag-current' : 'tag-future';
+      const tagLabel  = isPast ? '終了'     : isCurrent ? '開催中'     : '予定';
+      const period    = formatCardPeriod(h.startDate, h.startTime, h.endDate, h.endTime);
+      // 名前はタイプ別に生成
+      let fallbackName = '';
+      if (type === 'gatya') {
+        const gachas = entry.gachas ?? [];
+        fallbackName = gachas.map(g => {
+          const nm = gatyaRNames.get(g.id) ?? gatyaNNames.get(g.id) ?? gatyaENames.get(g.id) ?? `ID:${g.id}`;
+          return nm;
+        }).join(', ') || `gachaType:${h.gachaType}`;
+      } else if (type === 'sale') {
+        fallbackName = (entry.stageIds ?? []).map(id => saleNames.get(id) ?? `ID:${id}`).join(', ') || '(不明)';
+      } else if (type === 'item') {
+        const g = entry.gift;
+        fallbackName = (g?.title?.trim()) || itemNames.get(g?.giftType) || `giftType:${g?.giftType}`;
+      }
+      bodyHtml += `<div class="event-card ${isCurrent ? 'is-current' : ''}" style="cursor:default;">
+        <span class="card-tag ${tagClass}">${tagLabel}</span>
+        <div class="card-body">
+          <span class="card-period">${period}</span>　<span class="card-name">${fallbackName}</span>
+        </div>
       </div>`;
       continue;
     }
