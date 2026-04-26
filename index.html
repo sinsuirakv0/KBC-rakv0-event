@@ -660,6 +660,21 @@ function getStageProxyUrl(id) {
   return `https://kbc-rakv0.vercel.app/api/stage-proxy?type=${entry.type}&num=${num}`;
 }
 
+// JDB リンク生成
+function getJdbGatyaUrl(gachaType, id) {
+  // type 0=ノーマル→N, 1=レア→R, 4=イベント→E, その他は null
+  const rareCode = gachaType === 0 ? 'N' : gachaType === 4 ? 'E' : gachaType === 1 ? 'R' : null;
+  if (!rareCode) return null;
+  return `https://jarjarblink.github.io/JDB/gatya.html?cc=ja&rare=${rareCode}&no=${id}`;
+}
+
+function getJdbSaleUrl(id) {
+  const entry = STAGE_TYPE_MAP.find(e => id >= e.from && id <= e.to);
+  if (!entry) return null;
+  const num = String(id - entry.from).padStart(3, '0');
+  return `https://jarjarblink.github.io/JDB/map.html?cc=ja&type=${entry.type}&map=${num}`;
+}
+
 // =============================================
 // バージョンユーティリティ（表示用のみ、フィルタリングしない）
 // =============================================
@@ -1311,6 +1326,7 @@ function expandSaleEntry(entry, missionOnly) {
       ver:    `${entry.header.minVersion}~${entry.header.maxVersion}`,
       schedule: formatTimeBlocks(entry.timeBlocks, entry.header),
       stageProxyUrl: getStageProxyUrl(id),
+      jdbUrl: getJdbSaleUrl(id),
       steady: isSteadyEntry(entry.header),
       missionDesc: missionDesc, // mission名の全文（<br>→\n済み）
       _entryIdx: entryIdx,
@@ -1375,6 +1391,18 @@ function openOverlay(jsonStr) {
       <div class="overlay-section">
         <div class="overlay-label">【タイトル】</div>
         <div class="overlay-value">${d.message}</div>
+      </div>` : ''}
+      ${d.jdbUrl ? `<hr class="overlay-divider">
+      <div class="overlay-section">
+        <div class="overlay-label">JDB</div>
+        <div class="overlay-value"><a href="${d.jdbUrl}" target="_blank" rel="noopener" style="color:#f90;font-size:0.8rem;">${d.jdbUrl}</a></div>
+      </div>
+      <div class="overlay-iframe-wrap" style="margin-top:6px;">
+        <div class="overlay-iframe-loading" id="jdb-iframe-loading-gatya">読み込み中...</div>
+        <iframe src="${d.jdbUrl}" style="width:100%;height:320px;border:none;border-radius:6px;"
+          onload="this.previousElementSibling.style.display='none'"
+          onerror="this.parentElement.remove()">
+        </iframe>
       </div>` : ''}
       ${d.infoUrl ? `<hr class="overlay-divider">
       <div id="overlay-iframe-wrap" class="overlay-iframe-wrap">
@@ -1502,6 +1530,18 @@ function openOverlay(jsonStr) {
         <div class="overlay-label">ミッション内容</div>
         <div class="overlay-value" style="white-space:pre-wrap;line-height:1.7;">${d.missionDesc}</div>
       </div>` : ''}
+      ${d.jdbUrl ? `<hr class="overlay-divider">
+      <div class="overlay-section">
+        <div class="overlay-label">JDB</div>
+        <div class="overlay-value"><a href="${d.jdbUrl}" target="_blank" rel="noopener" style="color:#f90;font-size:0.8rem;">${d.jdbUrl}</a></div>
+      </div>
+      <div class="overlay-iframe-wrap" style="margin-top:6px;">
+        <div style="font-size:0.7rem;color:#aaa;padding:6px 0;">読み込み中...</div>
+        <iframe src="${d.jdbUrl}" style="width:100%;height:320px;border:none;border-radius:6px;"
+          onload="this.previousElementSibling.style.display='none'"
+          onerror="this.parentElement.remove()">
+        </iframe>
+      </div>` : ''}
       ${d.stageProxyUrl ? `<hr class="overlay-divider">
       <div id="overlay-iframe-wrap" class="overlay-iframe-wrap">
         <div class="overlay-iframe-loading" id="overlay-iframe-loading">読み込み中...</div>
@@ -1512,7 +1552,7 @@ function openOverlay(jsonStr) {
           onerror="handleIframeError(this)">
         </iframe>
       </div>` : ''}`;
-  }
+  } // end else (sale/mission)
 
   // エントリデータをセット
   const entryData  = _overlayEntries[d._entryIdx] ?? null;
@@ -1912,7 +1952,10 @@ function _histGatyaEntryToEvents(entry) {
       ver: `${h.minVersion}~${h.maxVersion}`, gachaCount: h.gachaCount,
       rates: formatRates(g.rates || {}),
       message: (g.message && g.message !== '0') ? g.message : '',
-      guaranteed: g.guaranteed, flagLabel, infoUrl, steady: isSteadyEntry(h), _entryIdx: entryIdx,
+      guaranteed: g.guaranteed, flagLabel, infoUrl,
+      gachaType: h.gachaType,
+      jdbUrl: getJdbGatyaUrl(h.gachaType, g.id),
+      steady: isSteadyEntry(h), _entryIdx: entryIdx,
     };
     events.push({ start, end, name: nameParts.join(' '), period, detail });
   }
@@ -2203,7 +2246,10 @@ function renderAllTab() {
               period: `${formatDetailDate(h.startDate, h.startTime)} ~ ${formatDetailDate(h.endDate, h.endTime)}`,
               ver: `${h.minVersion}~${h.maxVersion}`, gachaCount: h.gachaCount,
               rates: rateText, message: (g.message && g.message !== '0') ? g.message : '',
-              guaranteed: g.guaranteed, flagLabel, infoUrl, steady: isSteadyEntry(h), _entryIdx: entryIdx,
+              guaranteed: g.guaranteed, flagLabel, infoUrl,
+              gachaType: type,
+              jdbUrl: getJdbGatyaUrl(type, g.id),
+              steady: isSteadyEntry(h), _entryIdx: entryIdx,
             };
             buckets[sub].push({ start, end, name: nameParts.join(' '), period, detail });
           }
