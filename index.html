@@ -675,6 +675,13 @@ function getJdbSaleUrl(id) {
   return `https://jarjarblink.github.io/JDB/map.html?cc=ja&type=${entry.type}&map=${num}`;
 }
 
+function getDbSaleUrl(id) {
+  // STAGE_TYPE_MAP 範囲内のみ、s + id5桁
+  const inRange = STAGE_TYPE_MAP.some(e => id >= e.from && id <= e.to);
+  if (!inRange) return null;
+  return `https://battlecats-db.com/stage/s${String(id).padStart(5, '0')}.html`;
+}
+
 // =============================================
 // バージョンユーティリティ（表示用のみ、フィルタリングしない）
 // =============================================
@@ -1327,6 +1334,7 @@ function expandSaleEntry(entry, missionOnly) {
       schedule: formatTimeBlocks(entry.timeBlocks, entry.header),
       stageProxyUrl: getStageProxyUrl(id),
       jdbUrl: getJdbSaleUrl(id),
+      dbUrl:  getDbSaleUrl(id),
       steady: isSteadyEntry(entry.header),
       missionDesc: missionDesc, // mission名の全文（<br>→\n済み）
       _entryIdx: entryIdx,
@@ -1395,7 +1403,6 @@ function openOverlay(jsonStr) {
       ${d.jdbUrl ? `<hr class="overlay-divider">
       <div class="overlay-section">
         <div class="overlay-label"><a href="${d.jdbUrl}" target="_blank" rel="noopener" style="color:#f90;text-decoration:none;font-weight:bold;">JDB ↗</a></div>
-        <div class="overlay-value" style="font-size:0.72rem;opacity:.7;word-break:break-all;">${d.jdbUrl}</div>
       </div>` : ''}
       ${d.infoUrl ? `<hr class="overlay-divider">
       <div id="overlay-iframe-wrap" class="overlay-iframe-wrap">
@@ -1523,10 +1530,12 @@ function openOverlay(jsonStr) {
         <div class="overlay-label">ミッション内容</div>
         <div class="overlay-value" style="white-space:pre-wrap;line-height:1.7;">${d.missionDesc}</div>
       </div>` : ''}
-      ${d.jdbUrl ? `<hr class="overlay-divider">
+      ${(d.jdbUrl || d.dbUrl) ? `<hr class="overlay-divider">
       <div class="overlay-section">
-        <div class="overlay-label"><a href="${d.jdbUrl}" target="_blank" rel="noopener" style="color:#f90;text-decoration:none;font-weight:bold;">JDB ↗</a></div>
-        <div class="overlay-value" style="font-size:0.72rem;opacity:.7;word-break:break-all;">${d.jdbUrl}</div>
+        <div class="overlay-label" style="display:flex;gap:12px;align-items:center;">
+          ${d.jdbUrl ? `<a href="${d.jdbUrl}" target="_blank" rel="noopener" style="color:#f90;text-decoration:none;font-weight:bold;">JDB ↗</a>` : ''}
+          ${d.dbUrl  ? `<a href="${d.dbUrl}"  target="_blank" rel="noopener" style="color:#4a9eff;text-decoration:none;font-weight:bold;">DB ↗</a>` : ''}
+        </div>
       </div>` : ''}
       ${d.stageProxyUrl ? `<hr class="overlay-divider">
       <div id="overlay-iframe-wrap" class="overlay-iframe-wrap">
