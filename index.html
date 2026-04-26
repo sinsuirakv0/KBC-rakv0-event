@@ -583,7 +583,8 @@ let missionTagFilter = new Set();
 let _overlayEntries = [];
 let _currentJson    = null;
 let _currentRaw     = null;
-let _currentSuggestions = []; // サジェスト候補キャッシュ（インデックス参照用）
+let _currentSuggestions = [];
+let _overlayCurrentDetail = null; // 現在開いているオーバーレイのdetail（共有URL生成用）
 
 function storeOverlayEntry(entry) {
   const raw = entry.raw ?? null;
@@ -1553,6 +1554,7 @@ function openOverlay(jsonStr) {
   const entryData  = _overlayEntries[d._entryIdx] ?? null;
   _currentJson     = entryData?.json ?? null;
   _currentRaw      = entryData?.raw  ?? null;
+  _overlayCurrentDetail = d; // 共有URL生成用
 
   const hasData = _currentJson || _currentRaw;
   if (hasData) {
@@ -1562,6 +1564,7 @@ function openOverlay(jsonStr) {
         ${_currentJson ? '<button class="overlay-raw-btn" onclick="toggleRawView(\'json\')">📄 JSONを見る</button>' : ''}
         ${_currentRaw  ? '<button class="overlay-raw-btn" onclick="toggleRawView(\'raw\')">📋 生データを見る</button>' : ''}
         <button class="overlay-ss-btn" onclick="screenshotOverlay()">📷</button>
+        <button class="overlay-ss-btn" id="share-btn" onclick="copyShareUrl()" title="共有リンクをコピー">🔗</button>
       </div>
       <pre id="overlay-raw-content"
            style="display:none;white-space:pre-wrap;word-break:break-all;
@@ -1573,6 +1576,7 @@ function openOverlay(jsonStr) {
       <hr class="overlay-divider">
       <div class="overlay-raw-buttons">
         <button class="overlay-ss-btn" onclick="screenshotOverlay()">📷</button>
+        <button class="overlay-ss-btn" id="share-btn" onclick="copyShareUrl()" title="共有リンクをコピー">🔗</button>
       </div>`;
   }
 
@@ -3241,10 +3245,12 @@ async function loadSelectedRawFiles() {
     const results = await Promise.all(fetches);
     _overlayEntries = [];
 
-    for (const { type, text } of results) {
-      if (type === 'gatya') gatyaData = parseGatyaBrowser(text);
-      else if (type === 'sale') saleData  = parseSaleBrowser(text);
-      else if (type === 'item') itemData  = parseItemBrowser(text);
+    for (const { type, text, name } of results) {
+      let entries;
+      if (type === 'gatya') { entries = parseGatyaBrowser(text); gatyaData = entries; }
+      else if (type === 'sale') { entries = parseSaleBrowser(text); saleData = entries; }
+      else { entries = parseItemBrowser(text); itemData = entries; }
+      _registerTsvMeta(entries, name); // 共有URL用メタ登録
     }
 
     const loadedTypes = results.map(r => r.type).join(', ');
@@ -3472,7 +3478,165 @@ document.getElementById('ss-confirm-overlay').addEventListener('click', e => {
 // 初期化
 updateNow();
 setInterval(updateNow, 1000);
-loadData();
+// loadData完了後にURLパラメータを解析（タブ・オーバーレイを開く）
+loadData().then(() => parseUrlParams());
+
+// TSVメタキャッシュ: raw文字列 → { tsvSource, tsvRow }
+// loadSelectedRawFiles / handleTsvUpload でエントリをロードしたときに登録
+const _tsvMetaCache  = new Map();
+let   _rawListCache  = null; // raw/ のファイル一覧キャッシュ
+
+// rawファイルリストを取得（キャッシュあり）
+async function _getRawList() {
+  if (_rawListCache) return _rawListCache;
+  try {
+    const res   = await fetch(GITHUB_RAW_API);
+    if (!res.ok) return [];
+    const files = await res.json();
+    _rawListCache = files
+      .map(f => { const m = f.name.match(/^(gatya|sale|item)_(\d+)\.tsv$/); return m ? { name:f.name, type:m[1], unix:Number(m[2]) } : null; })
+      .filter(Boolean)
+      .sort((a,b) => b.unix - a.unix); // 新しい順
+    return _rawListCache;
+  } catch { return []; }
+}
+
+// raw文字列からTSVファイルと行番号を特定（最新TSVを優先検索）
+async function _findTsvRow(type, rawLine) {
+  if (!rawLine) return null;
+  // キャッシュ確認
+  const cached = _tsvMetaCache.get(rawLine);
+  if (cached) return cached;
+
+  const list = await _getRawList();
+  const candidates = list.filter(f => f.type === type).slice(0, 5); // 最新5件を試す
+
+  for (const file of candidates) {
+    try {
+      const text  = await fetch(`${GITHUB_RAW_DL}/${file.name}`).then(r => r.ok ? r.text() : null);
+      if (!text) continue;
+      // データ行だけ抽出（[start][end]空行スキップ）
+      const dataLines = text.trim().split('\n')
+        .map(l => l.trim())
+        .filter(l => l && l !== '[start]' && l !== '[end]');
+      const idx = dataLines.findIndex(l => l === rawLine.trim());
+      if (idx !== -1) {
+        const meta = { tsvSource: file.name, tsvRow: idx + 1 }; // 1-indexed
+        _tsvMetaCache.set(rawLine, meta);
+        return meta;
+      }
+    } catch { /* continue */ }
+  }
+  return null;
+}
+
+// 現在開いているオーバーレイの共有URLを生成してクリップボードにコピー
+async function copyShareUrl() {
+  const btn = document.getElementById('share-btn');
+  if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
+
+  try {
+    const d = _overlayCurrentDetail;
+    if (!d) return;
+
+    const base    = window.location.origin + window.location.pathname;
+    const tabName = activeTab;
+    const detailId = d.id;
+
+    // _entryIdx からエントリのrawを取得
+    const entryData = (d._entryIdx != null) ? _overlayEntries[d._entryIdx] : null;
+    const entryObj  = entryData ? JSON.parse(entryData.json) : null;
+    const rawLine   = entryObj?.raw ?? entryData?.raw ?? null;
+
+    // タイプ判定
+    const typeMap = { gatya:'gatya', sale:'sale', mission:'sale', item:'item', gatya_item:'item' };
+    const tsvType = typeMap[d.type] ?? null;
+
+    let meta = rawLine ? _tsvMetaCache.get(rawLine) : null;
+
+    if (!meta && tsvType && rawLine) {
+      meta = await _findTsvRow(tsvType, rawLine);
+    }
+
+    let url;
+    if (meta) {
+      url = `${base}?tab=${tabName}&tsv=${meta.tsvSource}&row=${meta.tsvRow}&id=${detailId}`;
+    } else {
+      url = `${base}?tab=${tabName}&id=${detailId}`;
+    }
+
+    await navigator.clipboard.writeText(url);
+    if (btn) { btn.textContent = '✓'; }
+    setTimeout(() => { if (btn) { btn.textContent = '🔗'; btn.disabled = false; } }, 2000);
+  } catch(e) {
+    console.error('Share URL error:', e);
+    if (btn) { btn.textContent = '✗'; btn.disabled = false; }
+  }
+}
+
+// TSVをロードしてメタキャッシュに登録するヘルパー
+function _registerTsvMeta(entries, tsvFilename) {
+  entries.forEach((entry, i) => {
+    if (entry.raw) _tsvMetaCache.set(entry.raw.trim(), { tsvSource: tsvFilename, tsvRow: i + 1 });
+  });
+}
+
+// URLパラメータを解析してタブ・オーバーレイを開く（loadData完了後に呼ぶ）
+async function parseUrlParams() {
+  const params   = new URLSearchParams(window.location.search);
+  const tabParam = params.get('tab');
+  const tsvParam = params.get('tsv');
+  const rowParam = parseInt(params.get('row')) || null;
+  const idParam  = parseInt(params.get('id'))  || null;
+
+  // タブ切り替え
+  const TAB_ALIASES = { setting:'settings', 全て:'all', 履歴:'history', 設定:'settings' };
+  const tab = TAB_ALIASES[tabParam] ?? tabParam ?? null;
+  if (tab) showTab(tab);
+
+  // TSV指定があればロードしてオーバーレイを開く
+  if (tsvParam && rowParam) {
+    await _openOverlayFromTsv(tsvParam, rowParam, idParam);
+  }
+}
+
+// 指定TSVの指定行エントリのオーバーレイを開く
+async function _openOverlayFromTsv(tsvFilename, rowNum, targetId) {
+  const m    = tsvFilename.match(/^(gatya|sale|item)/);
+  if (!m) return;
+  const type = m[1];
+
+  try {
+    const text = await fetch(`${GITHUB_RAW_DL}/${tsvFilename}`).then(r => { if(!r.ok) throw new Error(); return r.text(); });
+    let entries;
+    if (type === 'gatya')     entries = parseGatyaBrowser(text);
+    else if (type === 'sale') entries = parseSaleBrowser(text);
+    else                      entries = parseItemBrowser(text);
+
+    // メタ登録
+    _registerTsvMeta(entries, tsvFilename);
+
+    const entry = entries[rowNum - 1]; // 1-indexed
+    if (!entry) return;
+
+    // エントリをoverlayEntries に登録
+    _overlayEntries = []; // リセットせずに追記
+    storeOverlayEntry(entry);
+
+    // イベント展開
+    const events = _histEntryToEvents(type, entry);
+    if (events.length === 0) return;
+
+    // idが指定されていれば一致するイベントを選択、なければ最初
+    const targetEvent = targetId
+      ? (events.find(e => e.detail.id === targetId) ?? events[0])
+      : events[0];
+
+    openOverlay(JSON.stringify(targetEvent.detail));
+  } catch(e) {
+    console.error('Open overlay from TSV failed:', e);
+  }
+}
 </script>
 </body>
 </html>
