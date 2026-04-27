@@ -571,7 +571,8 @@ let gatyaENames  = new Map();
 
 let searchQuery      = '';
 let selectedUtcOffset = 'local';
-let currentLocale    = 'ja'; // 現在表示中のロケール（ja/en/kr/tw）
+let currentLocale    = 'ja';
+let scheduleOff      = false; // ?schedule=off のとき true: 予定を非表示
 
 // =============================================
 // フィルター状態（タグラベル → 表示/非表示）
@@ -1233,7 +1234,7 @@ function filterAndSort(events) {
       if (isPast)    return false;
       if (isSteady && isCurrent && !showAll) return false;
       if (isCurrent) return showCurrent;
-      if (isFuture)  return true;
+      if (isFuture)  return scheduleOff ? false : true; // scheduleOff時は予定を非表示
       return false;
     });
   }
@@ -2006,13 +2007,20 @@ function _diffEntries(type, oldEntries, newEntries) {
 }
 
 // 差分セクション: makeCard ベースでカード表示
+let _histSectionCounter = 0; // スクショ対象のidを一意にするカウンター
 function _histSectionHtml(type, label, cls, entries, isChanged = false) {
   const now   = getCalcNow();
   const count = entries.length;
+  const secId = `hist-sec-${++_histSectionCounter}`;
 
-  // ヘッダー
+  // ヘッダー（スクショボタン付き）
   const headerHtml = `<div class="hist-section-header ${cls}" onclick="toggleHistSection(this)">
-    <span>▶ ${label}</span><span style="font-size:0.7rem;">${count}件</span>
+    <span>▶ ${label}</span>
+    <span style="display:flex;align-items:center;gap:6px;">
+      <span style="font-size:0.7rem;">${count}件</span>
+      ${count > 0 ? `<button class="overlay-ss-btn" style="font-size:0.6rem;padding:1px 6px;"
+        onclick="event.stopPropagation();screenshotHistSection('${secId}')">📷</button>` : ''}
+    </span>
   </div>`;
 
   if (count === 0) {
@@ -2076,7 +2084,7 @@ function _histSectionHtml(type, label, cls, entries, isChanged = false) {
 
   return `<div class="hist-section">
     ${headerHtml}
-    <div class="hist-section-body" style="display:none;">${bodyHtml}</div>
+    <div class="hist-section-body" id="${secId}" style="display:none;">${bodyHtml}</div>
   </div>`;
 }
 
@@ -2087,6 +2095,51 @@ function toggleHistSection(header) {
   body.style.display = open ? 'none' : 'block';
   const span = header.querySelector('span:first-child');
   if (span) span.textContent = (open ? '▶ ' : '▼ ') + span.textContent.slice(2);
+}
+
+// all ボタン: 複数タイプの差分を一括表示
+async function openHistoryDiffAll(allFilesStr) {
+  document.getElementById('overlay-title').textContent = 'all 差分';
+  document.getElementById('overlay-body').innerHTML = '<div style="padding:16px;color:#aaa;font-size:0.82rem;">差分を計算中...</div>';
+  document.body.classList.add('overlay-open');
+  document.getElementById('overlay').classList.add('show');
+
+  const entries = allFilesStr.split(',').map(s => {
+    const [type, name, prev] = s.split(':');
+    return { type, name, prev };
+  });
+
+  let body = '';
+  for (const { type, name, prev } of entries) {
+    try {
+      const [newText, prevText] = await Promise.all([
+        fetch(`${GITHUB_RAW_DL}/${name}`).then(r => r.ok ? r.text() : null),
+        prev ? fetch(`${GITHUB_RAW_DL}/${prev}`).then(r => r.ok ? r.text() : null).catch(() => null) : Promise.resolve(null),
+      ]);
+      if (!newText) continue;
+
+      let newEntries, prevEntries;
+      if (type === 'gatya')      { newEntries = parseGatyaBrowser(newText); prevEntries = prevText ? parseGatyaBrowser(prevText) : []; }
+      else if (type === 'sale')  { newEntries = parseSaleBrowser(newText);  prevEntries = prevText ? parseSaleBrowser(prevText)  : []; }
+      else                       { newEntries = parseItemBrowser(newText);  prevEntries = prevText ? parseItemBrowser(prevText)  : []; }
+
+      const { added, removed, changed } = _diffEntries(type, prevEntries, newEntries);
+      body += `<div style="font-size:0.78rem;color:#f90;padding:6px 4px 2px;font-weight:bold;">${type}</div>`;
+      if (!prev) body += `<div class="hist-no-prev">⚠ 比較元なし</div>`;
+      body += _histSectionHtml(type, '追加', 'added',   added);
+      body += _histSectionHtml(type, '削除', 'removed', removed);
+      body += _histSectionHtml(type, '変更', 'changed', changed, true);
+    } catch(e) {
+      body += `<div style="color:#e74c3c;font-size:0.75rem;padding:4px;">${type}: エラー ${e.message}</div>`;
+    }
+  }
+
+  // スクショボタン
+  body += `<hr class="overlay-divider"><div class="overlay-raw-buttons">
+    <button class="overlay-ss-btn" onclick="screenshotOverlay()">📷</button>
+  </div>`;
+
+  document.getElementById('overlay-body').innerHTML = body || '<div class="hist-no-prev">差分なし</div>';
 }
 
 // 差分オーバーレイを開く
@@ -2187,9 +2240,18 @@ async function renderHistory() {
         return `<button class="history-type-btn" onclick="openHistoryDiff('${f.type}','${f.name}','${prev}')">${f.type}</button>`;
       }).join('');
 
+      // all ボタン: グループ内の全ファイルを一括表示
+      const allFiles = ev.files.map(f => {
+        const arr = byType[f.type];
+        const idx = arr.findIndex(x => x.name === f.name);
+        const prev = idx > 0 ? arr[idx-1].name : '';
+        return `${f.type}:${f.name}:${prev}`;
+      }).join(',');
+      const allBtn = `<button class="history-type-btn" style="color:#f90;border-color:#f90;" onclick="openHistoryDiffAll('${allFiles}')">all</button>`;
+
       html += `<div class="history-event-card">
         <div class="history-event-date">📅 ${dateStr}<span class="history-badge">更新検知</span></div>
-        <div class="history-event-types">${btns}</div>
+        <div class="history-event-types">${btns}${allBtn}</div>
       </div>`;
     }
 
@@ -3300,6 +3362,62 @@ async function handleTsvUpload(type, input) {
 let _ssTarget = null;
 let _ssRestoreFn = null; // オーバーレイ展開を元に戻すコールバック
 
+// 履歴差分セクションのスクショ（展開してから撮影）
+async function screenshotHistSection(secId) {
+  const bodyEl = document.getElementById(secId);
+  if (!bodyEl) return;
+
+  if (typeof html2canvas === 'undefined') { alert('html2canvas が読み込まれていません。'); return; }
+
+  // 非表示なら展開してからスクショ
+  const wasHidden = bodyEl.style.display === 'none';
+  if (wasHidden) bodyEl.style.display = 'block';
+
+  const origMaxH  = bodyEl.style.maxHeight;
+  const origOverY = bodyEl.style.overflowY;
+  bodyEl.style.maxHeight  = 'none';
+  bodyEl.style.overflowY  = 'visible';
+
+  const rootCs    = window.getComputedStyle(document.documentElement);
+  const bgColor   = window.getComputedStyle(document.body).backgroundColor || '#0a1931';
+
+  const CSS_VAR_NAMES = ['--bg-primary','--bg-secondary','--card','--border','--text-primary'];
+  const resolvedVars  = {};
+  CSS_VAR_NAMES.forEach(v => { const val = rootCs.getPropertyValue(v).trim(); if (val) resolvedVars[v] = val; });
+
+  try {
+    const canvas = await html2canvas(bodyEl, {
+      allowTaint: true, useCORS: true,
+      backgroundColor: bgColor,
+      scale: Math.min(window.devicePixelRatio || 1, 2),
+      logging: false,
+      onclone: (clonedDoc, clonedEl) => {
+        let css = ':root {';
+        Object.entries(resolvedVars).forEach(([k,v]) => { css += `${k}:${v};`; });
+        css += `} body { background:${bgColor} !important; } * { backdrop-filter:none !important; }`;
+        const s = clonedDoc.createElement('style');
+        s.textContent = css;
+        clonedDoc.head.appendChild(s);
+        clonedEl.style.background = bgColor;
+        clonedEl.style.display    = 'block';
+        clonedEl.style.maxHeight  = 'none';
+        clonedEl.style.overflowY  = 'visible';
+      },
+    });
+    const link = document.createElement('a');
+    link.download = `hist_section_${secId}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  } catch(e) {
+    console.error('Hist section screenshot error:', e);
+    alert('スクリーンショットに失敗しました: ' + e.message);
+  } finally {
+    bodyEl.style.maxHeight  = origMaxH;
+    bodyEl.style.overflowY  = origOverY;
+    if (wasHidden) bodyEl.style.display = 'none';
+  }
+}
+
 function confirmScreenshot() {
   _ssTarget = 'tab';
   document.getElementById('ss-confirm-msg').textContent =
@@ -3593,11 +3711,19 @@ async function parseUrlParams() {
   const tsvParam = params.get('tsv');
   const rowParam = parseInt(params.get('row')) || null;
   const idParam  = parseInt(params.get('id'))  || null;
+  const scheduleParam = params.get('schedule');
+
+  // ?schedule=off → 予定を非表示、開催中を自動チェック
+  if (scheduleParam === 'off') {
+    scheduleOff = true;
+    document.getElementById('showCurrent').checked = true;
+  }
 
   // タブ切り替え
   const TAB_ALIASES = { setting:'settings', 全て:'all', 履歴:'history', 設定:'settings' };
   const tab = TAB_ALIASES[tabParam] ?? tabParam ?? null;
   if (tab) showTab(tab);
+  else if (scheduleParam === 'off') renderAll(); // タブ指定なしでも再描画
 
   // TSV指定があればロードしてオーバーレイを開く
   if (tsvParam && rowParam) {
