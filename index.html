@@ -3239,7 +3239,7 @@ async function loadSelectedRawFiles() {
         const res  = await fetch(url);
         if (!res.ok) throw new Error(`${name}: HTTP ${res.status}`);
         const text = await res.text();
-        return { type, text };
+        return { type, text, name }; // name を含める
       });
 
     const results = await Promise.all(fetches);
@@ -3276,9 +3276,13 @@ async function handleTsvUpload(type, input) {
     const text = await file.text();
     _overlayEntries = [];
 
-    if (type === 'gatya')      gatyaData = parseGatyaBrowser(text);
-    else if (type === 'sale')  saleData  = parseSaleBrowser(text);
-    else if (type === 'item')  itemData  = parseItemBrowser(text);
+    let entries;
+    if (type === 'gatya')     { entries = parseGatyaBrowser(text); gatyaData = entries; }
+    else if (type === 'sale') { entries = parseSaleBrowser(text);  saleData  = entries; }
+    else                      { entries = parseItemBrowser(text);  itemData  = entries; }
+
+    // ファイル名をそのまま tsvSource として登録
+    _registerTsvMeta(entries, file.name);
 
     nameEl.textContent = `✓ ${file.name}`;
     renderAll();
@@ -3501,32 +3505,33 @@ async function _getRawList() {
   } catch { return []; }
 }
 
-// raw文字列からTSVファイルと行番号を特定（最新TSVを優先検索）
+// raw文字列からTSVファイルと行番号を特定
+// JSONデータはその時点で最新のTSVから変換されているため、最新1件のみ検索する
 async function _findTsvRow(type, rawLine) {
   if (!rawLine) return null;
-  // キャッシュ確認
-  const cached = _tsvMetaCache.get(rawLine);
+
+  // キャッシュに登録済み（設定からTSV読み込みした場合など）はそのまま返す
+  const cached = _tsvMetaCache.get(rawLine.trim());
   if (cached) return cached;
 
+  // JSONデータ → 最新TSV1本のみ検索（JSONは最新TSVの変換物）
   const list = await _getRawList();
-  const candidates = list.filter(f => f.type === type).slice(0, 5); // 最新5件を試す
+  const latest = list.find(f => f.type === type);
+  if (!latest) return null;
 
-  for (const file of candidates) {
-    try {
-      const text  = await fetch(`${GITHUB_RAW_DL}/${file.name}`).then(r => r.ok ? r.text() : null);
-      if (!text) continue;
-      // データ行だけ抽出（[start][end]空行スキップ）
-      const dataLines = text.trim().split('\n')
-        .map(l => l.trim())
-        .filter(l => l && l !== '[start]' && l !== '[end]');
-      const idx = dataLines.findIndex(l => l === rawLine.trim());
-      if (idx !== -1) {
-        const meta = { tsvSource: file.name, tsvRow: idx + 1 }; // 1-indexed
-        _tsvMetaCache.set(rawLine, meta);
-        return meta;
-      }
-    } catch { /* continue */ }
-  }
+  try {
+    const text = await fetch(`${GITHUB_RAW_DL}/${latest.name}`).then(r => r.ok ? r.text() : null);
+    if (!text) return null;
+    const dataLines = text.trim().split('\n')
+      .map(l => l.trim())
+      .filter(l => l && l !== '[start]' && l !== '[end]');
+    const idx = dataLines.findIndex(l => l === rawLine.trim());
+    if (idx !== -1) {
+      const meta = { tsvSource: latest.name, tsvRow: idx + 1 };
+      _tsvMetaCache.set(rawLine.trim(), meta);
+      return meta;
+    }
+  } catch { /* skip */ }
   return null;
 }
 
