@@ -157,6 +157,16 @@
 .stage-tag    { font-size: 0.48rem !important; padding: 1px 3px !important;
                 border-radius: 3px; vertical-align: middle; margin-left: 2px;
                 font-weight: bold; display: inline-block; }
+/* オーバーレイヘッダー行 */
+.overlay-header-row {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 8px; margin-bottom: 4px;
+}
+.overlay-header-row .overlay-title {
+  flex: 1; min-width: 0; word-break: break-word;
+}
+/* サブオーバーレイ（履歴内カード詳細）は z-index を上げる */
+#overlay-sub { z-index: 2100; }
 /* バージョンバッジ */
 .ver-badge  { font-size:0.6rem; padding:1px 4px; border-radius:3px; vertical-align:middle; margin-left:3px; }
 .ver-need   { background:rgba(255,80,80,0.2); color:#f99; }
@@ -540,16 +550,30 @@
   <!-- オーバーレイは container の外 → position:fixed がビューポート基準になる -->
   <div id="overlay" class="overlay-backdrop">
     <div class="overlay-panel">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
-        <div style="display:flex;gap:4px;">
+      <div class="overlay-header-row">
+        <div class="overlay-title" id="overlay-title"></div>
+        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
           <button class="overlay-ss-btn" onclick="screenshotOverlay()" title="スクリーンショット">📷</button>
           <button class="overlay-ss-btn" id="share-btn" onclick="copyShareUrl()" title="共有リンクをコピー">🔗</button>
+          <span class="overlay-close" id="overlay-close">&times;</span>
         </div>
-        <span class="overlay-close" id="overlay-close">&times;</span>
       </div>
-      <div class="overlay-title" id="overlay-title"></div>
       <hr class="overlay-divider">
       <div id="overlay-body"></div>
+    </div>
+  </div>
+
+  <!-- 詳細サブオーバーレイ（履歴差分内のカードクリック用） -->
+  <div id="overlay-sub" class="overlay-backdrop">
+    <div class="overlay-panel">
+      <div class="overlay-header-row">
+        <div class="overlay-title" id="overlay-sub-title"></div>
+        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+          <span class="overlay-close" id="overlay-sub-close">&times;</span>
+        </div>
+      </div>
+      <hr class="overlay-divider">
+      <div id="overlay-sub-body"></div>
     </div>
   </div>
 
@@ -1219,8 +1243,9 @@ function filterAndSort(events) {
   let filtered;
 
   if (searchQuery) {
-    // 検索中: 過去・常設・バージョン外問わず全て表示
+    // 検索中: 過去・常設・バージョン外問わず全て表示（ただしscheduleOff時は予定除外）
     filtered = events.filter(e => {
+      if (scheduleOff && e.start > getCalcNow()) return false;
       const id   = e.detail?.id ?? '';
       const name = normalizeForSearch(stripHtml(e.name ?? ''));
       return matchesSearch(id, name, searchQuery);
@@ -1231,16 +1256,19 @@ function filterAndSort(events) {
     const showAll     = document.getElementById('showAllSale').checked;
 
     filtered = events.filter(e => {
-      const isPast    = e.end   <= now;
-      const isCurrent = e.start <= now && e.end > now;
-      const isFuture  = e.start >  now;
+      const isPast    = e.end   <= getCalcNow();
+      const isCurrent = e.start <= getCalcNow() && e.end > getCalcNow();
+      const isFuture  = e.start >  getCalcNow();
       const isSteady  = e.detail?.steady ?? false;
+
+      // scheduleOff時は予定を絶対に非表示
+      if (scheduleOff && isFuture) return false;
 
       if (showPast)  return true;
       if (isPast)    return false;
       if (isSteady && isCurrent && !showAll) return false;
       if (isCurrent) return showCurrent;
-      if (isFuture)  return scheduleOff ? false : true; // scheduleOff時は予定を非表示
+      if (isFuture)  return true;
       return false;
     });
   }
@@ -1352,15 +1380,46 @@ function expandSaleEntry(entry, missionOnly) {
   return result;
 }
 
-// =============================================
-// オーバーレイ 開く
-// 順序: 期間 → ver → 開催期間 → 次の開催 → 公式リンク
-// =============================================
+// 履歴差分オーバーレイが開いているとき true → makeCard のクリックでサブ表示
+let _histOverlayMode = false;
+
+function openSubOverlay(jsonStr) {
+  const d = JSON.parse(jsonStr);
+  document.getElementById('overlay-sub-title').textContent = `${stripHtml(d.name ?? '')}　ID: ${d.id ?? ''}`;
+  // サブは簡易詳細のみ（openOverlayの本体ロジックを流用）
+  const savedMode    = _histOverlayMode;
+  _histOverlayMode   = false;
+  const bodyHtml     = _buildOverlayBody(d);
+  _histOverlayMode   = savedMode;
+  document.getElementById('overlay-sub-body').innerHTML = bodyHtml;
+  document.getElementById('overlay-sub').classList.add('show');
+}
+
+function closeSubOverlay() {
+  document.getElementById('overlay-sub').classList.remove('show');
+}
 function openOverlay(jsonStr) {
+  // 履歴差分モード中はサブオーバーレイに表示
+  if (_histOverlayMode) { openSubOverlay(jsonStr); return; }
+
   const d  = JSON.parse(jsonStr);
   const el = document.getElementById('overlay');
   document.getElementById('overlay-title').textContent = `${stripHtml(d.name)}　ID: ${d.id}`;
 
+  // エントリデータをセット（JSONビュー・共有URL用）
+  const entryData  = _overlayEntries[d._entryIdx] ?? null;
+  _currentJson     = entryData?.json ?? null;
+  _currentRaw      = entryData?.raw  ?? null;
+  _overlayCurrentDetail = d;
+
+  const bodyHtml = _buildOverlayBody(d);
+  document.getElementById('overlay-body').innerHTML = bodyHtml;
+  document.body.classList.add('overlay-open');
+  el.classList.add('show');
+}
+
+// ボディHTML生成（openOverlayとopenSubOverlayで共用）
+function _buildOverlayBody(d) {
   let bodyHtml = '';
 
   if (d.type === 'gatya') {
@@ -1561,7 +1620,6 @@ function openOverlay(jsonStr) {
   const entryData  = _overlayEntries[d._entryIdx] ?? null;
   _currentJson     = entryData?.json ?? null;
   _currentRaw      = entryData?.raw  ?? null;
-  _overlayCurrentDetail = d; // 共有URL生成用
 
   const hasData = _currentJson || _currentRaw;
   if (hasData) {
@@ -1578,14 +1636,10 @@ function openOverlay(jsonStr) {
                   margin-top:8px;color:#ccc;"></pre>`;
   }
 
-  document.getElementById('overlay-body').innerHTML = bodyHtml;
-  document.body.classList.add('overlay-open');
-  el.classList.add('show');
+  return bodyHtml;
 }
-
 // =============================================
 // iframe ロードハンドラ
-// =============================================
 function handleIframeLoad(iframe) {
   try {
     const doc = iframe.contentDocument;
@@ -1607,6 +1661,7 @@ function handleIframeError(iframe) {
 function closeOverlay() {
   document.body.classList.remove('overlay-open');
   document.getElementById('overlay').classList.remove('show');
+  _histOverlayMode = false;
 }
 
 // =============================================
@@ -2096,6 +2151,7 @@ function toggleHistSection(header) {
 
 // all ボタン: 複数タイプの差分を一括表示
 async function openHistoryDiffAll(allFilesStr) {
+  _histOverlayMode = true;
   document.getElementById('overlay-title').textContent = 'all 差分';
   document.getElementById('overlay-body').innerHTML = '<div style="padding:16px;color:#aaa;font-size:0.82rem;">差分を計算中...</div>';
   document.body.classList.add('overlay-open');
@@ -2136,6 +2192,7 @@ async function openHistoryDiffAll(allFilesStr) {
 
 // 差分オーバーレイを開く
 async function openHistoryDiff(type, filename, prevFilename) {
+  _histOverlayMode = true;
   const titleDate = filename.match(/_(\d+)\.tsv$/)?.[1];
   const titleDateStr = titleDate ? new Date(Number(titleDate)*1000).toLocaleString('ja-JP') : filename;
   document.getElementById('overlay-title').textContent = `${type}  ${titleDateStr}`;
@@ -3585,6 +3642,10 @@ document.getElementById('showAllSale').addEventListener('change', renderAll);
 document.getElementById('overlay-close').addEventListener('click', closeOverlay);
 document.getElementById('overlay').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeOverlay();
+});
+document.getElementById('overlay-sub-close').addEventListener('click', closeSubOverlay);
+document.getElementById('overlay-sub').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeSubOverlay();
 });
 // フィルターオーバーレイ：背景クリックで閉じる
 document.getElementById('filter-overlay').addEventListener('click', e => {
