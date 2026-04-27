@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/04/27 14:44:15",
+  "updatedAt": "26/04/27 16:12:22",
   "data": [
     {
       "header": {
@@ -1319,27 +1319,6 @@
     },
     {
       "header": {
-        "startDate": "20260422",
-        "startTime": "0",
-        "endDate": "20260423",
-        "endTime": "0",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2489,
-        "giftType": 204,
-        "giftAmount": 1,
-        "title": "超水曜にゃんこDAY☆",
-        "message": "22日の水曜日、奇跡の日限定の特別ボーナス！<br>プラチナチケットを1枚プレゼント！",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260422\t0\t20260423\t0\t150300\t999999\t0\t0\t2489\t204\t1\t超水曜にゃんこDAY☆\t22日の水曜日、奇跡の日限定の特別ボーナス！<br>プラチナチケットを1枚プレゼント！\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260423",
         "startTime": "1100",
         "endDate": "20260507",
@@ -1421,6 +1400,27 @@
         "repeatFlag": 0
       },
       "raw": "20260427\t0\t20260522\t1100\t150300\t999999\t0\t0\t2492\t721\t5000\tイベント不具合のお詫び\t「魅惑の堕天楼」一時停止のお詫びで経費5000円が送られました。\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260429",
+        "startTime": "000",
+        "endDate": "20260430",
+        "endTime": "000",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2493,
+        "giftType": 203,
+        "giftAmount": 1,
+        "title": "昭和の日記念☆",
+        "message": "祝日感謝！昭和の日を記念して<br>レアチケット1枚をプレゼント！",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260429\t000\t20260430\t000\t150300\t999999\t0\t0\t2493\t203\t1\t昭和の日記念☆\t祝日感謝！昭和の日を記念して<br>レアチケット1枚をプレゼント！\t7\t0\t0\t0\t0\t0\t0"
     }
   ]
 }
