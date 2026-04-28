@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/04/27 16:12:19",
+  "updatedAt": "26/04/28 15:36:17",
   "data": [
     {
       "header": {
@@ -13592,38 +13592,6 @@
     },
     {
       "header": {
-        "startDate": "20260422",
-        "startTime": "000",
-        "endDate": "20260427",
-        "endTime": "000",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "stageIds": [
-        7010
-      ],
-      "raw": "20260422\t000\t20260427\t000\t150300\t999999\t0\t0\t1\t7010\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260422",
-        "startTime": "000",
-        "endDate": "20260427",
-        "endTime": "000",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "stageIds": [
-        9554,
-        9555,
-        9556
-      ],
-      "raw": "20260422\t000\t20260427\t000\t150300\t999999\t0\t0\t3\t9554\t9555\t9556\t0"
-    },
-    {
-      "header": {
         "startDate": "20260424",
         "startTime": "1100",
         "endDate": "20260522",
@@ -13842,6 +13810,696 @@
         1173
       ],
       "raw": "20260501\t000\t20260515\t000\t150300\t999999\t0\t0\t1\t1173\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260505",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        18007
+      ],
+      "raw": "20260505\t1100\t20260522\t1100\t150300\t999999\t0\t0\t1\t18007\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        1431
+      ],
+      "raw": "20260501\t1100\t20260522\t1100\t150300\t999999\t0\t0\t1\t1431\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        9651,
+        9652,
+        9696,
+        9697,
+        9698,
+        9699,
+        9700,
+        9701,
+        9702,
+        9703,
+        9704,
+        9705
+      ],
+      "raw": "20260501\t1100\t20260522\t1100\t150300\t999999\t0\t0\t12\t9651\t9652\t9696\t9697\t9698\t9699\t9700\t9701\t9702\t9703\t9704\t9705\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260508",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        1415
+      ],
+      "raw": "20260508\t1100\t20260522\t1100\t150300\t999999\t0\t0\t1\t1415\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260508",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        1432
+      ],
+      "raw": "20260508\t1100\t20260522\t1100\t150300\t999999\t0\t0\t1\t1432\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260508",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        1428
+      ],
+      "raw": "20260508\t1100\t20260522\t1100\t150300\t999999\t0\t0\t1\t1428\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260508",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        9653,
+        9654,
+        9655
+      ],
+      "raw": "20260508\t1100\t20260522\t1100\t150300\t999999\t0\t0\t3\t9653\t9654\t9655\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260508",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        1119,
+        1201,
+        1128,
+        1205,
+        1215,
+        1252,
+        1305,
+        1306
+      ],
+      "raw": "20260501\t1100\t20260508\t1100\t150300\t999999\t0\t0\t8\t1119\t1201\t1128\t1205\t1215\t1252\t1305\t1306\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260508",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        9163,
+        9164,
+        9211,
+        9322,
+        9232,
+        9234,
+        9323,
+        9324,
+        9238
+      ],
+      "raw": "20260501\t1100\t20260508\t1100\t150300\t999999\t0\t0\t9\t9163\t9164\t9211\t9322\t9232\t9234\t9323\t9324\t9238\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260508",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        1220,
+        1383,
+        1219,
+        1381,
+        1379
+      ],
+      "raw": "20260501\t1100\t20260508\t1100\t150300\t999999\t0\t0\t5\t1220\t1383\t1219\t1381\t1379\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260508",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        9503,
+        9504,
+        9507
+      ],
+      "raw": "20260501\t1100\t20260508\t1100\t150300\t999999\t0\t0\t3\t9503\t9504\t9507\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260515",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "timeRanges": [
+            [
+              "1900",
+              "2200"
+            ]
+          ]
+        },
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Tue",
+            "Thu"
+          ],
+          "timeRanges": [
+            [
+              "1100",
+              "1400"
+            ]
+          ]
+        }
+      ],
+      "stageIds": [
+        1028
+      ],
+      "raw": "20260501\t1100\t20260515\t1100\t150300\t999999\t0\t2\t0\t0\t42\t1\t1900\t2200\t0\t0\t20\t1\t1100\t1400\t1\t1028\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260515",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Sun",
+            "Mon",
+            "Wed",
+            "Fri"
+          ],
+          "timeRanges": [
+            [
+              "1100",
+              "1400"
+            ]
+          ]
+        },
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Tue",
+            "Thu",
+            "Sat"
+          ],
+          "timeRanges": [
+            [
+              "1900",
+              "2200"
+            ]
+          ]
+        }
+      ],
+      "stageIds": [
+        1059
+      ],
+      "raw": "20260501\t1100\t20260515\t1100\t150300\t999999\t0\t2\t0\t0\t43\t1\t1100\t1400\t0\t0\t84\t1\t1900\t2200\t1\t1059\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260515",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Mon",
+            "Thu"
+          ],
+          "timeRanges": [
+            [
+              "1600",
+              "1700"
+            ]
+          ]
+        },
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Sun",
+            "Tue",
+            "Fri"
+          ],
+          "timeRanges": [
+            [
+              "2200",
+              "2300"
+            ]
+          ]
+        },
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Wed",
+            "Sat"
+          ],
+          "timeRanges": [
+            [
+              "800",
+              "900"
+            ]
+          ]
+        }
+      ],
+      "stageIds": [
+        1124
+      ],
+      "raw": "20260501\t1100\t20260515\t1100\t150300\t999999\t0\t3\t0\t0\t18\t1\t1600\t1700\t0\t0\t37\t1\t2200\t2300\t0\t0\t72\t1\t800\t900\t1\t1124\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260515",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Mon"
+          ],
+          "timeRanges": [
+            [
+              "2200",
+              "2400"
+            ]
+          ]
+        },
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Wed"
+          ],
+          "timeRanges": [
+            [
+              "1600",
+              "1800"
+            ]
+          ]
+        },
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Fri"
+          ],
+          "timeRanges": [
+            [
+              "800",
+              "1000"
+            ]
+          ]
+        }
+      ],
+      "stageIds": [
+        1155
+      ],
+      "raw": "20260501\t1100\t20260515\t1100\t150300\t999999\t0\t3\t0\t0\t2\t1\t2200\t2400\t0\t0\t8\t1\t1600\t1800\t0\t0\t32\t1\t800\t1000\t1\t1155\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260515",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Tue"
+          ],
+          "timeRanges": [
+            [
+              "800",
+              "1000"
+            ]
+          ]
+        },
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Thu"
+          ],
+          "timeRanges": [
+            [
+              "2200",
+              "2400"
+            ]
+          ]
+        },
+        {
+          "dateRanges": [],
+          "monthDays": [],
+          "weekdays": [
+            "Fri"
+          ],
+          "timeRanges": [
+            [
+              "1600",
+              "1800"
+            ]
+          ]
+        }
+      ],
+      "stageIds": [
+        1319
+      ],
+      "raw": "20260501\t1100\t20260515\t1100\t150300\t999999\t0\t3\t0\t0\t4\t1\t800\t1000\t0\t0\t16\t1\t2200\t2400\t0\t0\t32\t1\t1600\t1800\t1\t1319\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260508",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        24049
+      ],
+      "raw": "20260508\t1100\t20260522\t1100\t150300\t999999\t0\t0\t1\t24049\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260508",
+        "startTime": "1100",
+        "endDate": "20260511",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        1033
+      ],
+      "raw": "20260508\t1100\t20260511\t1100\t150300\t999999\t0\t0\t1\t1033\t1"
+    },
+    {
+      "header": {
+        "startDate": "20260511",
+        "startTime": "1100",
+        "endDate": "20260514",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        1034
+      ],
+      "raw": "20260511\t1100\t20260514\t1100\t150300\t999999\t0\t0\t1\t1034\t1"
+    },
+    {
+      "header": {
+        "startDate": "20260514",
+        "startTime": "1100",
+        "endDate": "20260516",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        1035
+      ],
+      "raw": "20260514\t1100\t20260516\t1100\t150300\t999999\t0\t0\t1\t1035\t1"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260515",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        5011
+      ],
+      "raw": "20260501\t1100\t20260515\t1100\t150300\t999999\t0\t0\t1\t5011\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        11039
+      ],
+      "raw": "20260501\t1100\t20260522\t1100\t150300\t999999\t0\t0\t1\t11039\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        1140
+      ],
+      "raw": "20260501\t1100\t20260522\t1100\t150300\t999999\t0\t0\t1\t1140\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        9072,
+        9073,
+        9074
+      ],
+      "raw": "20260501\t1100\t20260522\t1100\t150300\t999999\t0\t0\t3\t9072\t9073\t9074\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260516",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        36022
+      ],
+      "raw": "20260501\t1100\t20260516\t1100\t150300\t999999\t0\t0\t1\t36022\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260501",
+        "startTime": "1100",
+        "endDate": "20260516",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        9493,
+        9494,
+        9495,
+        9496
+      ],
+      "raw": "20260501\t1100\t20260516\t1100\t150300\t999999\t0\t0\t4\t9493\t9494\t9495\t9496\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260508",
+        "startTime": "1100",
+        "endDate": "20260515",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        24038
+      ],
+      "raw": "20260508\t1100\t20260515\t1100\t150300\t999999\t0\t0\t1\t24038\t1"
+    },
+    {
+      "header": {
+        "startDate": "20260515",
+        "startTime": "000",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        1173
+      ],
+      "raw": "20260515\t000\t20260522\t1100\t150300\t999999\t0\t0\t1\t1173\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260516",
+        "startTime": "1100",
+        "endDate": "20260518",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        1070
+      ],
+      "raw": "20260516\t1100\t20260518\t1100\t150300\t999999\t0\t0\t1\t1070\t1"
+    },
+    {
+      "header": {
+        "startDate": "20260518",
+        "startTime": "1100",
+        "endDate": "20260520",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        1079
+      ],
+      "raw": "20260518\t1100\t20260520\t1100\t150300\t999999\t0\t0\t1\t1079\t1"
+    },
+    {
+      "header": {
+        "startDate": "20260520",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "stageIds": [
+        1146
+      ],
+      "raw": "20260520\t1100\t20260522\t1100\t150300\t999999\t0\t0\t1\t1146\t1"
     }
   ]
 }
