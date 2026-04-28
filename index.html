@@ -1233,19 +1233,22 @@ function matchesSearch(id, name, query) {
 
 // =============================================
 // フィルタリング & ソート
-// 検索中は日付/状態フィルタを全無視
 // =============================================
 function filterAndSort(events) {
-  const now      = getCalcNow();
+  const now        = getCalcNow();
   const sortByDate = document.getElementById('sortByDate').checked;
   const sortById   = document.getElementById('sortById').checked;
+
+  // scheduleOff: 予定（未開始）イベントを条件問わず完全除去
+  const baseEvents = scheduleOff
+    ? events.filter(e => e.start <= now)
+    : events;
 
   let filtered;
 
   if (searchQuery) {
-    // 検索中: 過去・常設・バージョン外問わず全て表示（ただしscheduleOff時は予定除外）
-    filtered = events.filter(e => {
-      if (scheduleOff && e.start > getCalcNow()) return false;
+    // 検索中: 過去・常設・バージョン外問わず全て表示
+    filtered = baseEvents.filter(e => {
       const id   = e.detail?.id ?? '';
       const name = normalizeForSearch(stripHtml(e.name ?? ''));
       return matchesSearch(id, name, searchQuery);
@@ -1255,14 +1258,11 @@ function filterAndSort(events) {
     const showPast    = document.getElementById('showPast').checked;
     const showAll     = document.getElementById('showAllSale').checked;
 
-    filtered = events.filter(e => {
-      const isPast    = e.end   <= getCalcNow();
-      const isCurrent = e.start <= getCalcNow() && e.end > getCalcNow();
-      const isFuture  = e.start >  getCalcNow();
+    filtered = baseEvents.filter(e => {
+      const isPast    = e.end   <= now;
+      const isCurrent = e.start <= now && e.end > now;
+      const isFuture  = e.start >  now;
       const isSteady  = e.detail?.steady ?? false;
-
-      // scheduleOff時は予定を絶対に非表示
-      if (scheduleOff && isFuture) return false;
 
       if (showPast)  return true;
       if (isPast)    return false;
@@ -3711,47 +3711,53 @@ async function _findTsvRow(type, rawLine) {
   return null;
 }
 
-// 現在開いているオーバーレイの共有URLを生成してクリップボードにコピー
+// 現在開いているオーバーレイの共有URLを即時生成してクリップボードにコピー
+// フェッチ不要：_tsvMetaCache にあればtsv+row、なければtab+idのみ
 async function copyShareUrl() {
   const btn = document.getElementById('share-btn');
   if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
 
   try {
     const d = _overlayCurrentDetail;
-    if (!d) return;
+    if (!d) { if (btn) { btn.textContent = '✗'; btn.disabled = false; } return; }
 
     const base    = window.location.origin + window.location.pathname;
     const tabName = activeTab;
     const detailId = d.id;
 
-    // _entryIdx からエントリのrawを取得
+    // _entryIdx から raw を取得
     const entryData = (d._entryIdx != null) ? _overlayEntries[d._entryIdx] : null;
     const entryObj  = entryData ? JSON.parse(entryData.json) : null;
-    const rawLine   = entryObj?.raw ?? entryData?.raw ?? null;
+    const rawLine   = entryObj?.raw?.trim() ?? null;
 
     // タイプ判定
     const typeMap = { gatya:'gatya', sale:'sale', mission:'sale', item:'item', gatya_item:'item' };
     const tsvType = typeMap[d.type] ?? null;
 
-    let meta = rawLine ? _tsvMetaCache.get(rawLine) : null;
-
-    if (!meta && tsvType && rawLine) {
-      meta = await _findTsvRow(tsvType, rawLine);
-    }
+    // キャッシュにあれば即時使用（フェッチなし）
+    const meta = (rawLine && tsvType) ? _tsvMetaCache.get(rawLine) ?? null : null;
 
     let url;
     if (meta) {
-      url = `${base}?tab=${tabName}&tsv=${meta.tsvSource}&row=${meta.tsvRow}&id=${detailId}`;
+      url = `${base}?tab=${tabName}&tsv=${encodeURIComponent(meta.tsvSource)}&row=${meta.tsvRow}&id=${detailId}`;
     } else {
-      url = `${base}?tab=${tabName}&id=${detailId}`;
+      // tsvが不明でもtab+idだけでリンク生成（id単独でデータを探す）
+      url = `${base}?tab=${tabName}${tsvType ? `&type=${tsvType}` : ''}&id=${detailId}`;
     }
 
     await navigator.clipboard.writeText(url);
     if (btn) { btn.textContent = '✓'; }
-    setTimeout(() => { if (btn) { btn.textContent = '🔗'; btn.disabled = false; } }, 2000);
   } catch(e) {
     console.error('Share URL error:', e);
-    if (btn) { btn.textContent = '✗'; btn.disabled = false; }
+    // clipboard失敗時はpromptで表示
+    const d = _overlayCurrentDetail;
+    if (d) {
+      const base = window.location.origin + window.location.pathname;
+      prompt('リンクをコピーしてください:', `${base}?tab=${activeTab}&id=${d.id}`);
+    }
+    if (btn) { btn.textContent = '🔗'; }
+  } finally {
+    setTimeout(() => { if (btn && btn.textContent !== '🔗') { btn.textContent = '🔗'; btn.disabled = false; } }, 2000);
   }
 }
 
@@ -3786,7 +3792,26 @@ async function parseUrlParams() {
   // TSV指定があればロードしてオーバーレイを開く
   if (tsvParam && rowParam) {
     await _openOverlayFromTsv(tsvParam, rowParam, idParam);
+  } else if (idParam) {
+    // tsv指定なし: 現在のデータからidで検索してオーバーレイを開く
+    const typeParam = params.get('type') ?? tab ?? null;
+    _openOverlayById(typeParam, idParam);
   }
+}
+
+// id だけでオーバーレイを開く（現在のロードデータを検索）
+function _openOverlayById(type, id) {
+  const numId = Number(id);
+  let events = [];
+  if (type === 'gatya') {
+    events = gatyaData.flatMap(e => _histGatyaEntryToEvents(e));
+  } else if (type === 'sale') {
+    events = saleData.flatMap(e => [...expandSaleEntry(e, false), ...expandSaleEntry(e, true)]);
+  } else if (type === 'item') {
+    events = itemData.flatMap(e => expandItemEntry(e));
+  }
+  const target = events.find(e => e.detail?.id === numId);
+  if (target) openOverlay(JSON.stringify(target.detail));
 }
 
 // 指定TSVの指定行エントリのオーバーレイを開く
