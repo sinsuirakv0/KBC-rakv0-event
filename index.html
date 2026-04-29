@@ -1382,11 +1382,13 @@ function expandSaleEntry(entry, missionOnly) {
 
 // 履歴差分オーバーレイが開いているとき true → makeCard のクリックでサブ表示
 let _histOverlayMode = false;
+// 履歴共有用: 現在開いている履歴オーバーレイのコンテキスト
+let _histOverlayContext = null; // { unix, type } | null
 
 function openSubOverlay(jsonStr) {
   const d = JSON.parse(jsonStr);
   document.getElementById('overlay-sub-title').textContent = `${stripHtml(d.name ?? '')}　ID: ${d.id ?? ''}`;
-  // サブは簡易詳細のみ（openOverlayの本体ロジックを流用）
+  // サブはbodyHtmlのみ生成（_overlayCurrentDetail には触らない）
   const savedMode    = _histOverlayMode;
   _histOverlayMode   = false;
   const bodyHtml     = _buildOverlayBody(d);
@@ -1661,7 +1663,8 @@ function handleIframeError(iframe) {
 function closeOverlay() {
   document.body.classList.remove('overlay-open');
   document.getElementById('overlay').classList.remove('show');
-  _histOverlayMode = false;
+  _histOverlayMode    = false;
+  _histOverlayContext = null;
 }
 
 // =============================================
@@ -2150,9 +2153,11 @@ function toggleHistSection(header) {
 }
 
 // all ボタン: 複数タイプの差分を一括表示
-async function openHistoryDiffAll(allFilesStr) {
-  _histOverlayMode = true;
-  document.getElementById('overlay-title').textContent = 'all 差分';
+async function openHistoryDiffAll(allFilesStr, unix, dateStr) {
+  _histOverlayMode    = true;
+  _histOverlayContext = { unix, type: 'all' };
+  const titleStr = dateStr ? `all 差分 (${dateStr})` : 'all 差分';
+  document.getElementById('overlay-title').textContent = titleStr;
   document.getElementById('overlay-body').innerHTML = '<div style="padding:16px;color:#aaa;font-size:0.82rem;">差分を計算中...</div>';
   document.body.classList.add('overlay-open');
   document.getElementById('overlay').classList.add('show');
@@ -2191,9 +2196,10 @@ async function openHistoryDiffAll(allFilesStr) {
 }
 
 // 差分オーバーレイを開く
-async function openHistoryDiff(type, filename, prevFilename) {
-  _histOverlayMode = true;
-  const titleDate = filename.match(/_(\d+)\.tsv$/)?.[1];
+async function openHistoryDiff(type, filename, prevFilename, unix) {
+  _histOverlayMode    = true;
+  _histOverlayContext = { unix: unix ?? null, type };
+  const titleDate    = filename.match(/_(\d+)\.tsv$/)?.[1];
   const titleDateStr = titleDate ? new Date(Number(titleDate)*1000).toLocaleString('ja-JP') : filename;
   document.getElementById('overlay-title').textContent = `${type}  ${titleDateStr}`;
   document.getElementById('overlay-body').innerHTML = '<div style="padding:16px;color:#aaa;font-size:0.82rem;">差分を計算中...</div>';
@@ -2286,17 +2292,17 @@ async function renderHistory() {
         const arr  = byType[f.type];
         const idx  = arr.findIndex(x => x.name === f.name);
         const prev = idx > 0 ? arr[idx-1].name : '';
-        return `<button class="history-type-btn" onclick="openHistoryDiff('${f.type}','${f.name}','${prev}')">${f.type}</button>`;
+        return `<button class="history-type-btn" onclick="openHistoryDiff('${f.type}','${f.name}','${prev}',${ev.unix})">${f.type}</button>`;
       }).join('');
 
-      // all ボタン: グループ内の全ファイルを一括表示
+      // all ボタン: グループ内の全ファイルを一括表示（unix時刻付き）
       const allFiles = ev.files.map(f => {
         const arr = byType[f.type];
         const idx = arr.findIndex(x => x.name === f.name);
         const prev = idx > 0 ? arr[idx-1].name : '';
         return `${f.type}:${f.name}:${prev}`;
       }).join(',');
-      const allBtn = `<button class="history-type-btn" style="color:#f90;border-color:#f90;" onclick="openHistoryDiffAll('${allFiles}')">all</button>`;
+      const allBtn = `<button class="history-type-btn" style="color:#f90;border-color:#f90;" onclick="openHistoryDiffAll('${allFiles}',${ev.unix},'${dateStr}')">all</button>`;
 
       html += `<div class="history-event-card">
         <div class="history-event-date">📅 ${dateStr}<span class="history-badge">更新検知</span></div>
@@ -3711,53 +3717,62 @@ async function _findTsvRow(type, rawLine) {
   return null;
 }
 
-// 現在開いているオーバーレイの共有URLを即時生成してクリップボードにコピー
-// フェッチ不要：_tsvMetaCache にあればtsv+row、なければtab+idのみ
+// 現在開いているオーバーレイの共有URLを生成してクリップボードにコピー
 async function copyShareUrl() {
   const btn = document.getElementById('share-btn');
   if (btn) { btn.textContent = '⏳'; btn.disabled = true; }
 
   try {
-    const d = _overlayCurrentDetail;
-    if (!d) { if (btn) { btn.textContent = '✗'; btn.disabled = false; } return; }
-
-    const base    = window.location.origin + window.location.pathname;
-    const tabName = activeTab;
-    const detailId = d.id;
-
-    // _entryIdx から raw を取得
-    const entryData = (d._entryIdx != null) ? _overlayEntries[d._entryIdx] : null;
-    const entryObj  = entryData ? JSON.parse(entryData.json) : null;
-    const rawLine   = entryObj?.raw?.trim() ?? null;
-
-    // タイプ判定
-    const typeMap = { gatya:'gatya', sale:'sale', mission:'sale', item:'item', gatya_item:'item' };
-    const tsvType = typeMap[d.type] ?? null;
-
-    // キャッシュにあれば即時使用（フェッチなし）
-    const meta = (rawLine && tsvType) ? _tsvMetaCache.get(rawLine) ?? null : null;
-
+    const base = window.location.origin + window.location.pathname;
     let url;
-    if (meta) {
-      url = `${base}?tab=${tabName}&tsv=${encodeURIComponent(meta.tsvSource)}&row=${meta.tsvRow}&id=${detailId}`;
+
+    // ── 履歴モード ──────────────────────────────────────────
+    if (_histOverlayMode && _histOverlayContext) {
+      const { unix, type } = _histOverlayContext;
+      url = `${base}?tab=history&tsv=${unix}&type=${type}`;
+
+    // ── 通常オーバーレイ ─────────────────────────────────────
     } else {
-      // tsvが不明でもtab+idだけでリンク生成（id単独でデータを探す）
-      url = `${base}?tab=${tabName}${tsvType ? `&type=${tsvType}` : ''}&id=${detailId}`;
+      const d = _overlayCurrentDetail;
+      if (!d) throw new Error('no detail');
+
+      const tabName  = activeTab;
+      const detailId = d.id;
+
+      // _entryIdx から raw を取得
+      const entryData = (d._entryIdx != null) ? _overlayEntries[d._entryIdx] : null;
+      const entryObj  = entryData ? JSON.parse(entryData.json) : null;
+      const rawLine   = entryObj?.raw?.trim() ?? null;
+
+      // タイプ判定
+      const typeMap = { gatya:'gatya', sale:'sale', mission:'sale', item:'item', gatya_item:'item' };
+      const tsvType = typeMap[d.type] ?? null;
+
+      // キャッシュ確認 → なければ非同期検索
+      let meta = (rawLine && tsvType) ? _tsvMetaCache.get(rawLine) ?? null : null;
+      if (!meta && rawLine && tsvType) {
+        meta = await _findTsvRow(tsvType, rawLine);
+      }
+
+      if (meta) {
+        url = `${base}?tab=${tabName}&tsv=${encodeURIComponent(meta.tsvSource)}&row=${meta.tsvRow}&id=${detailId}`;
+      } else {
+        // TSV特定できない場合はid+tabのみ（レアケース）
+        url = `${base}?tab=${tabName}&id=${detailId}`;
+      }
     }
 
-    await navigator.clipboard.writeText(url);
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      prompt('リンクをコピーしてください:', url);
+    }
     if (btn) { btn.textContent = '✓'; }
   } catch(e) {
     console.error('Share URL error:', e);
-    // clipboard失敗時はpromptで表示
-    const d = _overlayCurrentDetail;
-    if (d) {
-      const base = window.location.origin + window.location.pathname;
-      prompt('リンクをコピーしてください:', `${base}?tab=${activeTab}&id=${d.id}`);
-    }
-    if (btn) { btn.textContent = '🔗'; }
+    if (btn) { btn.textContent = '✗'; }
   } finally {
-    setTimeout(() => { if (btn && btn.textContent !== '🔗') { btn.textContent = '🔗'; btn.disabled = false; } }, 2000);
+    setTimeout(() => { if (btn) { btn.textContent = '🔗'; btn.disabled = false; } }, 2000);
   }
 }
 
@@ -3770,11 +3785,12 @@ function _registerTsvMeta(entries, tsvFilename) {
 
 // URLパラメータを解析してタブ・オーバーレイを開く（loadData完了後に呼ぶ）
 async function parseUrlParams() {
-  const params   = new URLSearchParams(window.location.search);
-  const tabParam = params.get('tab');
-  const tsvParam = params.get('tsv');
-  const rowParam = parseInt(params.get('row')) || null;
-  const idParam  = parseInt(params.get('id'))  || null;
+  const params        = new URLSearchParams(window.location.search);
+  const tabParam      = params.get('tab');
+  const tsvParam      = params.get('tsv');
+  const rowParam      = parseInt(params.get('row')) || null;
+  const idParam       = parseInt(params.get('id'))  || null;
+  const typeParam     = params.get('type');
   const scheduleParam = params.get('schedule');
 
   // ?schedule=off → 予定を非表示、開催中を自動チェック
@@ -3787,15 +3803,65 @@ async function parseUrlParams() {
   const TAB_ALIASES = { setting:'settings', 全て:'all', 履歴:'history', 設定:'settings' };
   const tab = TAB_ALIASES[tabParam] ?? tabParam ?? null;
   if (tab) showTab(tab);
-  else if (scheduleParam === 'off') renderAll(); // タブ指定なしでも再描画
+  else if (scheduleParam === 'off') renderAll();
 
-  // TSV指定があればロードしてオーバーレイを開く
+  // 履歴タブ: ?tab=history&tsv=UNIX&type=gatya
+  if (tab === 'history' && tsvParam && typeParam) {
+    const targetUnix = Number(tsvParam);
+    // renderHistory が完了するまで待つ（非同期なのでrenderHistory内で処理）
+    await _openHistoryFromUrl(targetUnix, typeParam);
+    return;
+  }
+
+  // 通常タブ: TSV指定があればオーバーレイを開く
   if (tsvParam && rowParam) {
     await _openOverlayFromTsv(tsvParam, rowParam, idParam);
-  } else if (idParam) {
-    // tsv指定なし: 現在のデータからidで検索してオーバーレイを開く
-    const typeParam = params.get('type') ?? tab ?? null;
-    _openOverlayById(typeParam, idParam);
+  }
+}
+
+// 履歴URLからオーバーレイを開く
+async function _openHistoryFromUrl(targetUnix, type) {
+  const list = await _getRawList();
+  if (list.length === 0) return;
+
+  // タイプ別に昇順リスト
+  const byType = { gatya: [], sale: [], item: [] };
+  for (const f of list) byType[f.type]?.push(f);
+  for (const t of ['gatya','sale','item']) byType[t].sort((a,b) => a.unix - b.unix);
+
+  // グループ化（renderHistoryと同じロジック）
+  const sorted = [...list].sort((a,b) => b.unix - a.unix);
+  const groups = [];
+  let grp = null;
+  for (const f of sorted) {
+    if (!grp || (grp.unix - f.unix) > HISTORY_GROUP_SEC) { grp = { unix: f.unix, files: [] }; groups.push(grp); }
+    grp.files.push(f);
+  }
+
+  // targetUnixに最も近いグループを探す
+  const target = groups.reduce((best, g) =>
+    Math.abs(g.unix - targetUnix) < Math.abs(best.unix - targetUnix) ? g : best
+  , groups[0]);
+  if (!target) return;
+
+  const DOW = ['日','月','火','水','木','金','土'];
+  const d = new Date(target.unix * 1000);
+  const dateStr = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}(${DOW[d.getDay()]}) ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+
+  if (type === 'all') {
+    const allFiles = target.files.map(f => {
+      const arr = byType[f.type]; const idx = arr.findIndex(x => x.name === f.name);
+      const prev = idx > 0 ? arr[idx-1].name : '';
+      return `${f.type}:${f.name}:${prev}`;
+    }).join(',');
+    await openHistoryDiffAll(allFiles, target.unix, dateStr);
+  } else {
+    const file = target.files.find(f => f.type === type);
+    if (!file) return;
+    const arr  = byType[type];
+    const idx  = arr.findIndex(x => x.name === file.name);
+    const prev = idx > 0 ? arr[idx-1].name : '';
+    await openHistoryDiff(type, file.name, prev, target.unix);
   }
 }
 
