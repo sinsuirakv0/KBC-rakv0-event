@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/04/28 15:36:21",
+  "updatedAt": "26/04/30 10:59:19",
   "data": [
     {
       "header": {
@@ -1652,6 +1652,27 @@
         "repeatFlag": 0
       },
       "raw": "20260505\t000\t20260506\t000\t150300\t999999\t0\t0\t2501\t203\t1\tこどもの日記念☆\t祝日感謝！こどもの日を記念して<br>レアチケット1枚をプレゼント！\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260424",
+        "startTime": "1100",
+        "endDate": "20260601",
+        "endTime": "1100",
+        "minVersion": "150301",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 90012,
+        "giftType": 33000,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260424\t1100\t20260601\t1100\t150301\t999999\t0\t0\t90012\t33000\t0\t\t\t1300\t0\t0\t0\t0\t0\t0"
     }
   ]
 }
