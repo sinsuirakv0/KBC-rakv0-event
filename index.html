@@ -370,7 +370,8 @@
 .dev-search { width:min(260px,70vw); }
 .dev-editor-frame {
   height:460px; border:1px solid rgba(255,255,255,0.16); border-radius:8px;
-  overflow:auto; background:rgba(0,0,0,0.22); position:relative;
+  overflow-y: auto; overflow-x: hidden; background:rgba(0,0,0,0.22); position:relative;
+  contain: layout style paint; scroll-behavior: smooth;
 }
 #dev-sheet-viewport { transform-origin: top left; padding:0 0 120px 0; }
 .dev-sheet-table { border-collapse:collapse; table-layout:fixed; font-family:Consolas, monospace; font-size:12px; }
@@ -3404,7 +3405,6 @@ let devCellEditPushed = false;
 // Virtual scrolling
 const DEV_ROW_HEIGHT = 24; // pixels
 const DEV_VISIBLE_ROWS = 15; // lines to display at once
-let devScrollTop = 0;
 
 function isDeveloperOptionsOn() { return DEV_OPTIONS_ENABLED; }
 function devLocaleLabel(locale) { return locale === 'ja' ? 'jp' : (locale || 'jp'); }
@@ -3481,35 +3481,34 @@ function devRenderEditor() {
   const sheet = devCurrentSheet();
   if (!sheet) { 
     table.innerHTML = ''; 
-    container.scrollTop = 0;
-    devScrollTop = 0;
     return; 
   }
   
   const cols = devMaxCols(sheet.rows);
   const totalRows = sheet.rows.length;
   
-  // Virtual scrolling: compute visible range with RAF throttling
+  // Virtual scrolling: compute visible range
   const containerHeight = container.clientHeight || 460;
-  const rowsInView = Math.ceil(containerHeight / DEV_ROW_HEIGHT) + 2;
-  const startRow = Math.max(0, Math.floor(devScrollTop / DEV_ROW_HEIGHT) - 1);
-  const endRow = Math.min(totalRows, startRow + rowsInView + 2);
-
-  // Update scroll position tracker
-  const delta = Math.abs(container.scrollTop - devScrollTop);
-  if (delta > 2) {  // debounce small movements
-    devScrollTop = container.scrollTop;
-  }
+  const scrollTop = container.scrollTop;
+  const rowsInView = Math.max(5, Math.ceil(containerHeight / DEV_ROW_HEIGHT));
+  const buffer = 3;
+  const startRow = Math.max(0, Math.floor(scrollTop / DEV_ROW_HEIGHT) - buffer);
+  const endRow = Math.min(totalRows, startRow + rowsInView + buffer * 2);
 
   // Header row (always sticky)
-  let html = '<thead><tr><th class="dev-row-head" style="min-width:46px;max-width:46px;">#</th>';
+  let html = '<thead><tr><th style="position:sticky;top:0;z-index:6;background:#18243a;width:46px;min-width:46px;max-width:46px;height:24px;border:1px solid rgba(255,255,255,0.12);text-align:center;color:#aaa;">#</th>';
   for (let c = 0; c < cols; c++) {
-    html += `<th style="min-width:112px;max-width:112px;">${c + 1}</th>`;
+    html += `<th style="position:sticky;top:0;z-index:4;background:#18243a;width:112px;min-width:112px;max-width:112px;height:24px;border:1px solid rgba(255,255,255,0.12);text-align:center;color:#aaa;">${c + 1}</th>`;
   }
   html += '</tr></thead>';
 
-  // Virtual tbody with buffer rows + translateY positioning
-  html += '<tbody class="dev-virtual-tbody">';
+  // Virtual tbody: padding rows + visible rows (no translateY)
+  html += '<tbody>';
+  
+  // Top padding
+  if (startRow > 0) {
+    html += `<tr style="height:${startRow * DEV_ROW_HEIGHT}px;"><td colspan="${cols + 1}"></td></tr>`;
+  }
   
   // Search highlighting
   const hitCellsAll = new Set(devSearchState.matches.flatMap(m => 
@@ -3517,11 +3516,11 @@ function devRenderEditor() {
   ));
   const curMatch = devSearchState.matches[devSearchState.idx] ?? null;
   const curCells = curMatch ? new Set(curMatch.cells.map(cell => `${cell.r}:${cell.c}`)) : new Set();
-
+  
   // Render only visible rows
   for (let r = startRow; r < endRow && r < totalRows; r++) {
-    html += `<tr class="dev-row-buffer">`;
-    html += `<th class="dev-row-head" style="position:sticky;left:0;z-index:5;">${r + 1}</th>`;
+    html += `<tr>`;
+    html += `<th style="position:sticky;left:0;z-index:5;background:rgba(24,36,58,0.85);width:46px;min-width:46px;text-align:center;color:#aaa;border:1px solid rgba(255,255,255,0.12);">${r + 1}</th>`;
     
     for (let c = 0; c < cols; c++) {
       const val = devEscapeHtml(sheet.rows[r]?.[c] ?? '');
@@ -3537,40 +3536,33 @@ function devRenderEditor() {
     html += '</tr>';
   }
   
+  // Bottom padding
+  const bottomPadding = Math.max(0, (totalRows - endRow) * DEV_ROW_HEIGHT);
+  if (bottomPadding > 0) {
+    html += `<tr style="height:${bottomPadding}px;"><td colspan="${cols + 1}"></td></tr>`;
+  }
+  
   html += '</tbody>';
   table.innerHTML = html;
 
-  // Position virtual tbody with exact pixel offset
-  const tbody = table.querySelector('.dev-virtual-tbody');
-  if (tbody) {
-    tbody.style.transform = `translateY(${startRow * DEV_ROW_HEIGHT}px)`;
-    tbody.style.height = `${totalRows * DEV_ROW_HEIGHT}px !important`;
-    tbody.style.minHeight = `${totalRows * DEV_ROW_HEIGHT}px`;
-  }
-
-  // Event delegation for dynamic cells (60fps safe)
-  table.addEventListener('focus', devCellFocus, true);
-  table.addEventListener('input', devCellInput, true);
-  table.addEventListener('paste', devCellPaste, true);
-  table.addEventListener('keydown', devCellKeydown, true);
+  // Attach event listeners to dynamically created cells
+  table.querySelectorAll('.dev-cell').forEach(td => {
+    td.addEventListener('focus', devCellFocus);
+    td.addEventListener('input', devCellInput);
+    td.addEventListener('paste', devCellPaste);
+    td.addEventListener('keydown', devCellKeydown);
+  });
 
   // RAF throttled scroll handler (60fps)
-  if (!container._vscrollHandler) {
-    let rafId = null;
-    container._vscrollHandler = () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(devRenderEditor);
-    };
-    container.addEventListener('scroll', container._vscrollHandler, { passive: true });
+  if (!container._vscrollAttached) {
+    container.addEventListener('scroll', () => {
+      if (container._vscrollRaf) cancelAnimationFrame(container._vscrollRaf);
+      container._vscrollRaf = requestAnimationFrame(devRenderEditor);
+    }, { passive: true });
+    container._vscrollAttached = true;
   }
 
   devUpdateSearchCount();
-  
-  // Auto-scroll to selection if needed
-  const selCell = document.querySelector(`.dev-cell[data-r="${devSelectedCell.r}"][data-c="${devSelectedCell.c}"]`);
-  if (selCell && !selCell.isConnected) {
-    container.scrollTop = devSelectedCell.r * DEV_ROW_HEIGHT;
-  }
 }
 function devEscapeHtml(v) {
   return String(v).replace(/[&<>]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]));
@@ -3766,10 +3758,25 @@ function devGoSearch(delta) {
   const total = devSearchState.matches.length;
   if (!total) return;
   devSearchState.idx = (devSearchState.idx + delta + total) % total;
-  devRenderEditor();
   const m = devSearchState.matches[devSearchState.idx];
-  const td = document.querySelector(`.dev-cell[data-r="${m.r}"][data-c="${m.c}"]`);
-  if (td) td.scrollIntoView({ behavior:'smooth', block:'center', inline:'center' });
+  const container = document.getElementById('dev-editor-frame');
+  
+  // スクロール位置を設定（仮想スクロール対応）
+  if (container) {
+    container.scrollTop = m.r * DEV_ROW_HEIGHT;
+  }
+  
+  // レンダリングで該当行を表示
+  devRenderEditor();
+  
+  // 描画完了後、セルをフォーカス
+  requestAnimationFrame(() => {
+    const td = document.querySelector(`.dev-cell[data-r="${m.r}"][data-c="${m.c}"]`);
+    if (td) { 
+      td.focus(); 
+      td.scrollIntoView({ block:'nearest', inline:'nearest' }); 
+    }
+  });
 }
 function devGetSecretKey() {
   const hash = CryptoJS.MD5(DEV_KEY_BASE).toString();
