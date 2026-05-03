@@ -762,20 +762,43 @@ let saleTagFilter    = new Set(); // 非表示にするラベルセット（空=
 let missionTagFilter = new Set();
 
 let _overlayEntries = [];
+let _overlayEntryKeys = new Map();
+let _cardDetails = new Map();
 let _currentJson    = null;
 let _currentRaw     = null;
 let _currentSuggestions = [];
 let _overlayCurrentDetail = null; // 現在開いているオーバーレイのdetail（共有URL生成用）
 
+function resetOverlayStores() {
+  _overlayEntries = [];
+  _overlayEntryKeys = new Map();
+  _cardDetails = new Map();
+}
+
+function getOverlayEntryKey(entry) {
+  if (entry?.raw != null) return `raw:${entry.raw}`;
+  const keyData = {
+    header: entry?.header ?? null,
+    stageIds: entry?.stageIds ?? null,
+    gachas: entry?.gachas ?? null,
+    gift: entry?.gift ?? null,
+    timeBlocks: entry?.timeBlocks ?? null,
+  };
+  return `json:${JSON.stringify(keyData)}`;
+}
+
 function storeOverlayEntry(entry) {
   const raw = entry.raw ?? null;
-  const idx = _overlayEntries.findIndex(e => e.raw === raw && raw !== null);
-  if (idx !== -1) return idx;
+  const key = getOverlayEntryKey(entry);
+  const cachedIdx = _overlayEntryKeys.get(key);
+  if (cachedIdx !== undefined) return cachedIdx;
   _overlayEntries.push({
     json: JSON.stringify(entry, null, 2),
     raw,
   });
-  return _overlayEntries.length - 1;
+  const idx = _overlayEntries.length - 1;
+  _overlayEntryKeys.set(key, idx);
+  return idx;
 }
 
 function toggleRawView(type) {
@@ -1431,6 +1454,35 @@ function filterAndSort(events) {
 // =============================================
 // カード HTML 生成
 // =============================================
+function hashString(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h >>> 0).toString(36);
+}
+
+function escapeAttr(str) {
+  return String(str).replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
+}
+
+function storeCardDetail(detail) {
+  const key = `detail:${hashString(JSON.stringify(detail))}`;
+  _cardDetails.set(key, detail);
+  return key;
+}
+
+function openOverlayByKey(key) {
+  const detail = _cardDetails.get(key);
+  if (!detail) return;
+  const json = JSON.stringify(detail);
+  if (_histOverlayMode) openSubOverlay(json);
+  else openOverlay(json);
+}
+
 function makeCard(period, name, isCurrent, isPast, detail) {
   const tagClass = isPast ? 'tag-past' : isCurrent ? 'tag-current' : 'tag-future';
   const tagLabel = isPast ? '終了'     : isCurrent ? '開催中'     : '予定';
@@ -1448,10 +1500,10 @@ function makeCard(period, name, isCurrent, isPast, detail) {
   }
   // gatya は追加タグなし
 
-  const dataAttr = encodeURIComponent(JSON.stringify(detail));
+  const detailKey = storeCardDetail(detail);
   return `
     <div class="event-card ${isCurrent ? 'is-current' : ''}"
-         onclick="openOverlay(decodeURIComponent('${dataAttr}'))">
+         data-detail-key="${escapeAttr(detailKey)}">
       <span class="card-tag ${tagClass}">${tagLabel}</span>${extraTagHtml}
       <div class="card-body">
         <span class="card-period">${period}</span>　<span class="card-name">${name}</span>
@@ -1821,7 +1873,7 @@ function closeOverlay() {
 // 汎用: イベント配列からカードHTML生成
 // =============================================
 function buildCards(events) {
-  const now = getAccurateDate();
+  const now = getCalcNow();
   return events.map(e => {
     const isCurrent = e.start <= now && e.end > now;
     const isPast    = e.end   <= now;
@@ -2565,7 +2617,7 @@ function renderAllTab() {
 
   let html = '';
   let total = 0;
-  const now = getAccurateDate();
+  const now = getCalcNow();
 
   for (const sec of SECTIONS) {
     const events = sec.getEvents();
@@ -2632,7 +2684,7 @@ async function loadData() {
     // Mission_Name.csv は別途取得（Promise.allに入れると分割代入がずれるため）
     const missionNameText = await fetch(`${BASE}/Mission_Name.csv`).then(r => r.text()).catch(() => '');
 
-    _overlayEntries = [];
+    resetOverlayStores();
     const gatyaJson = await gatyaRes.json();
     const saleJson  = await saleRes.json();
     const itemJson  = await itemRes.json();
@@ -2895,14 +2947,20 @@ function toggleLastmod() {
 let offset = 0;
 
 async function syncAccurateTime() {
-  const t0 = Date.now();
-  const res = await fetch("https://worldtimeapi.org/api/timezone/Asia/Tokyo");
-  const t1  = Date.now();
-  const data = await res.json();
-  const serverTime  = new Date(data.datetime).getTime();
-  const rtt         = t1 - t0;
-  const oneWayDelay = rtt / 2;
-  offset = serverTime + oneWayDelay - Date.now();
+  try {
+    const t0 = Date.now();
+    const res = await fetch("https://worldtimeapi.org/api/timezone/Asia/Tokyo");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const t1  = Date.now();
+    const data = await res.json();
+    const serverTime = new Date(data.datetime).getTime();
+    if (!Number.isFinite(serverTime)) throw new Error('invalid datetime');
+    const rtt         = t1 - t0;
+    const oneWayDelay = rtt / 2;
+    offset = serverTime + oneWayDelay - Date.now();
+  } catch(e) {
+    console.warn('Time sync failed, using local clock:', e.message);
+  }
 }
 
 // 常に UTC ms ベースで補正済み現在時刻を返す
@@ -3625,7 +3683,7 @@ function devLoadCurrentToList() {
     if (sheet.type === 'gatya') gatyaData = entries;
     else if (sheet.type === 'sale') saleData = entries;
     else itemData = entries;
-    _overlayEntries = [];
+    resetOverlayStores();
     _registerTsvMeta(entries, sheet.filename);
     renderAll();
     devSetStatus(`${sheet.filename} を ${sheet.type} として一覧に読み込みました（${entries.length}件）。`);
@@ -3841,7 +3899,7 @@ async function switchLocale() {
       saleData  = parseSaleBrowser(saleTsv);
       itemData  = parseItemBrowser(itemTsv);
     }
-    _overlayEntries = [];
+    resetOverlayStores();
     currentLocale   = locale;
     document.getElementById('current-locale-label').textContent = LABEL[locale] ?? locale;
     status.textContent = `✓ ${LABEL[locale] ?? locale} に切り替えました`;
@@ -3942,7 +4000,7 @@ async function loadSelectedRawFiles() {
       });
 
     const results = await Promise.all(fetches);
-    _overlayEntries = [];
+    resetOverlayStores();
 
     for (const { type, text, name } of results) {
       let entries;
@@ -3974,7 +4032,7 @@ async function handleTsvUpload(type, input) {
 
   try {
     const text = await file.text();
-    _overlayEntries = [];
+    resetOverlayStores();
 
     let entries;
     if (type === 'gatya')     { entries = parseGatyaBrowser(text); gatyaData = entries; }
@@ -4244,6 +4302,11 @@ document.getElementById('filter-overlay').addEventListener('click', e => {
 document.getElementById('ss-confirm-overlay').addEventListener('click', e => {
   if (e.target === e.currentTarget) cancelScreenshot();
 });
+document.addEventListener('click', e => {
+  const card = e.target.closest('.event-card[data-detail-key]');
+  if (!card) return;
+  openOverlayByKey(card.dataset.detailKey);
+});
 
 // 初期化
 updateNow();
@@ -4485,7 +4548,7 @@ async function _openOverlayFromTsv(tsvFilename, rowNum, targetId) {
     if (!entry) return;
 
     // エントリをoverlayEntries に登録
-    _overlayEntries = []; // リセットせずに追記
+    resetOverlayStores();
     storeOverlayEntry(entry);
 
     // イベント展開
