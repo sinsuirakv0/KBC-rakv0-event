@@ -403,9 +403,7 @@
 .dev-virtual-tbody { contain:strict; } /* ✅ layout+size+style完全分離 */
 
 
-/* Virtual Scrolling */
-.dev-virtual-tbody { will-change: transform; contain: layout style; }
-.dev-row-buffer { height: 24px !important; }
+/* Virtual Scrolling */\n.dev-virtual-tbody { \n  will-change: transform; \n  contain: layout style size; \n  height: 100% !important; \n  min-height: var(--total-height, 0px) !important;\n}\n.dev-row-buffer { height: 24px !important; }
 
 .dev-cell.dev-search-hit { background:rgba(255,220,0,0.20); box-shadow:inset 0 0 0 1px rgba(255,220,0,0.65); }
 .dev-cell.dev-search-current { background:rgba(255,153,0,0.45); box-shadow:inset 0 0 0 2px #fff; }
@@ -603,8 +601,8 @@
             <button class="dev-mini-btn" onclick="devZoom(0.1)">+</button>
             <button class="dev-mini-btn" onclick="devZoom(0,true)">等倍</button>
             <input id="dev-search-input" class="dev-input dev-search" placeholder="セル検索: 999999 0 0" oninput="devSearch()">
-            <button class="dev-mini-btn" onclick="devGoSearch(-1)">前へ</button>
-            <button class="dev-mini-btn" onclick="devGoSearch(1)">次へ</button>
+<button class="dev-mini-btn" onclick="devGoSearch(event, -1)">前へ</button>
+            <button class="dev-mini-btn" onclick="devGoSearch(event, 1)">次へ</button>
             <span id="dev-search-count" class="dev-status">0/0</span>
           </div>
           <div class="dev-editor-frame" id="dev-editor-frame">
@@ -3402,9 +3400,9 @@ let devCellEditSnapshot = null;
 let devCellEditPushed = false;
 
 // Virtual scrolling
-const DEV_ROW_HEIGHT = 24; // pixels
+// const DEV_ROW_HEIGHT = 24; // pixels (dynamic via zoom)
 const DEV_VISIBLE_ROWS = 15; // lines to display at once
-let devScrollTop = 0;
+// let devScrollTop = 0; // Use container.scrollTop directly
 
 function isDeveloperOptionsOn() { return DEV_OPTIONS_ENABLED; }
 function devLocaleLabel(locale) { return locale === 'ja' ? 'jp' : (locale || 'jp'); }
@@ -3488,18 +3486,16 @@ function devRenderEditor() {
   
   const cols = devMaxCols(sheet.rows);
   const totalRows = sheet.rows.length;
+  const effectiveRowHeight = 24 * devZoomValue;  // 🔧 ZOOM対応動的行高
   
-  // Virtual scrolling: compute visible range with RAF throttling
-  const containerHeight = container.clientHeight || 460;
-  const rowsInView = Math.ceil(containerHeight / DEV_ROW_HEIGHT) + 2;
-  const startRow = Math.max(0, Math.floor(devScrollTop / DEV_ROW_HEIGHT) - 1);
+  // Virtual scrolling: containerサイズ/スクロール位置を即時反映
+  const containerHeight = container.clientHeight / devZoomValue || 460; // 🔧 zoom正規化
+  const rowsInView = Math.ceil(containerHeight / 24) + 2;
+  const startRow = Math.max(0, Math.floor(container.scrollTop / effectiveRowHeight) - 1);
   const endRow = Math.min(totalRows, startRow + rowsInView + 2);
 
-  // Update scroll position tracker
-  const delta = Math.abs(container.scrollTop - devScrollTop);
-  if (delta > 2) {  // debounce small movements
-    devScrollTop = container.scrollTop;
-  }
+  // 🔧 スクロール位置を即時追跡(debounce削除 → RAFのみで60fps)
+  // devScrollTop = container.scrollTop; // Direct use below
 
   // Header row (always sticky)
   let html = '<thead><tr><th class="dev-row-head" style="min-width:46px;max-width:46px;">#</th>';
@@ -3508,7 +3504,7 @@ function devRenderEditor() {
   }
   html += '</tr></thead>';
 
-  // Virtual tbody with buffer rows + translateY positioning
+  // Virtual tbody with buffer rows + zoom-aware translateY positioning
   html += '<tbody class="dev-virtual-tbody">';
   
   // Search highlighting
@@ -3540,12 +3536,13 @@ function devRenderEditor() {
   html += '</tbody>';
   table.innerHTML = html;
 
-  // Position virtual tbody with exact pixel offset
+  // 🔧 ZOOM対応 正確位置指定
   const tbody = table.querySelector('.dev-virtual-tbody');
   if (tbody) {
-    tbody.style.transform = `translateY(${startRow * DEV_ROW_HEIGHT}px)`;
-    tbody.style.height = `${totalRows * DEV_ROW_HEIGHT}px !important`;
-    tbody.style.minHeight = `${totalRows * DEV_ROW_HEIGHT}px`;
+    const offsetY = startRow * effectiveRowHeight;
+    tbody.style.transform = `translateY(${offsetY}px)`;
+  tbody.style.height = `${totalRows * effectiveRowHeight}px`;\n  tbody.style.minHeight = `${totalRows * effectiveRowHeight}px`;\n  tbody.style.setProperty('height', `${totalRows * effectiveRowHeight}px`, 'important');
+    tbody.style.minHeight = `${totalRows * effectiveRowHeight}px`;
   }
 
   // Event delegation for dynamic cells (60fps safe)
@@ -3554,13 +3551,9 @@ function devRenderEditor() {
   table.addEventListener('paste', devCellPaste, true);
   table.addEventListener('keydown', devCellKeydown, true);
 
-  // RAF throttled scroll handler (60fps)
+  // 🔧 RAF throttled scroll handler(60fps・debounce削除)
   if (!container._vscrollHandler) {
-    let rafId = null;
-    container._vscrollHandler = () => {
-      if (rafId) cancelAnimationFrame(rafId);
-      rafId = requestAnimationFrame(devRenderEditor);
-    };
+    container._vscrollHandler = () => requestAnimationFrame(devRenderEditor);
     container.addEventListener('scroll', container._vscrollHandler, { passive: true });
   }
 
@@ -3569,7 +3562,7 @@ function devRenderEditor() {
   // Auto-scroll to selection if needed
   const selCell = document.querySelector(`.dev-cell[data-r="${devSelectedCell.r}"][data-c="${devSelectedCell.c}"]`);
   if (selCell && !selCell.isConnected) {
-    container.scrollTop = devSelectedCell.r * DEV_ROW_HEIGHT;
+    container.scrollTop = devSelectedCell.r * effectiveRowHeight;
   }
 }
 function devEscapeHtml(v) {
@@ -3762,14 +3755,26 @@ function devUpdateSearchCount() {
   const total = devSearchState.matches.length;
   el.textContent = total ? `${devSearchState.idx + 1}/${total}` : '0/0';
 }
-function devGoSearch(delta) {
+function devGoSearch(e, delta) {\n  e.preventDefault();\n  e.stopPropagation();\n
+  e.stopPropagation();
+  
   const total = devSearchState.matches.length;
   if (!total) return;
+  
   devSearchState.idx = (devSearchState.idx + delta + total) % total;
   devRenderEditor();
+  
+  // 🔧 正確なコンテナ内中央スクロール
   const m = devSearchState.matches[devSearchState.idx];
+  const container = document.getElementById('dev-editor-frame');
+  const effectiveRowHeight = 24 * devZoomValue;
+  const targetScrollTop = m.r * effectiveRowHeight - (container.clientHeight / 2 / devZoomValue);
+  
+  container.scrollTop = targetScrollTop;\n  // container.scrollTo({ top: targetScrollTop, behavior: 'smooth' }); // Direct for precision
+  
+  // セルフォーカス
   const td = document.querySelector(`.dev-cell[data-r="${m.r}"][data-c="${m.c}"]`);
-  if (td) td.scrollIntoView({ behavior:'smooth', block:'center', inline:'center' });
+  td?.focus();
 }
 function devGetSecretKey() {
   const hash = CryptoJS.MD5(DEV_KEY_BASE).toString();
