@@ -391,11 +391,12 @@
 .dev-cell.dev-selected { box-shadow:inset 0 0 0 2px #f90; background:rgba(255,153,0,0.12); }
 .dev-cell:focus {
   position:absolute; z-index:10; /* ヘッダーより上 */
-  height:24px !important; max-height:24px !important; /* ✅ 固定高さ強制 */
-  min-width:260px; /* ✅ 横のみ拡張 */
+  height: calc(24px * var(--dev-zoom, 1)) !important;
+  max-height: calc(24px * var(--dev-zoom, 1)) !important; /* 固定高さ（ズームに合わせる） */
+  min-width: calc(260px * var(--dev-zoom, 1)); /* 横のみ拡張（ズームに合わせる） */
   background:#121b2d;
   box-shadow:0 4px 16px rgba(0,0,0,.6), inset 0 0 0 2px #f90;
-  transform:translate(-2px, -2px); /* ✅ 視覚的浮き出し */
+  transform:translate(-2px, -2px); /* 視覚的浮き出し */
 }
 .dev-cell:focus::before {  /* ✅ 縦長偽装レイヤー */
   content:''; position:absolute; inset:0; z-index:-1;
@@ -603,7 +604,7 @@
             <span id="dev-zoom-label" class="dev-status">100%</span>
             <button class="dev-mini-btn" onclick="devZoom(0.1)">+</button>
             <button class="dev-mini-btn" onclick="devZoom(0,true)">等倍</button>
-            <input id="dev-search-input" class="dev-input dev-search" placeholder="セル検索: 999999 0 0" oninput="devSearch()">
+            <input id="dev-search-input" class="dev-input dev-search" placeholder="セル検索: 999999 0 0" oninput="devSearchDebounce()">
             <button class="dev-mini-btn" onclick="devGoSearch(-1)">前へ</button>
             <button class="dev-mini-btn" onclick="devGoSearch(1)">次へ</button>
             <span id="dev-search-count" class="dev-status">0/0</span>
@@ -3405,6 +3406,22 @@ let devCellEditPushed = false;
 // Virtual scrolling
 const DEV_ROW_HEIGHT = 24; // pixels
 const DEV_VISIBLE_ROWS = 15; // lines to display at once
+let devSearchDebounceTimer = null; // debounce search input
+
+// Scaled metrics helpers
+function devScaledRowHeight() { return DEV_ROW_HEIGHT * devZoomValue; }
+function devScaledColWidth() { return 112 * devZoomValue; }
+
+// Helper: get the cell element from an event (works for direct or delegated listeners)
+function devCellFromEvent(e) {
+  if (!e) return null;
+  if (e.target && e.target.closest) {
+    const el = e.target.closest('.dev-cell');
+    if (el) return el;
+  }
+  if (e.currentTarget && e.currentTarget.classList && e.currentTarget.classList.contains('dev-cell')) return e.currentTarget;
+  return null;
+}
 
 function isDeveloperOptionsOn() { return DEV_OPTIONS_ENABLED; }
 function devLocaleLabel(locale) { return locale === 'ja' ? 'jp' : (locale || 'jp'); }
@@ -3473,87 +3490,87 @@ function devRenderEditor() {
   const container = document.getElementById('dev-editor-frame');
   if (!table || !viewport || !container) return;
 
-  // apply zoom
-  viewport.style.transform = `scale(${devZoomValue})`;
+  const sheet = devCurrentSheet();
+  if (!sheet) { table.innerHTML = ''; return; }
+
+  const cols = devMaxCols(sheet.rows);
+  const totalRows = sheet.rows.length;
+
+  // scaled metrics
+  const rowHeight = devScaledRowHeight();
+  const colWidth = devScaledColWidth();
+  table.style.setProperty('--dev-zoom', String(devZoomValue));
+
+  // update zoom label
   const zoomLabel = document.getElementById('dev-zoom-label');
   if (zoomLabel) zoomLabel.textContent = `${Math.round(devZoomValue * 100)}%`;
 
-  const sheet = devCurrentSheet();
-  if (!sheet) { 
-    table.innerHTML = ''; 
-    return; 
-  }
-  
-  const cols = devMaxCols(sheet.rows);
-  const totalRows = sheet.rows.length;
-  
-  // Virtual scrolling: compute visible range
   const containerHeight = container.clientHeight || 460;
   const scrollTop = container.scrollTop;
-  const rowsInView = Math.max(5, Math.ceil(containerHeight / DEV_ROW_HEIGHT));
-  const buffer = 3;
-  const startRow = Math.max(0, Math.floor(scrollTop / DEV_ROW_HEIGHT) - buffer);
+  const rowsInView = Math.max(5, Math.ceil(containerHeight / rowHeight));
+  const buffer = Math.max(3, Math.floor(rowsInView * 0.5));
+  const startRow = Math.max(0, Math.floor(scrollTop / rowHeight) - buffer);
   const endRow = Math.min(totalRows, startRow + rowsInView + buffer * 2);
 
-  // Header row (always sticky)
-  let html = '<thead><tr><th style="position:sticky;top:0;z-index:6;background:#18243a;width:46px;min-width:46px;max-width:46px;height:24px;border:1px solid rgba(255,255,255,0.12);text-align:center;color:#aaa;">#</th>';
-  for (let c = 0; c < cols; c++) {
-    html += `<th style="position:sticky;top:0;z-index:4;background:#18243a;width:112px;min-width:112px;max-width:112px;height:24px;border:1px solid rgba(255,255,255,0.12);text-align:center;color:#aaa;">${c + 1}</th>`;
+  // Simple render cache: avoid rebuilding if visible range + cols + zoom unchanged
+  if (table._lastStartRow === startRow && table._lastEndRow === endRow && table._lastCols === cols && table._lastZoom === devZoomValue) {
+    // Refresh selection/highlight classes only
+    document.querySelectorAll('.dev-cell.dev-selected').forEach(el => el.classList.remove('dev-selected'));
+    const sel = document.querySelector(`.dev-cell[data-r="${devSelectedCell.r}"][data-c="${devSelectedCell.c}"]`);
+    if (sel) sel.classList.add('dev-selected');
+    devUpdateSearchCount();
+    return;
   }
-  html += '</tr></thead>';
 
-  // Virtual tbody: padding rows + visible rows (no translateY)
-  html += '<tbody>';
-  
-  // Top padding
-  if (startRow > 0) {
-    html += `<tr style="height:${startRow * DEV_ROW_HEIGHT}px;"><td colspan="${cols + 1}"></td></tr>`;
+  // build header (cached per cols)
+  if (!table._headerHtml || table._headerCols !== cols) {
+    let header = '<thead><tr>';
+    header += `<th style="position:sticky;top:0;z-index:6;background:#18243a;width:${Math.round(46*devZoomValue)}px;min-width:${Math.round(46*devZoomValue)}px;max-width:${Math.round(46*devZoomValue)}px;height:${rowHeight}px;border:1px solid rgba(255,255,255,0.12);text-align:center;color:#aaa;">#</th>`;
+    for (let c = 0; c < cols; c++) header += `<th style="position:sticky;top:0;z-index:4;background:#18243a;width:${Math.round(colWidth)}px;min-width:${Math.round(colWidth)}px;max-width:${Math.round(colWidth)}px;height:${rowHeight}px;border:1px solid rgba(255,255,255,0.12);text-align:center;color:#aaa;">${c + 1}</th>`;
+    header += '</tr></thead>';
+    table._headerHtml = header;
+    table._headerCols = cols;
   }
-  
+
+  let html = table._headerHtml;
+  html += '<tbody>';
+
+  // top padding
+  if (startRow > 0) html += `<tr style="height:${startRow * rowHeight}px;"><td colspan="${cols + 1}"></td></tr>`;
+
   // Search highlighting
-  const hitCellsAll = new Set(devSearchState.matches.flatMap(m => 
-    m.cells.map(cell => `${cell.r}:${cell.c}`)
-  ));
+  const hitCellsAll = new Set(devSearchState.matches.flatMap(m => m.cells.map(cell => `${cell.r}:${cell.c}`)));
   const curMatch = devSearchState.matches[devSearchState.idx] ?? null;
   const curCells = curMatch ? new Set(curMatch.cells.map(cell => `${cell.r}:${cell.c}`)) : new Set();
-  
-  // Render only visible rows
+
   for (let r = startRow; r < endRow && r < totalRows; r++) {
     html += `<tr>`;
-    html += `<th style="position:sticky;left:0;z-index:5;background:rgba(24,36,58,0.85);width:46px;min-width:46px;text-align:center;color:#aaa;border:1px solid rgba(255,255,255,0.12);">${r + 1}</th>`;
-    
+    html += `<th style="position:sticky;left:0;z-index:5;background:rgba(24,36,58,0.85);width:${Math.round(46*devZoomValue)}px;min-width:${Math.round(46*devZoomValue)}px;text-align:center;color:#aaa;border:1px solid rgba(255,255,255,0.12);height:${rowHeight}px;">${r + 1}</th>`;
     for (let c = 0; c < cols; c++) {
       const val = devEscapeHtml(sheet.rows[r]?.[c] ?? '');
       const selected = (devSelectedCell.r === r && devSelectedCell.c === c) ? ' dev-selected' : '';
       const hitClass = hitCellsAll.has(`${r}:${c}`) ? ' dev-search-hit' : '';
       const currentClass = curCells.has(`${r}:${c}`) ? ' dev-search-current' : '';
-      
-      html += `<td class="dev-cell${selected}${hitClass}${currentClass}" 
-                 contenteditable="true" spellcheck="false" 
-                 data-r="${r}" data-c="${c}"
-                 style="width:112px;min-width:112px;max-width:112px;height:24px;">${val}</td>`;
+      html += `<td class="dev-cell${selected}${hitClass}${currentClass}" contenteditable="true" spellcheck="false" data-r="${r}" data-c="${c}" style="width:${Math.round(colWidth)}px;min-width:${Math.round(colWidth)}px;max-width:${Math.round(colWidth)}px;height:${rowHeight}px;">${val}</td>`;
     }
     html += '</tr>';
   }
-  
-  // Bottom padding
-  const bottomPadding = Math.max(0, (totalRows - endRow) * DEV_ROW_HEIGHT);
-  if (bottomPadding > 0) {
-    html += `<tr style="height:${bottomPadding}px;"><td colspan="${cols + 1}"></td></tr>`;
-  }
-  
+
+  const bottomPadding = Math.max(0, (totalRows - endRow) * rowHeight);
+  if (bottomPadding > 0) html += `<tr style="height:${bottomPadding}px;"><td colspan="${cols + 1}"></td></tr>`;
   html += '</tbody>';
   table.innerHTML = html;
 
-  // Attach event listeners to dynamically created cells
-  table.querySelectorAll('.dev-cell').forEach(td => {
-    td.addEventListener('focus', devCellFocus);
-    td.addEventListener('input', devCellInput);
-    td.addEventListener('paste', devCellPaste);
-    td.addEventListener('keydown', devCellKeydown);
-  });
+  // event delegation (attach once)
+  if (!table._delegateAttached) {
+    table.addEventListener('focus', devCellFocus, true);
+    table.addEventListener('input', devCellInput, true);
+    table.addEventListener('paste', devCellPaste, true);
+    table.addEventListener('keydown', devCellKeydown, true);
+    table._delegateAttached = true;
+  }
 
-  // RAF throttled scroll handler (60fps)
+  // RAF throttled scroll handler
   if (!container._vscrollAttached) {
     container.addEventListener('scroll', () => {
       if (container._vscrollRaf) cancelAnimationFrame(container._vscrollRaf);
@@ -3562,6 +3579,11 @@ function devRenderEditor() {
     container._vscrollAttached = true;
   }
 
+  // cache last rendered range for quick re-renders
+  table._lastStartRow = startRow;
+  table._lastEndRow = endRow;
+  table._lastCols = cols;
+  table._lastZoom = devZoomValue;
   devUpdateSearchCount();
 }
 function devEscapeHtml(v) {
@@ -3579,7 +3601,9 @@ function devSwitchSheet(idx) {
   if (sheet) devSetStatus(`${sheet.filename} を編集中です。`);
 }
 function devCellFocus(e) {
-  const td = e.currentTarget;
+  // Support both direct and delegated listeners
+  const td = (e.target && e.target.closest) ? e.target.closest('.dev-cell') : e.currentTarget;
+  if (!td) return;
   devSelectedCell = { r:Number(td.dataset.r), c:Number(td.dataset.c) };
   const sheet = devCurrentSheet();
   devCellEditSnapshot = sheet ? devCloneRows(sheet.rows) : null;
@@ -3596,7 +3620,8 @@ function devCellInput(e) {
     devRedoStack = [];
     devCellEditPushed = true;
   }
-  const td = e.currentTarget;
+  const td = devCellFromEvent(e);
+  if (!td) return;
   const r = Number(td.dataset.r), c = Number(td.dataset.c);
   while (sheet.rows[r].length <= c) sheet.rows[r].push('');
   sheet.rows[r][c] = td.textContent.replace(/[\t\r\n]/g, ' ');
@@ -3610,7 +3635,9 @@ function devCellPaste(e) {
   const sheet = devCurrentSheet();
   if (!sheet) return;
   devPushUndo();
-  const startR = Number(e.currentTarget.dataset.r), startC = Number(e.currentTarget.dataset.c);
+  const cell = devCellFromEvent(e);
+  if (!cell) return;
+  const startR = Number(cell.dataset.r), startC = Number(cell.dataset.c);
   const rows = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').map(line => line.split('\t'));
   if (rows.length > 1 && rows[rows.length - 1].length === 1 && rows[rows.length - 1][0] === '') rows.pop();
   for (let r = 0; r < rows.length; r++) {
@@ -3630,7 +3657,8 @@ function devCellKeydown(e) {
   const key = e.key;
   if (!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Tab','Enter'].includes(key)) return;
   if (key === 'Enter') e.preventDefault();
-  const td = e.currentTarget;
+  const td = devCellFromEvent(e);
+  if (!td) return;
   let r = Number(td.dataset.r), c = Number(td.dataset.c);
   if (key === 'ArrowUp') r--;
   if (key === 'ArrowDown' || key === 'Enter') r++;
@@ -3647,14 +3675,22 @@ function devFocusCell(r, c) {
   const container = document.getElementById('dev-editor-frame');
   let td = document.querySelector(`.dev-cell[data-r="${r}"][data-c="${c}"]`);
   if (!td) {
-    // row not rendered; scroll to it and re-render
+    // row not rendered; scroll to it and re-render using scaled height
     if (container) {
-      container.scrollTop = r * DEV_ROW_HEIGHT;
+      container.scrollTop = Math.max(0, Math.floor(r * devScaledRowHeight()));
       devRenderEditor();
     }
     td = document.querySelector(`.dev-cell[data-r="${r}"][data-c="${c}"]`);
   }
-  if (td) { td.focus(); td.scrollIntoView({ block:'nearest', inline:'nearest' }); }
+  if (td) {
+    td.focus();
+    // center the row in the viewport to avoid page scroll
+    if (container) {
+      const rowTop = r * devScaledRowHeight();
+      const target = Math.max(0, Math.floor(rowTop - (container.clientHeight - devScaledRowHeight()) / 2));
+      container.scrollTop = target;
+    }
+  }
 }
 function devUndo() {
   const sheet = devCurrentSheet();
@@ -3724,8 +3760,21 @@ function devClearCell() {
   devMarkDirty(); devSearch(); devRenderEditor();
 }
 function devZoom(delta, reset=false) {
+  const container = document.getElementById('dev-editor-frame');
+  const oldRowHeight = devScaledRowHeight();
   devZoomValue = reset ? 1 : Math.max(0.5, Math.min(2, devZoomValue + delta));
+  // preserve visual center after zoom change
+  if (container) {
+    const containerHeight = container.clientHeight || 460;
+    const visualCenterRow = (container.scrollTop + containerHeight / 2) / oldRowHeight;
+    const newRowHeight = devScaledRowHeight();
+    container.scrollTop = Math.max(0, Math.floor(visualCenterRow * newRowHeight - containerHeight / 2));
+  }
   devRenderEditor();
+}
+function devSearchDebounce() {
+  clearTimeout(devSearchDebounceTimer);
+  devSearchDebounceTimer = setTimeout(() => devSearch(), 200);
 }
 function devSearch() {
   const input = document.getElementById('dev-search-input');
@@ -3734,18 +3783,34 @@ function devSearch() {
   devSearchState = { matches: [], idx: -1 };
   if (sheet && q) {
     const terms = q.split(/\s+/).filter(Boolean);
+    if (!terms.length) { devUpdateSearchCount(); devRenderEditor(); return; }
     const cols = devMaxCols(sheet.rows);
+    const termsLen = terms.length;
+    
     for (let r = 0; r < sheet.rows.length; r++) {
-      for (let c = 0; c <= cols - terms.length; c++) {
-        let ok = true;
-        for (let i = 0; i < terms.length; i++) {
-          if (!String(sheet.rows[r][c + i] ?? '').includes(terms[i])) { ok = false; break; }
+      const row = sheet.rows[r];
+      const maxC = Math.max(0, cols - termsLen);
+      
+      for (let c = 0; c <= maxC; c++) {
+        let match = true;
+        for (let i = 0; i < termsLen; i++) {
+          const cell = row[c + i];
+          if (!cell || !String(cell).includes(terms[i])) {
+            match = false;
+            break;
+          }
         }
-        if (ok) devSearchState.matches.push({ r, c, cells: terms.map((_, i) => ({ r, c:c + i })) });
+        if (match) {
+          devSearchState.matches.push({
+            r, c,
+            cells: terms.map((_, i) => ({ r, c: c + i }))
+          });
+        }
       }
     }
     if (devSearchState.matches.length) devSearchState.idx = 0;
   }
+  devUpdateSearchCount();
   devRenderEditor();
 }
 function devUpdateSearchCount() {
@@ -3760,22 +3825,18 @@ function devGoSearch(delta) {
   devSearchState.idx = (devSearchState.idx + delta + total) % total;
   const m = devSearchState.matches[devSearchState.idx];
   const container = document.getElementById('dev-editor-frame');
-  
-  // スクロール位置を設定（仮想スクロール対応）
+
   if (container) {
-    container.scrollTop = m.r * DEV_ROW_HEIGHT;
+    // center target row in viewport
+    const target = Math.max(0, Math.floor(m.r * devScaledRowHeight() - (container.clientHeight - devScaledRowHeight()) / 2));
+    container.scrollTop = target;
   }
-  
-  // レンダリングで該当行を表示
+
+  // Render and focus
   devRenderEditor();
-  
-  // 描画完了後、セルをフォーカス
   requestAnimationFrame(() => {
     const td = document.querySelector(`.dev-cell[data-r="${m.r}"][data-c="${m.c}"]`);
-    if (td) { 
-      td.focus(); 
-      td.scrollIntoView({ block:'nearest', inline:'nearest' }); 
-    }
+    if (td) { td.focus(); }
   });
 }
 function devGetSecretKey() {
