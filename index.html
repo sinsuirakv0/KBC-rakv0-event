@@ -18,6 +18,7 @@
   <meta name="twitter:description" content="スケジュールを閲覧することができます。">
   <meta name="twitter:image" content="https://kbc-rakv0.vercel.app/assets/preview.png">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
   <script src="https://kbc-rakv0.vercel.app/js/theme.js"></script>
   <script>
   (function(){var t=localStorage.getItem('kbc-theme');if(t&&t!=='original')document.documentElement.setAttribute('data-theme',t);})();
@@ -334,6 +335,83 @@
   color: #aaa;
   min-width: 160px;
 }
+
+/* Developer TSV editor */
+.dev-only { display: none; }
+.dev-editor-head {
+  display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.dev-badge {
+  font-size:0.68rem; color:#000; background:#f90; border-radius:3px; padding:2px 7px;
+  font-weight:bold; letter-spacing:0.03em;
+}
+.dev-sheet-tabs { display:flex; gap:6px; flex-wrap:wrap; margin:8px 0; }
+.dev-sheet-tab {
+  border:1px solid #555; border-radius:4px; padding:4px 9px; cursor:pointer;
+  color:#ccc; background:rgba(255,255,255,0.06); font-size:0.74rem;
+}
+.dev-sheet-tab.active { color:#000; background:#f90; border-color:#f90; font-weight:bold; }
+.dev-toolbar {
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+  padding:8px; border:1px solid rgba(255,255,255,0.08); border-radius:6px;
+  background:rgba(0,0,0,0.12); margin:8px 0;
+}
+.dev-mini-btn {
+  padding:4px 9px; font-size:0.72rem; border-radius:4px; cursor:pointer;
+  border:1px solid #555; background:rgba(255,255,255,0.07); color:#ddd;
+}
+.dev-mini-btn:hover { border-color:#f90; color:#f90; }
+.dev-mini-btn:disabled { opacity:.35; cursor:not-allowed; }
+.dev-input, .dev-select {
+  font-size:0.76rem; padding:4px 7px; border-radius:4px; border:1px solid #555;
+  background:var(--bg-secondary,#222); color:var(--text-primary,#eee);
+}
+.dev-search { width:min(260px,70vw); }
+.dev-editor-frame {
+  height:460px; border:1px solid rgba(255,255,255,0.16); border-radius:8px;
+  overflow:auto; background:rgba(0,0,0,0.22); position:relative;
+}
+#dev-sheet-viewport { transform-origin: top left; padding:0 0 120px 0; }
+.dev-sheet-table { border-collapse:collapse; table-layout:fixed; font-family:Consolas, monospace; font-size:12px; }
+.dev-sheet-table th {
+  position:sticky; top:0; z-index:4; background:#18243a; color:#aaa;
+  border:1px solid rgba(255,255,255,0.12); height:24px; min-width:46px; max-width:46px;
+  font-weight:normal; text-align:center;
+}
+.dev-sheet-table .dev-row-head { left:0; z-index:5; min-width:46px; max-width:46px; }
+.dev-cell {
+  width:112px; min-width:112px; max-width:112px; height:24px; max-height:24px;
+  border:1px solid rgba(255,255,255,0.10); padding:2px 5px;
+  color:#e9eef8; background:rgba(255,255,255,0.025); overflow:hidden;
+  white-space:nowrap; outline:none; vertical-align:top; box-sizing:border-box;
+}
+.dev-cell:hover { background:rgba(255,255,255,0.07); }
+.dev-cell.dev-selected { box-shadow:inset 0 0 0 2px #f90; background:rgba(255,153,0,0.12); }
+.dev-cell:focus {
+  position:relative; z-index:8; overflow:visible; white-space:pre; min-width:260px;
+  min-height:66px; height:auto; max-height:none; background:#121b2d; box-shadow:0 6px 18px rgba(0,0,0,.45), inset 0 0 0 2px #f90;
+}
+.dev-cell.dev-search-hit { background:rgba(255,220,0,0.20); box-shadow:inset 0 0 0 1px rgba(255,220,0,0.65); }
+.dev-cell.dev-search-current { background:rgba(255,153,0,0.45); box-shadow:inset 0 0 0 2px #fff; }
+.dev-editor-foot { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.dev-status { font-size:0.76rem; color:#aaa; }
+#dev-save-overlay {
+  display:none; position:fixed; inset:0; z-index:3200; background:rgba(0,0,0,0.72);
+  align-items:center; justify-content:center;
+}
+#dev-save-overlay.show { display:flex; }
+#dev-save-panel {
+  width:min(92vw,420px); background:var(--card,#0a1931); color:var(--text-primary,#eee);
+  border:1px solid var(--border,rgba(255,255,255,0.14)); border-radius:12px; padding:18px;
+}
+#dev-save-panel h4 { margin:0 0 12px; font-size:0.92rem; }
+.dev-save-actions { display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; margin-top:14px; }
+[data-theme="light"] .dev-editor-frame { background:#f6f7f9; border-color:rgba(0,0,0,0.12); }
+[data-theme="light"] .dev-toolbar { background:rgba(0,0,0,0.035); border-color:rgba(0,0,0,0.08); }
+[data-theme="light"] .dev-cell { color:#222; background:#fff; border-color:rgba(0,0,0,0.12); }
+[data-theme="light"] .dev-cell:focus { background:#fff7e8; }
+[data-theme="light"] .dev-sheet-table th { background:#e8eaed; color:#444; }
 #utc-select { font-size: 0.8rem; padding: 3px 6px; }
 </style>
 </head>
@@ -470,6 +548,60 @@
           </div>
         </div>
 
+        <div class="settings-section dev-only" id="dev-editor-section">
+          <div class="dev-editor-head">
+            <h3 style="margin:0;">Developer TSV Editor</h3>
+            <span class="dev-badge">Developer_options=ON</span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">Local TSV/DAT</span>
+            <select id="dev-local-type" class="dev-select">
+              <option value="gatya">gatya</option>
+              <option value="sale">sale</option>
+              <option value="item">item</option>
+            </select>
+            <select id="dev-local-locale" class="dev-select">
+              <option value="ja">jp</option>
+              <option value="en">en</option>
+              <option value="kr">kr</option>
+              <option value="tw">tw</option>
+            </select>
+            <label class="settings-btn" style="cursor:pointer;">
+              Choose file
+              <input type="file" id="dev-local-file" accept=".tsv,.dat,application/octet-stream,text/tab-separated-values" style="display:none;" onchange="devHandleLocalFile(this)">
+            </label>
+            <span id="dev-local-status" class="dev-status"></span>
+          </div>
+          <div id="dev-sheet-tabs" class="dev-sheet-tabs"></div>
+          <div class="dev-toolbar">
+            <button class="dev-mini-btn" onclick="devUndo()">Undo</button>
+            <button class="dev-mini-btn" onclick="devRedo()">Redo</button>
+            <button class="dev-mini-btn" onclick="devAddRow()">+ Row</button>
+            <button class="dev-mini-btn" onclick="devAddCol()">+ Col</button>
+            <button class="dev-mini-btn" onclick="devDeleteRow()">Del Row</button>
+            <button class="dev-mini-btn" onclick="devDeleteCol()">Del Col</button>
+            <button class="dev-mini-btn" onclick="devClearCell()">Clear</button>
+            <span style="width:1px;height:22px;background:rgba(255,255,255,.15);"></span>
+            <button class="dev-mini-btn" onclick="devZoom(-0.1)">-</button>
+            <span id="dev-zoom-label" class="dev-status">100%</span>
+            <button class="dev-mini-btn" onclick="devZoom(0.1)">+</button>
+            <button class="dev-mini-btn" onclick="devZoom(0,true)">Reset</button>
+            <input id="dev-search-input" class="dev-input dev-search" placeholder="Search cells: 999999 0 0" oninput="devSearch()">
+            <button class="dev-mini-btn" onclick="devGoSearch(-1)">Prev</button>
+            <button class="dev-mini-btn" onclick="devGoSearch(1)">Next</button>
+            <span id="dev-search-count" class="dev-status">0/0</span>
+          </div>
+          <div class="dev-editor-frame" id="dev-editor-frame">
+            <div id="dev-sheet-viewport"><table id="dev-sheet-table" class="dev-sheet-table"></table></div>
+          </div>
+          <div class="dev-editor-foot">
+            <button class="settings-btn" onclick="devLoadCurrentToList()">現在の内容を一覧に読み込む</button>
+            <button class="settings-btn" onclick="devOpenSaveOverlay()">ファイルを保存</button>
+            <span id="dev-editor-status" class="dev-status">No TSV loaded.</span>
+          </div>
+        </div>
+
+
         <!-- カード4: TSV読み込み -->
         <div class="settings-section">
           <h3>📂 TSV読み込み</h3>
@@ -548,6 +680,23 @@
   </div>
 
   <!-- オーバーレイは container の外 → position:fixed がビューポート基準になる -->
+
+
+  <div id="dev-save-overlay">
+    <div id="dev-save-panel">
+      <h4>Save TSV editor content</h4>
+      <div class="settings-row">
+        <span class="settings-label">Filename</span>
+        <input id="dev-save-filename" class="dev-input" style="flex:1;min-width:180px;">
+      </div>
+      <div class="dev-status" id="dev-save-status">Choose a download method.</div>
+      <div class="dev-save-actions">
+        <button class="dev-mini-btn" onclick="devCloseSaveOverlay()">Cancel</button>
+        <button class="settings-btn" onclick="devDownloadPlain()">Save TSV</button>
+        <button class="settings-btn" onclick="devDownloadEncrypted()">Encrypt DAT</button>
+      </div>
+    </div>
+  </div>
   <div id="overlay" class="overlay-backdrop">
     <div class="overlay-panel">
       <div class="overlay-header-row">
@@ -3100,6 +3249,423 @@ function parseItemBrowser(tsv) {
 // =============================================
 // TSVダウンロード
 // =============================================
+// =============================================
+// Developer TSV editor
+// =============================================
+const DEV_OPTIONS_ENABLED = new URLSearchParams(window.location.search).get('Developer_options') === 'ON';
+const DEV_KEY_BASE = 'battlecats';
+const DEV_FILE_MAP = {
+  '002a4b18244f32d7833fd81bc833b97f.dat': 'sale.tsv',
+  '09b1058188348630d98a08e0f731f6bd.dat': 'gatya.tsv',
+  '408f66def075926baea9466e70504a3b.dat': 'item.tsv',
+  'sale.tsv': '002a4b18244f32d7833fd81bc833b97f.dat',
+  'gatya.tsv': '09b1058188348630d98a08e0f731f6bd.dat',
+  'item.tsv': '408f66def075926baea9466e70504a3b.dat',
+};
+const DEV_SALTS = { ja:'battlecats', jp:'battlecats', kr:'battlecatskr', en:'battlecatsen', tw:'battlecatstw' };
+let devSheets = [];
+let devActiveSheet = -1;
+let devSelectedCell = { r:0, c:0 };
+let devUndoStack = [];
+let devRedoStack = [];
+let devZoomValue = 1;
+let devSearchState = { matches: [], idx: -1 };
+let devCellEditSnapshot = null;
+let devCellEditPushed = false;
+
+function isDeveloperOptionsOn() { return DEV_OPTIONS_ENABLED; }
+function devLocaleLabel(locale) { return locale === 'ja' ? 'jp' : (locale || 'jp'); }
+function devCurrentSheet() { return devSheets[devActiveSheet] ?? null; }
+function devCloneRows(rows) { return rows.map(row => row.slice()); }
+function devSetStatus(msg) { const el = document.getElementById('dev-editor-status'); if (el) el.textContent = msg; }
+function devNormalizeFilename(type, locale, filename) {
+  const loc = devLocaleLabel(locale);
+  return filename || `${type}_${loc}.tsv`;
+}
+function devMaxCols(rows) { return Math.max(1, ...rows.map(r => r.length)); }
+function devParseTsvRows(text) {
+  const normalized = String(text ?? '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const lines = normalized.split('\n');
+  if (lines.length > 1 && lines[lines.length - 1] === '') lines.pop();
+  return lines.map(line => line.split('\t'));
+}
+function devRowsToTsv(rows) { return rows.map(row => row.join('\t')).join('\n'); }
+function devTypeFromFilename(name, fallback='gatya') {
+  const m = String(name || '').match(/^(gatya|sale|item)(?:_|\.)/i);
+  return m ? m[1].toLowerCase() : fallback;
+}
+function devPushUndo() {
+  const sheet = devCurrentSheet();
+  if (!sheet) return;
+  devUndoStack.push(devCloneRows(sheet.rows));
+  if (devUndoStack.length > 80) devUndoStack.shift();
+  devRedoStack = [];
+}
+function devMarkDirty() {
+  const sheet = devCurrentSheet();
+  if (sheet) sheet.dirty = true;
+}
+function devOpenTsvEditor({ text, type, locale='ja', filename, source='TSV' }) {
+  if (!isDeveloperOptionsOn()) return;
+  const rows = devParseTsvRows(text);
+  const sheet = {
+    type,
+    locale,
+    filename: devNormalizeFilename(type, locale, filename),
+    source,
+    rows: rows.length ? rows : [['']],
+    dirty: false,
+  };
+  const sameIdx = devSheets.findIndex(s => s.filename === sheet.filename);
+  if (sameIdx !== -1) devSheets.splice(sameIdx, 1, sheet);
+  else devSheets.push(sheet);
+  devActiveSheet = sameIdx !== -1 ? sameIdx : devSheets.length - 1;
+  devSelectedCell = { r:0, c:0 };
+  devUndoStack = [];
+  devRedoStack = [];
+  devRenderEditor();
+  devSetStatus(`${sheet.filename} loaded from ${source}. ${sheet.rows.length} rows.`);
+}
+function devRenderSheetTabs() {
+  const box = document.getElementById('dev-sheet-tabs');
+  if (!box) return;
+  box.innerHTML = devSheets.map((sheet, i) =>
+    `<button class="dev-sheet-tab ${i === devActiveSheet ? 'active' : ''}" onclick="devSwitchSheet(${i})">${sheet.filename}${sheet.dirty ? ' *' : ''}</button>`
+  ).join('');
+}
+function devRenderEditor() {
+  devRenderSheetTabs();
+  const table = document.getElementById('dev-sheet-table');
+  const viewport = document.getElementById('dev-sheet-viewport');
+  if (!table || !viewport) return;
+  viewport.style.transform = `scale(${devZoomValue})`;
+  const zoomLabel = document.getElementById('dev-zoom-label');
+  if (zoomLabel) zoomLabel.textContent = `${Math.round(devZoomValue * 100)}%`;
+  const sheet = devCurrentSheet();
+  if (!sheet) { table.innerHTML = ''; return; }
+  const cols = devMaxCols(sheet.rows);
+  let html = '<thead><tr><th class="dev-row-head"></th>';
+  for (let c = 0; c < cols; c++) html += `<th>${c + 1}</th>`;
+  html += '</tr></thead><tbody>';
+  const hitCells = new Set(devSearchState.matches.flatMap(m => m.cells.map(cell => `${cell.r}:${cell.c}`)));
+  const cur = devSearchState.matches[devSearchState.idx] ?? null;
+  const curSet = new Set(cur ? cur.cells.map(cell => `${cell.r}:${cell.c}`) : []);
+  for (let r = 0; r < sheet.rows.length; r++) {
+    html += `<tr><th class="dev-row-head">${r + 1}</th>`;
+    for (let c = 0; c < cols; c++) {
+      const val = devEscapeHtml(sheet.rows[r][c] ?? '');
+      const selected = devSelectedCell.r === r && devSelectedCell.c === c ? ' dev-selected' : '';
+      const hit = hitCells.has(`${r}:${c}`) ? ' dev-search-hit' : '';
+      const current = curSet.has(`${r}:${c}`) ? ' dev-search-current' : '';
+      html += `<td class="dev-cell${selected}${hit}${current}" contenteditable="true" spellcheck="false" data-r="${r}" data-c="${c}">${val}</td>`;
+    }
+    html += '</tr>';
+  }
+  html += '</tbody>';
+  table.innerHTML = html;
+  table.querySelectorAll('.dev-cell').forEach(td => {
+    td.addEventListener('focus', devCellFocus);
+    td.addEventListener('input', devCellInput);
+    td.addEventListener('paste', devCellPaste);
+    td.addEventListener('keydown', devCellKeydown);
+  });
+  devUpdateSearchCount();
+}
+function devEscapeHtml(v) {
+  return String(v).replace(/[&<>]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]));
+}
+function devSwitchSheet(idx) {
+  if (idx < 0 || idx >= devSheets.length) return;
+  devActiveSheet = idx;
+  devSelectedCell = { r:0, c:0 };
+  devUndoStack = [];
+  devRedoStack = [];
+  devSearch();
+  devRenderEditor();
+  const sheet = devCurrentSheet();
+  if (sheet) devSetStatus(`${sheet.filename} active.`);
+}
+function devCellFocus(e) {
+  const td = e.currentTarget;
+  devSelectedCell = { r:Number(td.dataset.r), c:Number(td.dataset.c) };
+  const sheet = devCurrentSheet();
+  devCellEditSnapshot = sheet ? devCloneRows(sheet.rows) : null;
+  devCellEditPushed = false;
+  document.querySelectorAll('.dev-cell.dev-selected').forEach(el => el.classList.remove('dev-selected'));
+  td.classList.add('dev-selected');
+}
+function devCellInput(e) {
+  const sheet = devCurrentSheet();
+  if (!sheet) return;
+  if (!devCellEditPushed && devCellEditSnapshot) {
+    devUndoStack.push(devCellEditSnapshot);
+    if (devUndoStack.length > 80) devUndoStack.shift();
+    devRedoStack = [];
+    devCellEditPushed = true;
+  }
+  const td = e.currentTarget;
+  const r = Number(td.dataset.r), c = Number(td.dataset.c);
+  while (sheet.rows[r].length <= c) sheet.rows[r].push('');
+  sheet.rows[r][c] = td.textContent.replace(/[\t\r\n]/g, ' ');
+  devMarkDirty();
+  devRenderSheetTabs();
+}
+function devCellPaste(e) {
+  const text = e.clipboardData?.getData('text/plain') ?? '';
+  if (!text.includes('\t') && !text.includes('\n')) return;
+  e.preventDefault();
+  const sheet = devCurrentSheet();
+  if (!sheet) return;
+  devPushUndo();
+  const startR = Number(e.currentTarget.dataset.r), startC = Number(e.currentTarget.dataset.c);
+  const rows = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').map(line => line.split('\t'));
+  if (rows.length > 1 && rows[rows.length - 1].length === 1 && rows[rows.length - 1][0] === '') rows.pop();
+  for (let r = 0; r < rows.length; r++) {
+    while (sheet.rows.length <= startR + r) sheet.rows.push([]);
+    for (let c = 0; c < rows[r].length; c++) {
+      while (sheet.rows[startR + r].length <= startC + c) sheet.rows[startR + r].push('');
+      sheet.rows[startR + r][startC + c] = rows[r][c];
+    }
+  }
+  devMarkDirty();
+  devSearch();
+  devRenderEditor();
+}
+function devCellKeydown(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); devUndo(); return; }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); devRedo(); return; }
+  const key = e.key;
+  if (!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Tab','Enter'].includes(key)) return;
+  if (key === 'Enter') e.preventDefault();
+  const td = e.currentTarget;
+  let r = Number(td.dataset.r), c = Number(td.dataset.c);
+  if (key === 'ArrowUp') r--;
+  if (key === 'ArrowDown' || key === 'Enter') r++;
+  if (key === 'ArrowLeft') c--;
+  if (key === 'ArrowRight' || key === 'Tab') { e.preventDefault(); c += e.shiftKey ? -1 : 1; }
+  devFocusCell(Math.max(0, r), Math.max(0, c));
+}
+function devFocusCell(r, c) {
+  const sheet = devCurrentSheet();
+  if (!sheet) return;
+  if (r >= sheet.rows.length) return;
+  const cols = devMaxCols(sheet.rows);
+  if (c >= cols) return;
+  const td = document.querySelector(`.dev-cell[data-r="${r}"][data-c="${c}"]`);
+  if (td) { td.focus(); td.scrollIntoView({ block:'nearest', inline:'nearest' }); }
+}
+function devUndo() {
+  const sheet = devCurrentSheet();
+  if (!sheet || devUndoStack.length === 0) return;
+  devRedoStack.push(devCloneRows(sheet.rows));
+  sheet.rows = devUndoStack.pop();
+  sheet.dirty = true;
+  devSearch();
+  devRenderEditor();
+}
+function devRedo() {
+  const sheet = devCurrentSheet();
+  if (!sheet || devRedoStack.length === 0) return;
+  devUndoStack.push(devCloneRows(sheet.rows));
+  sheet.rows = devRedoStack.pop();
+  sheet.dirty = true;
+  devSearch();
+  devRenderEditor();
+}
+function devAddRow() {
+  const sheet = devCurrentSheet(); if (!sheet) return;
+  devPushUndo();
+  const cols = devMaxCols(sheet.rows);
+  sheet.rows.splice(devSelectedCell.r + 1, 0, Array(cols).fill(''));
+  devMarkDirty(); devSearch(); devRenderEditor();
+}
+function devAddCol() {
+  const sheet = devCurrentSheet(); if (!sheet) return;
+  devPushUndo();
+  for (const row of sheet.rows) row.splice(devSelectedCell.c + 1, 0, '');
+  devMarkDirty(); devSearch(); devRenderEditor();
+}
+function devDeleteRow() {
+  const sheet = devCurrentSheet(); if (!sheet || sheet.rows.length <= 1) return;
+  devPushUndo();
+  sheet.rows.splice(devSelectedCell.r, 1);
+  devSelectedCell.r = Math.max(0, Math.min(devSelectedCell.r, sheet.rows.length - 1));
+  devMarkDirty(); devSearch(); devRenderEditor();
+}
+function devDeleteCol() {
+  const sheet = devCurrentSheet(); if (!sheet) return;
+  const cols = devMaxCols(sheet.rows); if (cols <= 1) return;
+  devPushUndo();
+  for (const row of sheet.rows) row.splice(devSelectedCell.c, 1);
+  devSelectedCell.c = Math.max(0, Math.min(devSelectedCell.c, cols - 2));
+  devMarkDirty(); devSearch(); devRenderEditor();
+}
+function devClearCell() {
+  const sheet = devCurrentSheet(); if (!sheet) return;
+  devPushUndo();
+  const { r, c } = devSelectedCell;
+  while (sheet.rows[r].length <= c) sheet.rows[r].push('');
+  sheet.rows[r][c] = '';
+  devMarkDirty(); devSearch(); devRenderEditor();
+}
+function devZoom(delta, reset=false) {
+  devZoomValue = reset ? 1 : Math.max(0.5, Math.min(2, devZoomValue + delta));
+  devRenderEditor();
+}
+function devSearch() {
+  const input = document.getElementById('dev-search-input');
+  const q = input ? input.value.trim() : '';
+  const sheet = devCurrentSheet();
+  devSearchState = { matches: [], idx: -1 };
+  if (sheet && q) {
+    const terms = q.split(/\s+/).filter(Boolean);
+    const cols = devMaxCols(sheet.rows);
+    for (let r = 0; r < sheet.rows.length; r++) {
+      for (let c = 0; c <= cols - terms.length; c++) {
+        let ok = true;
+        for (let i = 0; i < terms.length; i++) {
+          if (!String(sheet.rows[r][c + i] ?? '').includes(terms[i])) { ok = false; break; }
+        }
+        if (ok) devSearchState.matches.push({ r, c, cells: terms.map((_, i) => ({ r, c:c + i })) });
+      }
+    }
+    if (devSearchState.matches.length) devSearchState.idx = 0;
+  }
+  devRenderEditor();
+}
+function devUpdateSearchCount() {
+  const el = document.getElementById('dev-search-count');
+  if (!el) return;
+  const total = devSearchState.matches.length;
+  el.textContent = total ? `${devSearchState.idx + 1}/${total}` : '0/0';
+}
+function devGoSearch(delta) {
+  const total = devSearchState.matches.length;
+  if (!total) return;
+  devSearchState.idx = (devSearchState.idx + delta + total) % total;
+  devRenderEditor();
+  const m = devSearchState.matches[devSearchState.idx];
+  const td = document.querySelector(`.dev-cell[data-r="${m.r}"][data-c="${m.c}"]`);
+  if (td) td.scrollIntoView({ behavior:'smooth', block:'center', inline:'center' });
+}
+function devGetSecretKey() {
+  const hash = CryptoJS.MD5(DEV_KEY_BASE).toString();
+  return CryptoJS.enc.Utf8.parse(hash.substring(0, 16));
+}
+function devWordToUint8Array(wordArray) {
+  const l = wordArray.sigBytes;
+  const words = wordArray.words;
+  const result = new Uint8Array(l);
+  for (let i = 0; i < l; i++) result[i] = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
+  return result;
+}
+function devArrayBufferToWordArray(buffer) { return CryptoJS.lib.WordArray.create(buffer); }
+function devDecryptDat(arrayBuffer) {
+  if (typeof CryptoJS === 'undefined') throw new Error('CryptoJS is not loaded');
+  const encryptedSize = arrayBuffer.byteLength - 32;
+  if (encryptedSize <= 0) throw new Error('Encrypted file is too small');
+  const encryptedPart = CryptoJS.lib.WordArray.create(arrayBuffer.slice(0, encryptedSize));
+  const decrypted = CryptoJS.AES.decrypt({ ciphertext: encryptedPart }, devGetSecretKey(), { mode:CryptoJS.mode.ECB, padding:CryptoJS.pad.Pkcs7 });
+  return new TextDecoder().decode(devWordToUint8Array(decrypted));
+}
+function devEncryptText(text, locale) {
+  if (typeof CryptoJS === 'undefined') throw new Error('CryptoJS is not loaded');
+  const bytes = new TextEncoder().encode(text);
+  const encrypted = CryptoJS.AES.encrypt(devArrayBufferToWordArray(bytes.buffer), devGetSecretKey(), { mode:CryptoJS.mode.ECB, padding:CryptoJS.pad.Pkcs7 });
+  const salt = DEV_SALTS[locale] || DEV_SALTS.ja;
+  const hash = CryptoJS.MD5(CryptoJS.enc.Utf8.parse(salt).concat(encrypted.ciphertext)).toString();
+  return devWordToUint8Array(encrypted.ciphertext.concat(CryptoJS.enc.Utf8.parse(hash)));
+}
+async function devHandleLocalFile(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  const type = document.getElementById('dev-local-type')?.value || devTypeFromFilename(file.name);
+  const locale = document.getElementById('dev-local-locale')?.value || 'ja';
+  const status = document.getElementById('dev-local-status');
+  if (status) status.textContent = 'Loading...';
+  try {
+    const buffer = await file.arrayBuffer();
+    const isDat = file.name.toLowerCase().endsWith('.dat');
+    const text = isDat ? devDecryptDat(buffer) : new TextDecoder().decode(buffer);
+    const filename = isDat ? (DEV_FILE_MAP[file.name] || `${type}_${devLocaleLabel(locale)}.tsv`) : file.name;
+    devOpenTsvEditor({ text, type, locale, filename, source:isDat ? 'local encrypted DAT' : 'local TSV' });
+    if (status) status.textContent = `Loaded ${filename}`;
+  } catch(e) {
+    if (status) status.textContent = 'Failed: ' + e.message;
+    console.error(e);
+  } finally {
+    input.value = '';
+  }
+}
+function devParseSheetEntries(sheet) {
+  const text = devRowsToTsv(sheet.rows);
+  if (sheet.type === 'gatya') return parseGatyaBrowser(text);
+  if (sheet.type === 'sale') return parseSaleBrowser(text);
+  return parseItemBrowser(text);
+}
+function devLoadCurrentToList() {
+  const sheet = devCurrentSheet();
+  if (!sheet) { devSetStatus('No TSV loaded.'); return; }
+  try {
+    const entries = devParseSheetEntries(sheet);
+    if (sheet.type === 'gatya') gatyaData = entries;
+    else if (sheet.type === 'sale') saleData = entries;
+    else itemData = entries;
+    _overlayEntries = [];
+    _registerTsvMeta(entries, sheet.filename);
+    renderAll();
+    devSetStatus(`${sheet.filename} loaded as ${sheet.type}. ${entries.length} entries parsed.`);
+  } catch(e) {
+    devSetStatus('Parse failed: ' + e.message);
+    console.error(e);
+  }
+}
+function devOpenSaveOverlay() {
+  const sheet = devCurrentSheet();
+  if (!sheet) { devSetStatus('No TSV loaded.'); return; }
+  const input = document.getElementById('dev-save-filename');
+  if (input) input.value = sheet.filename;
+  document.getElementById('dev-save-overlay')?.classList.add('show');
+}
+function devCloseSaveOverlay() { document.getElementById('dev-save-overlay')?.classList.remove('show'); }
+function devDownloadBlob(data, filename, type='application/octet-stream') {
+  const blob = new Blob([data], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+function devDownloadPlain() {
+  const sheet = devCurrentSheet(); if (!sheet) return;
+  const filename = document.getElementById('dev-save-filename')?.value.trim() || sheet.filename;
+  devDownloadBlob(devRowsToTsv(sheet.rows), filename.endsWith('.tsv') ? filename : filename + '.tsv', 'text/tab-separated-values');
+  devCloseSaveOverlay();
+}
+function devDownloadEncrypted() {
+  const sheet = devCurrentSheet(); if (!sheet) return;
+  try {
+    const baseName = `${sheet.type}.tsv`;
+    let filename = DEV_FILE_MAP[baseName] || `${sheet.type}.dat`;
+    const custom = document.getElementById('dev-save-filename')?.value.trim();
+    if (custom && custom.endsWith('.dat')) filename = custom;
+    const encrypted = devEncryptText(devRowsToTsv(sheet.rows), sheet.locale);
+    devDownloadBlob(encrypted, filename);
+    devCloseSaveOverlay();
+  } catch(e) {
+    const status = document.getElementById('dev-save-status');
+    if (status) status.textContent = 'Encrypt failed: ' + e.message;
+    console.error(e);
+  }
+}
+function initDeveloperOptions() {
+  if (!isDeveloperOptionsOn()) return;
+  document.querySelectorAll('.dev-only').forEach(el => el.style.display = 'block');
+  const overlay = document.getElementById('dev-save-overlay');
+  if (overlay) overlay.addEventListener('click', e => { if (e.target === e.currentTarget) devCloseSaveOverlay(); });
+  devSetStatus('Developer mode ready. TSV downloads will open here instead of auto-downloading.');
+}
+
+
 const API_BASE = 'https://kbc-rakv0-event.vercel.app/api/getData';
 
 async function _fetchTsv(type, locale) {
@@ -3120,20 +3686,22 @@ async function downloadTsv() {
   const locale  = document.getElementById('tsv-locale').value;
   const fileVal = document.getElementById('tsv-file').value;
   const status  = document.getElementById('tsv-status');
-  status.textContent = '取得中...';
+  status.textContent = 'Getting TSV...';
   try {
     if (fileVal === 'all') {
       for (const t of ['gatya','sale','item']) {
         const text = await _fetchTsv(t, locale);
-        _triggerDownload(text, `${t}_${locale}.tsv`);
+        if (isDeveloperOptionsOn()) devOpenTsvEditor({ text, type:t, locale, filename:`${t}_${devLocaleLabel(locale)}.tsv`, source:'TSV download' });
+        else _triggerDownload(text, `${t}_${locale}.tsv`);
       }
     } else {
       const text = await _fetchTsv(fileVal, locale);
-      _triggerDownload(text, `${fileVal}_${locale}.tsv`);
+      if (isDeveloperOptionsOn()) devOpenTsvEditor({ text, type:fileVal, locale, filename:`${fileVal}_${devLocaleLabel(locale)}.tsv`, source:'TSV download' });
+      else _triggerDownload(text, `${fileVal}_${locale}.tsv`);
     }
-    status.textContent = '✓ 完了';
+    status.textContent = isDeveloperOptionsOn() ? 'Loaded into Developer TSV Editor.' : 'Done.';
   } catch(e) {
-    status.textContent = '✗ 失敗: ' + e.message;
+    status.textContent = 'Failed: ' + e.message;
     console.error(e);
   }
 }
@@ -3367,7 +3935,8 @@ async function loadSelectedRawFiles() {
       if (type === 'gatya') { entries = parseGatyaBrowser(text); gatyaData = entries; }
       else if (type === 'sale') { entries = parseSaleBrowser(text); saleData = entries; }
       else { entries = parseItemBrowser(text); itemData = entries; }
-      _registerTsvMeta(entries, name); // 共有URL用メタ登録
+      _registerTsvMeta(entries, name);
+      if (isDeveloperOptionsOn()) devOpenTsvEditor({ text, type, locale: currentLocale, filename: name, source:'GitHub raw' }); // 共有URL用メタ登録
     }
 
     const loadedTypes = results.map(r => r.type).join(', ');
@@ -3400,6 +3969,7 @@ async function handleTsvUpload(type, input) {
 
     // ファイル名をそのまま tsvSource として登録
     _registerTsvMeta(entries, file.name);
+    if (isDeveloperOptionsOn()) devOpenTsvEditor({ text, type, locale: currentLocale, filename: file.name, source:'local TSV' });
 
     nameEl.textContent = `✓ ${file.name}`;
     renderAll();
@@ -3665,6 +4235,7 @@ document.getElementById('ss-confirm-overlay').addEventListener('click', e => {
 updateNow();
 setInterval(updateNow, 1000);
 // loadData完了後にURLパラメータを解析（タブ・オーバーレイを開く）
+initDeveloperOptions();
 loadData().then(() => parseUrlParams());
 
 // TSVメタキャッシュ: raw文字列 → { tsvSource, tsvRow }
