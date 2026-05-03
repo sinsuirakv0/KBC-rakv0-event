@@ -4686,7 +4686,7 @@ async function _openOverlayFromTsv(tsvFilename, rowNum, targetId) {
     const entry = entries[rowNum - 1]; // 1-indexed
     if (!entry) return;
 
-    // エントリをoverlayEntries に登録
+    // エントリをoverlayEntriesに登録
     resetOverlayStores();
     storeOverlayEntry(entry);
 
