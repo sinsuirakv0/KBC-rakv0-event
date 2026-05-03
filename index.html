@@ -392,6 +392,11 @@
   position:relative; z-index:8; overflow:visible; white-space:pre; min-width:260px;
   min-height:66px; height:auto; max-height:none; background:#121b2d; box-shadow:0 6px 18px rgba(0,0,0,.45), inset 0 0 0 2px #f90;
 }
+
+/* Virtual Scrolling */
+.dev-virtual-tbody { will-change: transform; contain: layout style; }
+.dev-row-buffer { height: var(--dev-row-height, 24px); }
+
 .dev-cell.dev-search-hit { background:rgba(255,220,0,0.20); box-shadow:inset 0 0 0 1px rgba(255,220,0,0.65); }
 .dev-cell.dev-search-current { background:rgba(255,153,0,0.45); box-shadow:inset 0 0 0 2px #fff; }
 .dev-editor-foot { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; }
@@ -1405,6 +1410,46 @@ function matchesSearch(id, name, query) {
 }
 
 // =============================================
+// 現在のJSONに含まれているかチェック
+// =============================================
+function isEventInCurrentJson(type, detail) {
+  if (type === 'gatya') {
+    return gatyaData.some(entry =>
+      (entry.gachas || []).some(g => g.id === detail.id) &&
+      entry.header.gachaType === detail.gachaType
+    );
+  } else if (type === 'sale') {
+    return saleData.some(entry => (entry.stageIds || []).includes(detail.id));
+  } else if (type === 'mission') {
+    return saleData.some(entry => (entry.stageIds || []).includes(detail.id));
+  } else if (type === 'item' || type === 'gatya_item') {
+    return itemData.some(entry => entry.gift?.giftType === detail.id || entry.gift?.eventId === detail.eventId);
+  }
+  return true;
+}
+
+function isEventInCurrentJsonByHeader(type, header) {
+  if (type === 'gatya') {
+    return gatyaData.some(entry =>
+      entry.header.startDate === header.startDate &&
+      entry.header.startTime === header.startTime &&
+      entry.header.gachaType === header.gachaType
+    );
+  } else if (type === 'sale') {
+    return saleData.some(entry =>
+      entry.header.startDate === header.startDate &&
+      entry.header.startTime === header.startTime
+    );
+  } else if (type === 'item') {
+    return itemData.some(entry =>
+      entry.header.startDate === header.startDate &&
+      entry.header.startTime === header.startTime
+    );
+  }
+  return true;
+}
+
+// =============================================
 // フィルタリング & ソート
 // =============================================
 function filterAndSort(events) {
@@ -2304,7 +2349,14 @@ function _histSectionHtml(type, label, cls, entries, isChanged = false) {
       const start = parseDateTime(h.startDate, h.startTime);
       const end   = parseDateTime(h.endDate,   h.endTime);
       const isCurrent = start <= now2 && end > now2;
-      const isPast    = end   <= now2;
+      let isPast    = end   <= now2;
+      
+      // 現在のJSONに含まれていない場合は終了と判定
+      const isInCurrentJson = isEventInCurrentJsonByHeader(type, entry.header);
+      if (!isInCurrentJson) {
+        isPast = true;
+      }
+      
       const tagClass  = isPast ? 'tag-past' : isCurrent ? 'tag-current' : 'tag-future';
       const tagLabel  = isPast ? '終了'     : isCurrent ? '開催中'     : '予定';
       const period    = formatCardPeriod(h.startDate, h.startTime, h.endDate, h.endTime);
@@ -2334,7 +2386,14 @@ function _histSectionHtml(type, label, cls, entries, isChanged = false) {
     // 各イベントをカードとして表示
     for (const e of events) {
       const isCurrent = e.start <= now && e.end > now;
-      const isPast    = e.end   <= now;
+      let isPast    = e.end   <= now;
+      
+      // 現在のJSONに含まれていない場合は終了と判定
+      const isInCurrentJson = isEventInCurrentJson(type, e.detail);
+      if (!isInCurrentJson) {
+        isPast = true;
+      }
+      
       bodyHtml += makeCard(e.period, e.name, isCurrent, isPast, e.detail);
     }
   }
@@ -3332,6 +3391,11 @@ let devSearchState = { matches: [], idx: -1 };
 let devCellEditSnapshot = null;
 let devCellEditPushed = false;
 
+// Virtual scrolling
+const DEV_ROW_HEIGHT = 24; // pixels
+const DEV_VISIBLE_ROWS = 15; // lines to display at once
+let devScrollTop = 0;
+
 function isDeveloperOptionsOn() { return DEV_OPTIONS_ENABLED; }
 function devLocaleLabel(locale) { return locale === 'ja' ? 'jp' : (locale || 'jp'); }
 function devCurrentSheet() { return devSheets[devActiveSheet] ?? null; }
@@ -3396,39 +3460,105 @@ function devRenderEditor() {
   devRenderSheetTabs();
   const table = document.getElementById('dev-sheet-table');
   const viewport = document.getElementById('dev-sheet-viewport');
-  if (!table || !viewport) return;
+  const container = document.getElementById('dev-editor-frame');
+  if (!table || !viewport || !container) return;
+
+  // apply zoom
   viewport.style.transform = `scale(${devZoomValue})`;
   const zoomLabel = document.getElementById('dev-zoom-label');
   if (zoomLabel) zoomLabel.textContent = `${Math.round(devZoomValue * 100)}%`;
+
   const sheet = devCurrentSheet();
-  if (!sheet) { table.innerHTML = ''; return; }
+  if (!sheet) { 
+    table.innerHTML = ''; 
+    container.scrollTop = 0;
+    devScrollTop = 0;
+    return; 
+  }
+  
   const cols = devMaxCols(sheet.rows);
-  let html = '<thead><tr><th class="dev-row-head"></th>';
-  for (let c = 0; c < cols; c++) html += `<th>${c + 1}</th>`;
-  html += '</tr></thead><tbody>';
-  const hitCells = new Set(devSearchState.matches.flatMap(m => m.cells.map(cell => `${cell.r}:${cell.c}`)));
-  const cur = devSearchState.matches[devSearchState.idx] ?? null;
-  const curSet = new Set(cur ? cur.cells.map(cell => `${cell.r}:${cell.c}`) : []);
-  for (let r = 0; r < sheet.rows.length; r++) {
-    html += `<tr><th class="dev-row-head">${r + 1}</th>`;
+  const totalRows = sheet.rows.length;
+  
+  // Virtual scrolling: compute visible range with RAF throttling
+  const containerHeight = container.clientHeight || 460;
+  const rowsInView = Math.ceil(containerHeight / DEV_ROW_HEIGHT) + 2;
+  const startRow = Math.max(0, Math.floor(devScrollTop / DEV_ROW_HEIGHT) - 1);
+  const endRow = Math.min(totalRows, startRow + rowsInView + 2);
+
+  // Update scroll position tracker
+  if (Math.abs(container.scrollTop - devScrollTop) > 1) {
+    devScrollTop = container.scrollTop;
+  }
+
+  // Header row (always sticky)
+  let html = '<thead><tr><th class="dev-row-head" style="min-width:46px;max-width:46px;">#</th>';
+  for (let c = 0; c < cols; c++) {
+    html += `<th style="min-width:112px;max-width:112px;">${c + 1}</th>`;
+  }
+  html += '</tr></thead>';
+
+  // Virtual tbody with buffer rows + translateY positioning
+  html += '<tbody class="dev-virtual-tbody">';
+  
+  // Search highlighting
+  const hitCellsAll = new Set(devSearchState.matches.flatMap(m => 
+    m.cells.map(cell => `${cell.r}:${cell.c}`)
+  ));
+  const curMatch = devSearchState.matches[devSearchState.idx] ?? null;
+  const curCells = curMatch ? new Set(curMatch.cells.map(cell => `${cell.r}:${cell.c}`)) : new Set();
+
+  // Render only visible rows
+  for (let r = startRow; r < endRow && r < totalRows; r++) {
+    html += `<tr class="dev-row-buffer">`;
+    html += `<th class="dev-row-head" style="position:sticky;left:0;z-index:5;">${r + 1}</th>`;
+    
     for (let c = 0; c < cols; c++) {
-      const val = devEscapeHtml(sheet.rows[r][c] ?? '');
-      const selected = devSelectedCell.r === r && devSelectedCell.c === c ? ' dev-selected' : '';
-      const hit = hitCells.has(`${r}:${c}`) ? ' dev-search-hit' : '';
-      const current = curSet.has(`${r}:${c}`) ? ' dev-search-current' : '';
-      html += `<td class="dev-cell${selected}${hit}${current}" contenteditable="true" spellcheck="false" data-r="${r}" data-c="${c}">${val}</td>`;
+      const val = devEscapeHtml(sheet.rows[r]?.[c] ?? '');
+      const selected = (devSelectedCell.r === r && devSelectedCell.c === c) ? ' dev-selected' : '';
+      const hitClass = hitCellsAll.has(`${r}:${c}`) ? ' dev-search-hit' : '';
+      const currentClass = curCells.has(`${r}:${c}`) ? ' dev-search-current' : '';
+      
+      html += `<td class="dev-cell${selected}${hitClass}${currentClass}" 
+                 contenteditable="true" spellcheck="false" 
+                 data-r="${r}" data-c="${c}"
+                 style="width:112px;min-width:112px;max-width:112px;height:24px;">${val}</td>`;
     }
     html += '</tr>';
   }
+  
   html += '</tbody>';
   table.innerHTML = html;
-  table.querySelectorAll('.dev-cell').forEach(td => {
-    td.addEventListener('focus', devCellFocus);
-    td.addEventListener('input', devCellInput);
-    td.addEventListener('paste', devCellPaste);
-    td.addEventListener('keydown', devCellKeydown);
-  });
+
+  // Position virtual tbody with exact pixel offset
+  const tbody = table.querySelector('.dev-virtual-tbody');
+  if (tbody) {
+    tbody.style.transform = `translateY(${startRow * DEV_ROW_HEIGHT}px)`;
+    tbody.style.height = `${totalRows * DEV_ROW_HEIGHT}px`;
+  }
+
+  // Event delegation for dynamic cells (60fps safe)
+  table.addEventListener('focus', devCellFocus, true);
+  table.addEventListener('input', devCellInput, true);
+  table.addEventListener('paste', devCellPaste, true);
+  table.addEventListener('keydown', devCellKeydown, true);
+
+  // RAF throttled scroll handler (60fps)
+  if (!container._vscrollHandler) {
+    let rafId = null;
+    container._vscrollHandler = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(devRenderEditor);
+    };
+    container.addEventListener('scroll', container._vscrollHandler, { passive: true });
+  }
+
   devUpdateSearchCount();
+  
+  // Auto-scroll to selection if needed
+  const selCell = document.querySelector(`.dev-cell[data-r="${devSelectedCell.r}"][data-c="${devSelectedCell.c}"]`);
+  if (selCell && !selCell.isConnected) {
+    container.scrollTop = devSelectedCell.r * DEV_ROW_HEIGHT;
+  }
 }
 function devEscapeHtml(v) {
   return String(v).replace(/[&<>]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]));
@@ -3510,7 +3640,16 @@ function devFocusCell(r, c) {
   if (r >= sheet.rows.length) return;
   const cols = devMaxCols(sheet.rows);
   if (c >= cols) return;
-  const td = document.querySelector(`.dev-cell[data-r="${r}"][data-c="${c}"]`);
+  const container = document.getElementById('dev-editor-frame');
+  let td = document.querySelector(`.dev-cell[data-r="${r}"][data-c="${c}"]`);
+  if (!td) {
+    // row not rendered; scroll to it and re-render
+    if (container) {
+      container.scrollTop = r * DEV_ROW_HEIGHT;
+      devRenderEditor();
+    }
+    td = document.querySelector(`.dev-cell[data-r="${r}"][data-c="${c}"]`);
+  }
   if (td) { td.focus(); td.scrollIntoView({ block:'nearest', inline:'nearest' }); }
 }
 function devUndo() {
