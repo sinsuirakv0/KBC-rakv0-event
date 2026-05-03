@@ -389,13 +389,23 @@
 .dev-cell:hover { background:rgba(255,255,255,0.07); }
 .dev-cell.dev-selected { box-shadow:inset 0 0 0 2px #f90; background:rgba(255,153,0,0.12); }
 .dev-cell:focus {
-  position:relative; z-index:8; overflow:visible; white-space:pre; min-width:260px;
-  min-height:66px; height:auto; max-height:none; background:#121b2d; box-shadow:0 6px 18px rgba(0,0,0,.45), inset 0 0 0 2px #f90;
+  position:absolute; z-index:10; /* ヘッダーより上 */
+  height:24px !important; max-height:24px !important; /* ✅ 固定高さ強制 */
+  min-width:260px; /* ✅ 横のみ拡張 */
+  background:#121b2d;
+  box-shadow:0 4px 16px rgba(0,0,0,.6), inset 0 0 0 2px #f90;
+  transform:translate(-2px, -2px); /* ✅ 視覚的浮き出し */
 }
+.dev-cell:focus::before {  /* ✅ 縦長偽装レイヤー */
+  content:''; position:absolute; inset:0; z-index:-1;
+  background:rgba(255,153,0,.08);
+}
+.dev-virtual-tbody { contain:strict; } /* ✅ layout+size+style完全分離 */
+
 
 /* Virtual Scrolling */
 .dev-virtual-tbody { will-change: transform; contain: layout style; }
-.dev-row-buffer { height: var(--dev-row-height, 24px); }
+.dev-row-buffer { height: 24px !important; }
 
 .dev-cell.dev-search-hit { background:rgba(255,220,0,0.20); box-shadow:inset 0 0 0 1px rgba(255,220,0,0.65); }
 .dev-cell.dev-search-current { background:rgba(255,153,0,0.45); box-shadow:inset 0 0 0 2px #fff; }
@@ -3486,7 +3496,8 @@ function devRenderEditor() {
   const endRow = Math.min(totalRows, startRow + rowsInView + 2);
 
   // Update scroll position tracker
-  if (Math.abs(container.scrollTop - devScrollTop) > 1) {
+  const delta = Math.abs(container.scrollTop - devScrollTop);
+  if (delta > 2) {  // debounce small movements
     devScrollTop = container.scrollTop;
   }
 
@@ -3533,7 +3544,8 @@ function devRenderEditor() {
   const tbody = table.querySelector('.dev-virtual-tbody');
   if (tbody) {
     tbody.style.transform = `translateY(${startRow * DEV_ROW_HEIGHT}px)`;
-    tbody.style.height = `${totalRows * DEV_ROW_HEIGHT}px`;
+    tbody.style.height = `${totalRows * DEV_ROW_HEIGHT}px !important`;
+    tbody.style.minHeight = `${totalRows * DEV_ROW_HEIGHT}px`;
   }
 
   // Event delegation for dynamic cells (60fps safe)
