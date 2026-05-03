@@ -550,11 +550,11 @@
 
         <div class="settings-section dev-only" id="dev-editor-section">
           <div class="dev-editor-head">
-            <h3 style="margin:0;">Developer TSV Editor</h3>
+            <h3 style="margin:0;">開発者用 TSV エディタ</h3>
             <span class="dev-badge">Developer_options=ON</span>
           </div>
           <div class="settings-row">
-            <span class="settings-label">Local TSV/DAT</span>
+            <span class="settings-label">ローカル TSV/DAT</span>
             <select id="dev-local-type" class="dev-select">
               <option value="gatya">gatya</option>
               <option value="sale">sale</option>
@@ -567,28 +567,29 @@
               <option value="tw">tw</option>
             </select>
             <label class="settings-btn" style="cursor:pointer;">
-              Choose file
+              ファイル選択
               <input type="file" id="dev-local-file" accept=".tsv,.dat,application/octet-stream,text/tab-separated-values" style="display:none;" onchange="devHandleLocalFile(this)">
             </label>
             <span id="dev-local-status" class="dev-status"></span>
           </div>
           <div id="dev-sheet-tabs" class="dev-sheet-tabs"></div>
           <div class="dev-toolbar">
-            <button class="dev-mini-btn" onclick="devUndo()">Undo</button>
-            <button class="dev-mini-btn" onclick="devRedo()">Redo</button>
-            <button class="dev-mini-btn" onclick="devAddRow()">+ Row</button>
-            <button class="dev-mini-btn" onclick="devAddCol()">+ Col</button>
-            <button class="dev-mini-btn" onclick="devDeleteRow()">Del Row</button>
-            <button class="dev-mini-btn" onclick="devDeleteCol()">Del Col</button>
-            <button class="dev-mini-btn" onclick="devClearCell()">Clear</button>
+            <button class="dev-mini-btn" onclick="devUndo()">元に戻す</button>
+            <button class="dev-mini-btn" onclick="devRedo()">やり直し</button>
+            <input id="dev-row-count" class="dev-input" type="number" min="1" max="5000" value="1" title="追加する行数" style="width:70px;">
+            <button class="dev-mini-btn" onclick="devAddRows()">行を追加</button>
+            <button class="dev-mini-btn" onclick="devAddCol()">列を追加</button>
+            <button class="dev-mini-btn" onclick="devDeleteRow()">行を削除</button>
+            <button class="dev-mini-btn" onclick="devDeleteCol()">列を削除</button>
+            <button class="dev-mini-btn" onclick="devClearCell()">セルを空にする</button>
             <span style="width:1px;height:22px;background:rgba(255,255,255,.15);"></span>
             <button class="dev-mini-btn" onclick="devZoom(-0.1)">-</button>
             <span id="dev-zoom-label" class="dev-status">100%</span>
             <button class="dev-mini-btn" onclick="devZoom(0.1)">+</button>
-            <button class="dev-mini-btn" onclick="devZoom(0,true)">Reset</button>
-            <input id="dev-search-input" class="dev-input dev-search" placeholder="Search cells: 999999 0 0" oninput="devSearch()">
-            <button class="dev-mini-btn" onclick="devGoSearch(-1)">Prev</button>
-            <button class="dev-mini-btn" onclick="devGoSearch(1)">Next</button>
+            <button class="dev-mini-btn" onclick="devZoom(0,true)">等倍</button>
+            <input id="dev-search-input" class="dev-input dev-search" placeholder="セル検索: 999999 0 0" oninput="devSearch()">
+            <button class="dev-mini-btn" onclick="devGoSearch(-1)">前へ</button>
+            <button class="dev-mini-btn" onclick="devGoSearch(1)">次へ</button>
             <span id="dev-search-count" class="dev-status">0/0</span>
           </div>
           <div class="dev-editor-frame" id="dev-editor-frame">
@@ -597,7 +598,7 @@
           <div class="dev-editor-foot">
             <button class="settings-btn" onclick="devLoadCurrentToList()">現在の内容を一覧に読み込む</button>
             <button class="settings-btn" onclick="devOpenSaveOverlay()">ファイルを保存</button>
-            <span id="dev-editor-status" class="dev-status">No TSV loaded.</span>
+            <span id="dev-editor-status" class="dev-status">TSVはまだ読み込まれていません。</span>
           </div>
         </div>
 
@@ -684,16 +685,16 @@
 
   <div id="dev-save-overlay">
     <div id="dev-save-panel">
-      <h4>Save TSV editor content</h4>
+      <h4>TSVエディタの内容を保存</h4>
       <div class="settings-row">
-        <span class="settings-label">Filename</span>
+        <span class="settings-label">ファイル名</span>
         <input id="dev-save-filename" class="dev-input" style="flex:1;min-width:180px;">
       </div>
-      <div class="dev-status" id="dev-save-status">Choose a download method.</div>
+      <div class="dev-status" id="dev-save-status">保存方法を選んでください。</div>
       <div class="dev-save-actions">
-        <button class="dev-mini-btn" onclick="devCloseSaveOverlay()">Cancel</button>
-        <button class="settings-btn" onclick="devDownloadPlain()">Save TSV</button>
-        <button class="settings-btn" onclick="devDownloadEncrypted()">Encrypt DAT</button>
+        <button class="dev-mini-btn" onclick="devCloseSaveOverlay()">キャンセル</button>
+        <button class="settings-btn" onclick="devDownloadPlain()">TSVで保存</button>
+        <button class="settings-btn" onclick="devDownloadEncrypted()">暗号化DATで保存</button>
       </div>
     </div>
   </div>
@@ -3324,7 +3325,7 @@ function devOpenTsvEditor({ text, type, locale='ja', filename, source='TSV' }) {
   devUndoStack = [];
   devRedoStack = [];
   devRenderEditor();
-  devSetStatus(`${sheet.filename} loaded from ${source}. ${sheet.rows.length} rows.`);
+  devSetStatus(`${sheet.filename} を読み込みました（${source} / ${sheet.rows.length}行）。`);
 }
 function devRenderSheetTabs() {
   const box = document.getElementById('dev-sheet-tabs');
@@ -3383,7 +3384,7 @@ function devSwitchSheet(idx) {
   devSearch();
   devRenderEditor();
   const sheet = devCurrentSheet();
-  if (sheet) devSetStatus(`${sheet.filename} active.`);
+  if (sheet) devSetStatus(`${sheet.filename} を編集中です。`);
 }
 function devCellFocus(e) {
   const td = e.currentTarget;
@@ -3472,12 +3473,25 @@ function devRedo() {
   devSearch();
   devRenderEditor();
 }
+function devReadRowAddCount() {
+  const input = document.getElementById('dev-row-count');
+  const n = Number(input?.value ?? 1);
+  return Math.max(1, Math.min(5000, Number.isFinite(n) ? Math.floor(n) : 1));
+}
 function devAddRow() {
+  devAddRows(1);
+}
+function devAddRows(count = devReadRowAddCount()) {
   const sheet = devCurrentSheet(); if (!sheet) return;
+  const addCount = Math.max(1, Math.min(5000, Number(count) || 1));
   devPushUndo();
   const cols = devMaxCols(sheet.rows);
-  sheet.rows.splice(devSelectedCell.r + 1, 0, Array(cols).fill(''));
+  const insertAt = devSelectedCell.r + 1;
+  const rows = Array.from({ length: addCount }, () => Array(cols).fill(''));
+  sheet.rows.splice(insertAt, 0, ...rows);
+  devSelectedCell.r = insertAt;
   devMarkDirty(); devSearch(); devRenderEditor();
+  devSetStatus(addCount + '行を追加しました。');
 }
 function devAddCol() {
   const sheet = devCurrentSheet(); if (!sheet) return;
@@ -3582,16 +3596,16 @@ async function devHandleLocalFile(input) {
   const type = document.getElementById('dev-local-type')?.value || devTypeFromFilename(file.name);
   const locale = document.getElementById('dev-local-locale')?.value || 'ja';
   const status = document.getElementById('dev-local-status');
-  if (status) status.textContent = 'Loading...';
+  if (status) status.textContent = '読み込み中...';
   try {
     const buffer = await file.arrayBuffer();
     const isDat = file.name.toLowerCase().endsWith('.dat');
     const text = isDat ? devDecryptDat(buffer) : new TextDecoder().decode(buffer);
     const filename = isDat ? (DEV_FILE_MAP[file.name] || `${type}_${devLocaleLabel(locale)}.tsv`) : file.name;
     devOpenTsvEditor({ text, type, locale, filename, source:isDat ? 'local encrypted DAT' : 'local TSV' });
-    if (status) status.textContent = `Loaded ${filename}`;
+    if (status) status.textContent = `${filename} を読み込みました`;
   } catch(e) {
-    if (status) status.textContent = 'Failed: ' + e.message;
+    if (status) status.textContent = '失敗: ' + e.message;
     console.error(e);
   } finally {
     input.value = '';
@@ -3605,7 +3619,7 @@ function devParseSheetEntries(sheet) {
 }
 function devLoadCurrentToList() {
   const sheet = devCurrentSheet();
-  if (!sheet) { devSetStatus('No TSV loaded.'); return; }
+  if (!sheet) { devSetStatus('TSVはまだ読み込まれていません。'); return; }
   try {
     const entries = devParseSheetEntries(sheet);
     if (sheet.type === 'gatya') gatyaData = entries;
@@ -3614,15 +3628,15 @@ function devLoadCurrentToList() {
     _overlayEntries = [];
     _registerTsvMeta(entries, sheet.filename);
     renderAll();
-    devSetStatus(`${sheet.filename} loaded as ${sheet.type}. ${entries.length} entries parsed.`);
+    devSetStatus(`${sheet.filename} を ${sheet.type} として一覧に読み込みました（${entries.length}件）。`);
   } catch(e) {
-    devSetStatus('Parse failed: ' + e.message);
+    devSetStatus('パースに失敗しました: ' + e.message);
     console.error(e);
   }
 }
 function devOpenSaveOverlay() {
   const sheet = devCurrentSheet();
-  if (!sheet) { devSetStatus('No TSV loaded.'); return; }
+  if (!sheet) { devSetStatus('TSVはまだ読み込まれていません。'); return; }
   const input = document.getElementById('dev-save-filename');
   if (input) input.value = sheet.filename;
   document.getElementById('dev-save-overlay')?.classList.add('show');
@@ -3653,7 +3667,7 @@ function devDownloadEncrypted() {
     devCloseSaveOverlay();
   } catch(e) {
     const status = document.getElementById('dev-save-status');
-    if (status) status.textContent = 'Encrypt failed: ' + e.message;
+    if (status) status.textContent = '暗号化に失敗しました: ' + e.message;
     console.error(e);
   }
 }
@@ -3662,7 +3676,7 @@ function initDeveloperOptions() {
   document.querySelectorAll('.dev-only').forEach(el => el.style.display = 'block');
   const overlay = document.getElementById('dev-save-overlay');
   if (overlay) overlay.addEventListener('click', e => { if (e.target === e.currentTarget) devCloseSaveOverlay(); });
-  devSetStatus('Developer mode ready. TSV downloads will open here instead of auto-downloading.');
+  devSetStatus('開発者モードです。TSV取得は自動ダウンロードせず、このエディタに読み込みます。');
 }
 
 
@@ -3686,7 +3700,7 @@ async function downloadTsv() {
   const locale  = document.getElementById('tsv-locale').value;
   const fileVal = document.getElementById('tsv-file').value;
   const status  = document.getElementById('tsv-status');
-  status.textContent = 'Getting TSV...';
+  status.textContent = 'TSVを取得中...';
   try {
     if (fileVal === 'all') {
       for (const t of ['gatya','sale','item']) {
@@ -3699,9 +3713,9 @@ async function downloadTsv() {
       if (isDeveloperOptionsOn()) devOpenTsvEditor({ text, type:fileVal, locale, filename:`${fileVal}_${devLocaleLabel(locale)}.tsv`, source:'TSV download' });
       else _triggerDownload(text, `${fileVal}_${locale}.tsv`);
     }
-    status.textContent = isDeveloperOptionsOn() ? 'Loaded into Developer TSV Editor.' : 'Done.';
+    status.textContent = isDeveloperOptionsOn() ? '開発者用TSVエディタに読み込みました。' : '完了しました。';
   } catch(e) {
-    status.textContent = 'Failed: ' + e.message;
+    status.textContent = '失敗: ' + e.message;
     console.error(e);
   }
 }
