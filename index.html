@@ -389,7 +389,7 @@
 }
 .dev-sheet-table .dev-row-head { left:0; z-index:5; min-width:46px; max-width:46px; }
 .dev-cell {
-  width: calc(96px * var(--dev-zoom, 1)); min-width: calc(96px * var(--dev-zoom, 1)); max-width: calc(96px * var(--dev-zoom, 1)); height: calc(24px * var(--dev-zoom, 1)); max-height: calc(24px * var(--dev-zoom, 1));
+  width: calc(80px * var(--dev-zoom, 1)); min-width: calc(80px * var(--dev-zoom, 1)); max-width: calc(80px * var(--dev-zoom, 1)); height: calc(24px * var(--dev-zoom, 1)); max-height: calc(24px * var(--dev-zoom, 1));
   border:1px solid rgba(255,255,255,0.10); padding:2px 5px;
   color:#e9eef8; background:rgba(255,255,255,0.025); overflow:hidden;
   white-space:nowrap; outline:none; vertical-align:top; box-sizing:border-box;
@@ -592,7 +592,7 @@
             </select>
             <label class="settings-btn" style="cursor:pointer;">
               ファイル選択
-              <input type="file" id="dev-local-file" accept=".tsv,.dat,application/octet-stream,text/tab-separated-values" style="display:none;" onchange="devHandleLocalFile(this)">
+              <input type="file" id="dev-local-file" accept=".tsv,.dat,.json,application/json,application/octet-stream,text/tab-separated-values" style="display:none;" onchange="devHandleLocalFile(this)">
             </label>
             <span id="dev-local-status" class="dev-status"></span>
           </div>
@@ -719,6 +719,7 @@
         <button class="dev-mini-btn" onclick="devCloseSaveOverlay()">キャンセル</button>
         <button class="settings-btn" onclick="devDownloadPlain()">TSVで保存</button>
         <button class="settings-btn" onclick="devDownloadEncrypted()">暗号化DATで保存</button>
+        <button class="settings-btn" onclick="devDownloadJson()">JSONで保存</button>
       </div>
     </div>
   </div>
@@ -3417,7 +3418,7 @@ let devSearchDebounceTimer = null; // debounce search input
 
 // Scaled metrics helpers
 function devScaledRowHeight() { return DEV_ROW_HEIGHT * devZoomValue; }
-function devScaledColWidth() { return 96 * devZoomValue; }
+function devScaledColWidth() { return 80 * devZoomValue; }
 
 // Helper: get the cell element from an event (works for direct or delegated listeners)
 function devCellFromEvent(e) {
@@ -3883,11 +3884,55 @@ async function devHandleLocalFile(input) {
   if (status) status.textContent = '読み込み中...';
   try {
     const buffer = await file.arrayBuffer();
-    const isDat = file.name.toLowerCase().endsWith('.dat');
-    const text = isDat ? devDecryptDat(buffer) : new TextDecoder().decode(buffer);
-    const filename = isDat ? (DEV_FILE_MAP[file.name] || `${type}_${devLocaleLabel(locale)}.tsv`) : file.name;
-    devOpenTsvEditor({ text, type, locale, filename, source:isDat ? 'local encrypted DAT' : 'local TSV' });
-    if (status) status.textContent = `${filename} を読み込みました`;
+    const name = file.name.toLowerCase();
+    if (name.endsWith('.dat')) {
+      const text = devDecryptDat(buffer);
+      const filename = DEV_FILE_MAP[file.name] || `${type}_${devLocaleLabel(locale)}.tsv`;
+      devOpenTsvEditor({ text, type, locale, filename, source: 'local encrypted DAT' });
+      if (status) status.textContent = `${filename} を読み込みました`;
+    } else if (name.endsWith('.json')) {
+      const text = new TextDecoder().decode(buffer);
+      let obj;
+      try { obj = JSON.parse(text); } catch(err) { throw new Error('JSON 解析エラー: ' + err.message); }
+      let entries = [];
+      let importType = type;
+      if (Array.isArray(obj)) {
+        entries = obj;
+        if (!importType && entries.length > 0) {
+          const e = entries.find(Boolean);
+          if (e?.gachas) importType = 'gatya';
+          else if (e?.stageIds) importType = 'sale';
+          else if (e?.gift) importType = 'item';
+        }
+      } else if (obj && obj.entries) {
+        entries = obj.entries || [];
+        importType = obj.type || type;
+      } else {
+        throw new Error('JSON がエクスポート形式ではありません');
+      }
+
+      // Ensure baseline data is available for merging
+      await ensureDataLoaded();
+
+      const lines = [];
+      for (const entry of entries) {
+        if (!entry) continue;
+        if (entry.raw) { lines.push(entry.raw); continue; }
+        const matched = devFindMatchingEntry(importType, entry);
+        if (matched && matched.raw) { lines.push(matched.raw); continue; }
+        // fallback: best-effort serializer (may lose some fields)
+        lines.push(devSerializeEntry(entry, importType));
+      }
+      const filename = file.name;
+      const textOut = lines.join('\n');
+      devOpenTsvEditor({ text: textOut, type: importType, locale, filename, source: 'local JSON' });
+      if (status) status.textContent = `${filename} を読み込みました (${entries.length} 件)`;
+    } else {
+      const text = new TextDecoder().decode(buffer);
+      const filename = file.name;
+      devOpenTsvEditor({ text, type, locale, filename, source: 'local TSV' });
+      if (status) status.textContent = `${filename} を読み込みました`;
+    }
   } catch(e) {
     if (status) status.textContent = '失敗: ' + e.message;
     console.error(e);
@@ -3955,6 +4000,111 @@ function devDownloadEncrypted() {
     console.error(e);
   }
 }
+async function devDownloadJson() {
+  const sheet = devCurrentSheet(); if (!sheet) return;
+  const input = document.getElementById('dev-save-filename');
+  const filename = (input?.value?.trim()) || sheet.filename || `${sheet.type}.json`;
+  const entries = devParseSheetEntries(sheet);
+  const payload = { type: sheet.type, locale: sheet.locale, filename: sheet.filename, generatedAt: new Date().toISOString(), entries };
+  devDownloadBlob(JSON.stringify(payload, null, 2), filename.endsWith('.json') ? filename : filename + '.json', 'application/json');
+  devCloseSaveOverlay();
+}
+
+async function ensureDataLoaded() {
+  if ((Array.isArray(gatyaData) && gatyaData.length) || (Array.isArray(saleData) && saleData.length) || (Array.isArray(itemData) && itemData.length)) return;
+  const BASE = 'https://raw.githubusercontent.com/sinsuirakv0/KBC-rakv0-event/main/data';
+  const [gatyaRes, saleRes, itemRes] = await Promise.all([fetch(`${BASE}/gatya.json`), fetch(`${BASE}/sale.json`), fetch(`${BASE}/item.json`)]);
+  const [gatyaJson, saleJson, itemJson] = await Promise.all([gatyaRes.json(), saleRes.json(), itemRes.json()]);
+  gatyaData = Array.isArray(gatyaJson) ? gatyaJson : (gatyaJson.data ?? []);
+  saleData  = Array.isArray(saleJson)  ? saleJson  : (saleJson.data ?? []);
+  itemData  = Array.isArray(itemJson)  ? itemJson  : (itemJson.data ?? []);
+}
+
+function arraysEqual(a,b) { if (!Array.isArray(a) || !Array.isArray(b)) return false; if (a.length !== b.length) return false; for (let i=0;i<a.length;i++) if (a[i] !== b[i]) return false; return true; }
+
+function devFindMatchingEntry(type, entry) {
+  if (!entry) return null;
+  const arr = type === 'gatya' ? gatyaData : type === 'sale' ? saleData : itemData;
+  if (!arr || arr.length === 0) return null;
+  const eh = entry.header || {};
+  for (const cand of arr) {
+    const ch = cand.header || {};
+    if (eh.startDate && eh.startTime && eh.endDate && eh.endTime && ch.startDate === eh.startDate && ch.startTime === eh.startTime && ch.endDate === eh.endDate && ch.endTime === eh.endTime) return cand;
+  }
+  if (type === 'sale' && Array.isArray(entry.stageIds) && entry.stageIds.length > 0) {
+    for (const cand of arr) { if (Array.isArray(cand.stageIds) && arraysEqual(cand.stageIds, entry.stageIds)) return cand; }
+  }
+  if (type === 'gatya' && Array.isArray(entry.gachas) && entry.gachas.length > 0) {
+    const ids = entry.gachas.map(g => g.id).join(',');
+    for (const cand of arr) { if (Array.isArray(cand.gachas) && cand.gachas.map(g => g.id).join(',') === ids) return cand; }
+  }
+  if (type === 'item' && entry.gift) {
+    for (const cand of arr) {
+      if (cand.gift && entry.gift) {
+        if (entry.gift.eventId && cand.gift.eventId && entry.gift.eventId === cand.gift.eventId) return cand;
+        if (entry.gift.giftType && cand.gift.giftType && entry.gift.giftType === cand.gift.giftType && entry.gift.giftAmount === cand.gift.giftAmount) return cand;
+      }
+    }
+  }
+  return null;
+}
+
+function devSerializeEntry(entry, type) {
+  if (!entry) return '';
+  const h = entry.header || {};
+  const parts = [];
+  parts.push(h.startDate || '');
+  parts.push(h.startTime || '');
+  parts.push(h.endDate || '');
+  parts.push(h.endTime || '');
+  parts.push(h.minVersion || '');
+  parts.push(h.maxVersion || '');
+  parts.push('');
+  if (type === 'sale') {
+    const stages = entry.stageIds || [];
+    parts.push(String((entry.timeBlocks || []).length || 0));
+    parts.push(String(stages.length));
+    for (const s of stages) parts.push(String(s || ''));
+  } else if (type === 'item') {
+    parts.push(String((entry.timeBlocks || []).length || 0));
+    const g = entry.gift || {};
+    parts.push(String(g.eventId || 0));
+    parts.push(String(g.giftType || 0));
+    parts.push(String(g.giftAmount || 0));
+    const title = g.title || '';
+    const msgOrUrl = g.url || g.message || '';
+    parts.push(title);
+    parts.push(msgOrUrl);
+    parts.push('');
+    parts.push('');
+    parts.push(String(g.repeatFlag || 0));
+  } else {
+    while (parts.length < 9) parts.push('');
+    const gcount = (entry.gachas || []).length || 0;
+    parts.push(String(gcount));
+    for (let i = 0; i < gcount; i++) {
+      const g = entry.gachas[i] || {};
+      parts.push(String(g.id || -1));
+      parts.push(String(g.price || 0));
+      parts.push('');
+      parts.push(String(g.flags || 0));
+      parts.push(String(g.rates?.normal || 0));
+      parts.push('');
+      parts.push(String(g.rates?.rare || 0));
+      parts.push('');
+      parts.push(String(g.rates?.superRare || 0));
+      parts.push('');
+      parts.push(String(g.rates?.uberRare || 0));
+      parts.push(g.guaranteed ? '1' : '0');
+      parts.push(String(g.rates?.legendRare || 0));
+      parts.push('');
+      parts.push(g.message || '');
+    }
+    for (let i = 0; i < gcount; i++) { parts.push('0'); parts.push(String(entry.gachas[i]?.rates?.featured || 0)); }
+  }
+  return parts.join('\t');
+}
+
 function initDeveloperOptions() {
   if (!isDeveloperOptionsOn()) return;
   document.querySelectorAll('.dev-only').forEach(el => el.style.display = 'block');
