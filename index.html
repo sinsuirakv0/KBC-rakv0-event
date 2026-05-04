@@ -370,19 +370,16 @@
 .dev-search { width:min(260px,70vw); }
 .dev-editor-frame {
   height:460px; border:1px solid rgba(255,255,255,0.16); border-radius:8px;
-  overflow-y: auto; overflow-x: hidden; background:rgba(0,0,0,0.22); position:relative;
+  overflow: auto; background:rgba(0,0,0,0.22); position:relative;
   contain: layout style paint; scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain; /* prevent parent page from scrolling during interactions */
-  touch-action: pan-y; /* vertical pan on outer container */
+  overscroll-behavior: auto;
 }
 #dev-sheet-viewport {
   transform-origin: top left; padding:0 0 120px 0;
-  display:block; width:100%;
-  overflow-x: auto; overflow-y: visible;
+  display:block;
+  overflow: visible;
   -webkit-overflow-scrolling: touch;
-  touch-action: pan-x; /* horizontal swipes handled here, vertical gestures bubble */
-  overscroll-behavior-x: contain;
 }
 .dev-sheet-table { border-collapse:collapse; table-layout:fixed; font-family:Consolas, monospace; font-size: calc(12px * var(--dev-zoom, 1)); width: max-content; }
 .dev-sheet-table th {
