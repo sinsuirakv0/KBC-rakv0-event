@@ -372,9 +372,19 @@
   height:460px; border:1px solid rgba(255,255,255,0.16); border-radius:8px;
   overflow-y: auto; overflow-x: hidden; background:rgba(0,0,0,0.22); position:relative;
   contain: layout style paint; scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain; /* prevent parent page from scrolling during interactions */
+  touch-action: pan-y; /* vertical pan on outer container */
 }
-#dev-sheet-viewport { transform-origin: top left; padding:0 0 120px 0; }
-.dev-sheet-table { border-collapse:collapse; table-layout:fixed; font-family:Consolas, monospace; font-size: calc(12px * var(--dev-zoom, 1)); }
+#dev-sheet-viewport {
+  transform-origin: top left; padding:0 0 120px 0;
+  display:block; width:100%;
+  overflow-x: auto; overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x; /* horizontal swipes handled here, vertical gestures bubble */
+  overscroll-behavior-x: contain;
+}
+.dev-sheet-table { border-collapse:collapse; table-layout:fixed; font-family:Consolas, monospace; font-size: calc(12px * var(--dev-zoom, 1)); width: max-content; }
 .dev-sheet-table th {
   position:sticky; top:0; z-index:4; background:#18243a; color:#aaa;
   border:1px solid rgba(255,255,255,0.12); height:24px; min-width:46px; max-width:46px;
@@ -382,7 +392,7 @@
 }
 .dev-sheet-table .dev-row-head { left:0; z-index:5; min-width:46px; max-width:46px; }
 .dev-cell {
-  width:112px; min-width:112px; max-width:112px; height:24px; max-height:24px;
+  width: calc(96px * var(--dev-zoom, 1)); min-width: calc(96px * var(--dev-zoom, 1)); max-width: calc(96px * var(--dev-zoom, 1)); height: calc(24px * var(--dev-zoom, 1)); max-height: calc(24px * var(--dev-zoom, 1));
   border:1px solid rgba(255,255,255,0.10); padding:2px 5px;
   color:#e9eef8; background:rgba(255,255,255,0.025); overflow:hidden;
   white-space:nowrap; outline:none; vertical-align:top; box-sizing:border-box;
@@ -3410,7 +3420,7 @@ let devSearchDebounceTimer = null; // debounce search input
 
 // Scaled metrics helpers
 function devScaledRowHeight() { return DEV_ROW_HEIGHT * devZoomValue; }
-function devScaledColWidth() { return 112 * devZoomValue; }
+function devScaledColWidth() { return 96 * devZoomValue; }
 
 // Helper: get the cell element from an event (works for direct or delegated listeners)
 function devCellFromEvent(e) {
@@ -3957,7 +3967,7 @@ function initDeveloperOptions() {
 }
 
 
-const API_BASE = 'https://kbc-rakv0-event.vercel.app/api/getData';
+const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3000/api/getData' : 'https://kbc-rakv0-event.vercel.app/api/getData';
 
 async function _fetchTsv(type, locale) {
   const res = await fetch(`${API_BASE}?type=${type}&locale=${locale}`);
