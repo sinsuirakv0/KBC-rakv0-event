@@ -1,0 +1,102 @@
+:root {
+ --bg: #051026;
+ --card: #0a1931;
+ --text: #ffffff;
+ --muted: #94a3b8;
+ --accent: #3b82f6;
+ --border: rgba(255, 255, 255, 0.1);
+ --body-gradient: radial-gradient(circle at top right, #0d2550, #051026);
+ --links-a-color: #fff;
+ --input-color: white;
+}
+[data-theme="light"] {
+ --bg: #f0f4f8;
+ --card: #ffffff;
+ --text: #1a202c;
+ --muted: #64748b;
+ --accent: #2563eb;
+ --border: rgba(0, 0, 0, 0.1);
+ --body-gradient: radial-gradient(circle at top right, #dbeafe, #f0f4f8);
+ --links-a-color: #1a202c;
+ --input-color: #1a202c;
+}
+[data-theme="dark"] {
+ --bg: #0d0d0d;
+ --card: #1a1a1a;
+ --text: #e5e5e5;
+ --muted: #888888;
+ --accent: #60a5fa;
+ --border: rgba(255, 255, 255, 0.08);
+ --body-gradient: radial-gradient(circle at top right, #1c1c1c, #0d0d0d);
+ --links-a-color: #e5e5e5;
+ --input-color: #e5e5e5;
+}
+* { box-sizing: border-box; }
+body {
+ margin: 0;
+ font-family: 'Noto Sans JP', sans-serif;
+ background-color: var(--bg);
+ background-image: var(--body-gradient);
+ color: var(--text);
+ line-height: 1.6;
+ transition: background-color 0.3s, color 0.3s;
+}
+.container { width: 900px; max-width: 95%; margin: 0 auto; padding: 20px 0; }
+.header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+.header-left { display: flex; align-items: center; gap: 12px; }
+#logo { width: 54px; height: 54px; border-radius: 8px; transition: transform 0.3s; }
+.site-title { font-size: 22px; margin: 0; font-weight: 700; letter-spacing: 1px; }
+.nav { display: flex; gap: 20px; align-items: center; }
+.nav a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+.nav a:hover { color: var(--accent); }
+.theme-switcher { display: flex; align-items: center; background: var(--card); border: 1px solid var(--border); border-radius: 30px; padding: 4px; gap: 2px; transition: background 0.3s, border-color 0.3s; }
+.theme-btn { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; border: none; background: transparent; cursor: pointer; font-size: 15px; transition: background 0.2s, transform 0.2s; color: var(--muted); position: relative; }
+.theme-btn:hover { background: rgba(59, 130, 246, 0.15); transform: scale(1.1); }
+.theme-btn.active { background: var(--accent); color: #fff; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4); }
+.theme-btn[title]::after { content: attr(title); position: absolute; bottom: -28px; left: 50%; transform: translateX(-50%); font-size: 10px; white-space: nowrap; background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+.theme-btn:hover[title]::after { opacity: 1; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: transform 0.3s, border-color 0.3s, background 0.3s; }
+.card:hover { transform: translateY(-5px); border-color: var(--accent); }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.card h3 { margin: 0; font-size: 18px; }
+.tag { font-size: 10px; background: rgba(59, 130, 246, 0.2); color: var(--accent); padding: 2px 8px; border-radius: 20px; text-transform: uppercase; }
+.links { list-style: none; padding: 0; margin: 0; }
+.links li { margin-bottom: 10px; }
+.links a { display: block; padding: 12px 15px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: 10px; color: var(--links-a-color); text-decoration: none; font-size: 14px; transition: all 0.2s; }
+[data-theme="light"] .links a { background: rgba(0, 0, 0, 0.03); }
+.links a:hover { background: var(--accent); border-color: var(--accent); color: #fff; transform: scale(1.02); }
+footer { margin-top: 50px; text-align: center; color: var(--muted); font-size: 12px; }
+.fade-in { animation: fadeIn 0.8s ease forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+input[type="text"], input[type="number"], select { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--input-color); padding: 8px 12px; border-radius: 6px; margin-top: 4px; }
+label { font-size: 12px; color: var(--muted); }
+.content-area { width: 100%; max-width: 1200px; margin: 20px auto; padding: 0 10px; box-sizing: border-box; }
+.iframe-wrapper { position: relative; width: 100%; height: 80vh; border: 2px solid #ccc; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.iframe-wrapper iframe { width: 100%; height: 100%; border: none; }
+.gacha-section { margin-top: 20px; padding: 0; background: transparent; border: none; }
+.search-controls { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+#gachaNumber { padding: 8px; font-size: 16px; width: 100px; border: 1px solid #ccc; border-radius: 4px; }
+.search-controls button { padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+.search-controls button:hover { background-color: #0056b3; }
+.gacha-view { height: 60vh; border: 1px solid var(--border); }
+.lang-selector { margin-bottom: 10px; padding: 10px 0; background: none; box-shadow: none; }
+.lang-selector p { margin: 0 0 8px 0; font-size: 14px; font-weight: bold; color: var(--text); text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+.lang-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+.lang-buttons button { padding: 5px 15px; cursor: pointer; border: 1px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.2); color: white; border-radius: 20px; font-size: 13px; transition: 0.3s; }
+.lang-buttons button:hover { background: rgba(255,255,255,0.4); border-color: white; }
+.gacha-details { margin: 20px 0; width: 100%; max-width: 1200px; }
+.gacha-details summary { background-color: rgba(0, 123, 255, 0.8); color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; list-style: none; text-align: center; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+.gacha-details summary:hover { background-color: rgba(0, 123, 255, 1); }
+.gacha-details summary::before { content: "🔍 "; }
+.gacha-details[open] .external-search-controls { margin-top: 10px; background-color: transparent; padding: 15px; border-radius: 10px; display: flex; justify-content: center; }
+.gacha-container-inner { background: transparent !important; border: none !important; }
+#stageType { background: rgba(255, 255, 255, 0.1); color: var(--text); padding: 8px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 4px; cursor: pointer; font-size: 14px; }
+#stageType option { background-color: var(--card); color: var(--text); }
+.mini-player { position: fixed; bottom: 0; width: 100%; height: 65px; background: #222539; display: none; align-items: center; padding: 0 15px; z-index: 100; border-top: 2px solid #f39800; }
+.full-player { position: fixed; top: 100%; left: 0; width: 100%; height: 100%; background: #1a1c2c; transition: 0.4s; z-index: 200; overflow: hidden; color: white; }
+.full-player.active { top: 0; }
+.album-art-circle { width: 260px; height: 260px; background: #333; border-radius: 50%; margin: 50px auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.play-main-btn { width: 75px; height: 75px; border-radius: 50%; background: #f39800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.seek-container { display: flex; align-items: center; gap: 10px; padding: 0 20px; }
+input[type="range"] { flex-grow: 1; accent-color: #f39800; }

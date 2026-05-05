@@ -4,8 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KBC Schedule (Modular Shell Draft)</title>
-  <link rel="stylesheet" href="https://kbc-rakv0.vercel.app/assets/style.css" />
-  <link rel="stylesheet" href="https://kbc-rakv0.vercel.app/assets/event.css" />
+  <link rel="stylesheet" href="./assets/style.css" />
+  <link rel="stylesheet" href="./assets/event.css" />
+  <style>
+    .shell-pane { display: none; }
+    .shell-pane.active { display: block; }
+    .shell-search { width: 100%; max-width: 360px; margin: 8px 0 12px; }
+  </style>
 </head>
 <body>
   <main style="padding: 16px; color: #ddd; font-family: sans-serif;">
@@ -23,7 +28,31 @@
       <li>devtools補助: <code>src/features/devtools/parserBridge.js</code></li>
     </ul>
     <p>次フェーズでこの shell に実UIを段階移植し、最終的に現行 <code>index.html</code> と置き換えます。</p>
+    <input id="shell-search" class="shell-search" type="text" placeholder="Search by date token (e.g. 202401)" />
+    <div id="shell-status" style="margin: 12px 0; color: #f8b84e;"></div>
+    <div class="tabs" style="margin-bottom: 10px;">
+      <div class="tab shell-tab active" data-tab="gatya">gatya</div>
+      <div class="tab shell-tab" data-tab="sale">sale</div>
+      <div class="tab shell-tab" data-tab="item">item</div>
+      <div class="tab shell-tab" data-tab="history">history</div>
+    </div>
+    <section id="shell-gatya" class="shell-pane active">
+      <div id="shell-gatya-list"></div>
+    </section>
+    <section id="shell-sale" class="shell-pane">
+      <div id="shell-sale-list"></div>
+    </section>
+    <section id="shell-item" class="shell-pane">
+      <div id="shell-item-list"></div>
+    </section>
+    <section id="shell-history" class="shell-pane">
+      <div id="shell-history-list"></div>
+    </section>
   </main>
   <script type="module" src="./src/main.js"></script>
+  <script type="module">
+    import { bootShellApp } from "./src/shell-app.js";
+    bootShellApp();
+  </script>
 </body>
 </html>
