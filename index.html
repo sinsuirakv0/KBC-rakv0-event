@@ -723,6 +723,44 @@
       </div>
     </div>
   </div>
+  <div id="dev-load-overlay" style="display:none; position:fixed; inset:0; z-index:3300; background:rgba(0,0,0,0.72); align-items:center; justify-content:center;">
+    <div id="dev-load-panel" style="width:min(92vw,540px); background:var(--card,#0a1931); color:var(--text-primary,#eee); border:1px solid rgba(255,255,255,0.14); border-radius:12px; padding:18px;">
+      <h4 style="margin:0 0 12px;font-size:0.92rem;">ローカルファイルの読み込み確認</h4>
+      <div class="settings-row"><span class="settings-label">ファイル</span><span id="dev-load-filename" style="margin-left:8px;"></span></div>
+      <div class="settings-row" style="margin-top:8px;">
+        <span class="settings-label">判定</span>
+        <select id="dev-load-type" class="dev-select">
+          <option value="gatya">gatya</option>
+          <option value="sale">sale</option>
+          <option value="item">item</option>
+        </select>
+        <select id="dev-load-locale" class="dev-select">
+          <option value="ja">jp</option>
+          <option value="en">en</option>
+          <option value="kr">kr</option>
+          <option value="tw">tw</option>
+        </select>
+      </div>
+      <div id="dev-load-note" style="font-size:0.8rem;color:#f39c12;margin-top:8px;"></div>
+      <pre id="dev-load-preview" style="max-height:140px;overflow:auto;background:#021226;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:6px;margin-top:8px;white-space:pre-wrap;color:#dfefff;"></pre>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+        <button class="dev-mini-btn" onclick="devCloseLoadOverlay()">キャンセル</button>
+        <button class="settings-btn" onclick="devConfirmLoadOverlay()">読み込む</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dev-json-confirm-overlay" style="display:none; position:fixed; inset:0; z-index:3301; background:rgba(0,0,0,0.72); align-items:center; justify-content:center;">
+    <div id="dev-json-confirm-panel" style="width:min(92vw,480px); background:var(--card,#0a1931); color:var(--text-primary,#eee); border:1px solid rgba(255,255,255,0.14); border-radius:12px; padding:18px;">
+      <h4 style="margin:0 0 12px;font-size:0.92rem;">JSONで保存 - 確認</h4>
+      <div id="dev-json-confirm-msg" style="white-space:pre-wrap;color:#eee;"></div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+        <button class="dev-mini-btn" onclick="devCloseJsonConfirmOverlay()">キャンセル</button>
+        <button class="settings-btn" onclick="devConfirmJsonSave()">JSONで保存</button>
+      </div>
+    </div>
+  </div>
+
   <div id="overlay" class="overlay-backdrop">
     <div class="overlay-panel">
       <div class="overlay-header-row">
@@ -752,11 +790,12 @@
     </div>
   </div>
 
+<script type="module" src="./src/main.js"></script>
 <script>
 // =============================================
 // ★ 現在のアプリバージョン設定
 // =============================================
-const CURRENT_VERSION = 150300;
+const CURRENT_VERSION = window.KBCModules?.constants?.CURRENT_VERSION ?? 150300;
 
 // =============================================
 // 状態管理
@@ -1373,6 +1412,7 @@ function parseItemPackCsv(text) {
 // コメント行（//で始まるセル）を除外して表示テキストを返す
 // =============================================
 function parseTsvContent(text) {
+  if (window.KBCModules?.tsv?.parseTsvContent) return window.KBCModules.tsv.parseTsvContent(text);
   const lines = [];
   for (const line of text.split('\n')) {
     const trimmed = line.trim();
@@ -1397,11 +1437,13 @@ function toKatakana(str) {
 
 // 検索用正規化（小文字化 + ひらがな→カタカナ）
 function normalizeForSearch(str) {
+  if (window.KBCModules?.search?.normalizeForSearch) return window.KBCModules.search.normalizeForSearch(str);
   return toKatakana(str.toLowerCase());
 }
 
 // HTML タグ除去
 function stripHtml(str) {
+  if (window.KBCModules?.search?.stripHtml) return window.KBCModules.search.stripHtml(str);
   return str.replace(/<[^>]*>/g, '');
 }
 
@@ -1412,6 +1454,7 @@ function stripHtml(str) {
 // "ネコフラワー"     → { idPart:"",     namePart:"ネコフラワー" }
 // =============================================
 function parseSearchQuery(q) {
+  if (window.KBCModules?.search?.parseSearchQuery) return window.KBCModules.search.parseSearchQuery(q);
   const trimmed = q.trim();
   if (!trimmed) return { idPart: '', namePart: '' };
   // 先頭が数字列 → idPart、残りを namePart
@@ -1422,6 +1465,7 @@ function parseSearchQuery(q) {
 
 // イベント1件が検索クエリにマッチするか
 function matchesSearch(id, name, query) {
+  if (window.KBCModules?.search?.matchesSearch) return window.KBCModules.search.matchesSearch(id, name, query);
   if (!query) return true;
   const { idPart, namePart } = parseSearchQuery(query);
   const idMatch   = idPart   ? String(id).includes(idPart) : true;
@@ -1476,6 +1520,18 @@ function filterAndSort(events) {
   const now        = getCalcNow();
   const sortByDate = document.getElementById('sortByDate').checked;
   const sortById   = document.getElementById('sortById').checked;
+  if (window.KBCModules?.search?.filterAndSortEvents) {
+    return window.KBCModules.search.filterAndSortEvents(events, {
+      now,
+      scheduleOff,
+      searchQuery,
+      sortByDate,
+      sortById,
+      showCurrent: document.getElementById('showCurrent').checked,
+      showPast: document.getElementById('showPast').checked,
+      showAll: document.getElementById('showAllSale').checked,
+    });
+  }
 
   // scheduleOff: 予定（未開始）イベントを条件問わず完全除去
   const baseEvents = scheduleOff
@@ -2528,27 +2584,29 @@ async function renderHistory() {
   cont.innerHTML = '<div class="loading">履歴を取得中...</div>';
 
   try {
-    const res = await fetch(GITHUB_RAW_API);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const files = await res.json();
-
-    // (gatya|sale|item)_数字.tsv を抽出
-    const parsed = [];
-    for (const f of files) {
-      const m = f.name.match(/^(gatya|sale|item)_(\d+)\.tsv$/);
-      if (!m) continue;
-      parsed.push({ name: f.name, type: m[1], unix: Number(m[2]) });
+    let parsed = [];
+    let byType = { gatya: [], sale: [], item: [] };
+    if (window.KBCModules?.history?.fetchHistoryGroups) {
+      const hist = await window.KBCModules.history.fetchHistoryGroups();
+      parsed = hist.groups.flatMap(g => g.files);
+      byType = hist.byType;
+    } else {
+      const res = await fetch(GITHUB_RAW_API);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const files = await res.json();
+      for (const f of files) {
+        const m = f.name.match(/^(gatya|sale|item)_(\d+)\.tsv$/);
+        if (!m) continue;
+        parsed.push({ name: f.name, type: m[1], unix: Number(m[2]) });
+      }
+      for (const f of parsed) byType[f.type].push(f);
+      for (const t of ['gatya','sale','item']) byType[t].sort((a,b) => a.unix - b.unix);
     }
 
     if (parsed.length === 0) {
       cont.innerHTML = '<div class="empty">🐈 履歴データがありません</div>';
       return;
     }
-
-    // タイプ別に昇順リスト作成（前のファイルを探すため）
-    const byType = { gatya: [], sale: [], item: [] };
-    for (const f of parsed) byType[f.type].push(f);
-    for (const t of ['gatya','sale','item']) byType[t].sort((a,b) => a.unix - b.unix);
 
     // 新しい順でグループ化
     parsed.sort((a, b) => b.unix - a.unix);
@@ -3199,9 +3257,19 @@ function _decodeWeekdays(bitmask) {
 // parsers/gatya.js → parseGatya(tsv) → window.parseGatyaBrowser
 // parsers/sale.js  → parseSale(tsv)  → window.parseSaleBrowser
 // parsers/item.js  → parseItem(tsv)  → window.parseItemBrowser
-const PARSER_BASE = 'https://raw.githubusercontent.com/sinsuirakv0/KBC-rakv0-event/refs/heads/main/parsers';
+const PARSER_BASE = window.KBCModules?.constants?.PARSER_BASE || 'https://raw.githubusercontent.com/sinsuirakv0/KBC-rakv0-event/refs/heads/main/parsers';
 
 async function _loadParsers() {
+  if (window.KBCModules?.parsers?.loadParsers) {
+    const loaded = await window.KBCModules.parsers.loadParsers();
+    parseGatyaBrowser = loaded.parseGatyaBrowser || parseGatyaBrowser;
+    parseSaleBrowser = loaded.parseSaleBrowser || parseSaleBrowser;
+    parseItemBrowser = loaded.parseItemBrowser || parseItemBrowser;
+    window.parseGatyaBrowser = parseGatyaBrowser;
+    window.parseSaleBrowser = parseSaleBrowser;
+    window.parseItemBrowser = parseItemBrowser;
+    return;
+  }
   const map = [
     { file: 'gatya', exportName: 'parseGatya', globalName: 'parseGatyaBrowser' },
     { file: 'sale',  exportName: 'parseSale',  globalName: 'parseSaleBrowser'  },
@@ -3391,7 +3459,8 @@ function parseItemBrowser(tsv) {
 // Developer TSV editor
 // =============================================
 const DEV_OPTIONS_ENABLED = new URLSearchParams(window.location.search).get('Developer_options') === 'ON';
-const DEV_KEY_BASE = 'battlecats';
+/* Secret keys moved to server-side. Do NOT store secrets in client code. */
+const DEV_KEY_BASE = null;
 const DEV_FILE_MAP = {
   '002a4b18244f32d7833fd81bc833b97f.dat': 'sale.tsv',
   '09b1058188348630d98a08e0f731f6bd.dat': 'gatya.tsv',
@@ -3400,7 +3469,8 @@ const DEV_FILE_MAP = {
   'gatya.tsv': '09b1058188348630d98a08e0f731f6bd.dat',
   'item.tsv': '408f66def075926baea9466e70504a3b.dat',
 };
-const DEV_SALTS = { ja:'battlecats', jp:'battlecats', kr:'battlecatskr', en:'battlecatsen', tw:'battlecatstw' };
+/* DEV_SALTS moved to server-side */
+const DEV_SALTS = null;
 let devSheets = [];
 let devActiveSheet = -1;
 let devSelectedCell = { r:0, c:0 };
@@ -3878,61 +3948,63 @@ function devEncryptText(text, locale) {
 async function devHandleLocalFile(input) {
   const file = input.files?.[0];
   if (!file) return;
-  const type = document.getElementById('dev-local-type')?.value || devTypeFromFilename(file.name);
-  const locale = document.getElementById('dev-local-locale')?.value || 'ja';
+  const uiType = document.getElementById('dev-local-type')?.value;
+  const uiLocale = document.getElementById('dev-local-locale')?.value || 'ja';
   const status = document.getElementById('dev-local-status');
   if (status) status.textContent = '読み込み中...';
   try {
     const buffer = await file.arrayBuffer();
-    const name = file.name.toLowerCase();
-    if (name.endsWith('.dat')) {
-      const text = devDecryptDat(buffer);
-      const filename = DEV_FILE_MAP[file.name] || `${type}_${devLocaleLabel(locale)}.tsv`;
-      devOpenTsvEditor({ text, type, locale, filename, source: 'local encrypted DAT' });
-      if (status) status.textContent = `${filename} を読み込みました`;
-    } else if (name.endsWith('.json')) {
-      const text = new TextDecoder().decode(buffer);
-      let obj;
-      try { obj = JSON.parse(text); } catch(err) { throw new Error('JSON 解析エラー: ' + err.message); }
-      let entries = [];
-      let importType = type;
-      if (Array.isArray(obj)) {
-        entries = obj;
-        if (!importType && entries.length > 0) {
-          const e = entries.find(Boolean);
-          if (e?.gachas) importType = 'gatya';
-          else if (e?.stageIds) importType = 'sale';
-          else if (e?.gift) importType = 'item';
+    const name = file.name;
+    const lname = name.toLowerCase();
+    let guessedType = uiType || devTypeFromFilename(name);
+    let guessedLocale = uiLocale || 'ja';
+    let text = '';
+    let jsonObj = null;
+    let ext = 'tsv';
+
+    if (lname.endsWith('.dat')) {
+      // Encrypted DAT: do not decrypt in client. Send base64 to server for safe decryption.
+      const datBase64 = arrayBufferToBase64(buffer);
+      ext = 'dat';
+      text = null;
+      jsonObj = null;
+    } else if (lname.endsWith('.json')) {
+      text = new TextDecoder().decode(buffer);
+      try { jsonObj = JSON.parse(text); } catch(err) { throw new Error('JSON 解析エラー: ' + err.message); }
+      ext = 'json';
+      if (!uiType) {
+        if (Array.isArray(jsonObj) && jsonObj.length > 0) {
+          const e = jsonObj.find(Boolean);
+          if (e?.gachas) guessedType = 'gatya';
+          else if (e?.stageIds) guessedType = 'sale';
+          else if (e?.gift) guessedType = 'item';
+        } else if (jsonObj && jsonObj.entries && jsonObj.entries.length > 0) {
+          const e = jsonObj.entries.find(Boolean);
+          if (e?.gachas) guessedType = 'gatya';
+          else if (e?.stageIds) guessedType = 'sale';
+          else if (e?.gift) guessedType = 'item';
+          if (jsonObj.type) guessedType = jsonObj.type;
         }
-      } else if (obj && obj.entries) {
-        entries = obj.entries || [];
-        importType = obj.type || type;
-      } else {
-        throw new Error('JSON がエクスポート形式ではありません');
       }
-
-      // Ensure baseline data is available for merging
-      await ensureDataLoaded();
-
-      const lines = [];
-      for (const entry of entries) {
-        if (!entry) continue;
-        if (entry.raw) { lines.push(entry.raw); continue; }
-        const matched = devFindMatchingEntry(importType, entry);
-        if (matched && matched.raw) { lines.push(matched.raw); continue; }
-        // fallback: best-effort serializer (may lose some fields)
-        lines.push(devSerializeEntry(entry, importType));
-      }
-      const filename = file.name;
-      const textOut = lines.join('\n');
-      devOpenTsvEditor({ text: textOut, type: importType, locale, filename, source: 'local JSON' });
-      if (status) status.textContent = `${filename} を読み込みました (${entries.length} 件)`;
     } else {
-      const text = new TextDecoder().decode(buffer);
-      const filename = file.name;
-      devOpenTsvEditor({ text, type, locale, filename, source: 'local TSV' });
-      if (status) status.textContent = `${filename} を読み込みました`;
+      text = new TextDecoder().decode(buffer);
+      ext = 'tsv';
+      if (!uiType) {
+        const firstLine = (text || '').split('\n').map(l => l.trim()).find(l => l && l !== '[start]' && l !== '[end]') || '';
+        if (firstLine) {
+          const cols = firstLine.split('\t').filter(x => x !== '');
+          if (cols.length >= 10) guessedType = 'gatya';
+          else if (cols.length >= 6 && cols.length < 10) guessedType = 'sale';
+          else guessedType = devTypeFromFilename(name);
+        }
+      }
     }
+
+    const previewText = ext === 'json' ? (Array.isArray(jsonObj) ? JSON.stringify(jsonObj.slice(0,6), null, 2) : JSON.stringify(Object.assign({}, jsonObj, { entries: (jsonObj.entries || []).slice(0,5) }), null, 2)) : (text || '').split('\n').slice(0,6).join('\n');
+
+    const payload = { text, filename: name, guessedType, guessedLocale: uiLocale || guessedLocale, ext, jsonObj, previewText };
+    devShowLoadOverlay(payload);
+    if (status) status.textContent = '読み込み保留: 読み込み確認ダイアログを表示中';
   } catch(e) {
     if (status) status.textContent = '失敗: ' + e.message;
     console.error(e);
@@ -3941,6 +4013,13 @@ async function devHandleLocalFile(input) {
   }
 }
 function devParseSheetEntries(sheet) {
+  if (window.KBCModules?.devtools?.parseSheetEntries) {
+    return window.KBCModules.devtools.parseSheetEntries(sheet, {
+      parseGatyaBrowser,
+      parseSaleBrowser,
+      parseItemBrowser,
+    }, devRowsToTsv);
+  }
   const text = devRowsToTsv(sheet.rows);
   if (sheet.type === 'gatya') return parseGatyaBrowser(text);
   if (sheet.type === 'sale') return parseSaleBrowser(text);
@@ -3971,6 +4050,39 @@ function devOpenSaveOverlay() {
   document.getElementById('dev-save-overlay')?.classList.add('show');
 }
 function devCloseSaveOverlay() { document.getElementById('dev-save-overlay')?.classList.remove('show'); }
+function arrayBufferToBase64(buffer) {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+function base64ToArrayBuffer(base64) {
+  const binary = atob(base64);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes.buffer;
+}
+async function clientDecryptDatViaApi(datBase64, locale='ja') {
+  if (window.KBCModules?.api?.decryptDatViaApi) return window.KBCModules.api.decryptDatViaApi(datBase64, locale);
+  const res = await fetch('/api/decryptDat', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ data: datBase64, locale }) });
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error(t || 'API decrypt failed');
+  }
+  const json = await res.json();
+  return json.text;
+}
+async function clientEncryptDatViaApi(text, locale='ja') {
+  if (window.KBCModules?.api?.encryptDatViaApi) return window.KBCModules.api.encryptDatViaApi(text, locale);
+  const res = await fetch('/api/encryptDat', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ text, locale }) });
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error(t || 'API encrypt failed');
+  }
+  return await res.arrayBuffer();
+}
 function devDownloadBlob(data, filename, type='application/octet-stream') {
   const blob = new Blob([data], { type });
   const url = URL.createObjectURL(blob);
@@ -3984,15 +4096,15 @@ function devDownloadPlain() {
   devDownloadBlob(devRowsToTsv(sheet.rows), filename.endsWith('.tsv') ? filename : filename + '.tsv', 'text/tab-separated-values');
   devCloseSaveOverlay();
 }
-function devDownloadEncrypted() {
+async function devDownloadEncrypted() {
   const sheet = devCurrentSheet(); if (!sheet) return;
   try {
     const baseName = `${sheet.type}.tsv`;
     let filename = DEV_FILE_MAP[baseName] || `${sheet.type}.dat`;
     const custom = document.getElementById('dev-save-filename')?.value.trim();
     if (custom && custom.endsWith('.dat')) filename = custom;
-    const encrypted = devEncryptText(devRowsToTsv(sheet.rows), sheet.locale);
-    devDownloadBlob(encrypted, filename);
+    const arrayBuffer = await clientEncryptDatViaApi(devRowsToTsv(sheet.rows), sheet.locale);
+    devDownloadBlob(arrayBuffer, filename);
     devCloseSaveOverlay();
   } catch(e) {
     const status = document.getElementById('dev-save-status');
@@ -4006,8 +4118,7 @@ async function devDownloadJson() {
   const filename = (input?.value?.trim()) || sheet.filename || `${sheet.type}.json`;
   const entries = devParseSheetEntries(sheet);
   const payload = { type: sheet.type, locale: sheet.locale, filename: sheet.filename, generatedAt: new Date().toISOString(), entries };
-  devDownloadBlob(JSON.stringify(payload, null, 2), filename.endsWith('.json') ? filename : filename + '.json', 'application/json');
-  devCloseSaveOverlay();
+  devShowJsonSaveConfirm(payload, filename.endsWith('.json') ? filename : filename + '.json');
 }
 
 async function ensureDataLoaded() {
@@ -4020,7 +4131,13 @@ async function ensureDataLoaded() {
   itemData  = Array.isArray(itemJson)  ? itemJson  : (itemJson.data ?? []);
 }
 
-function arraysEqual(a,b) { if (!Array.isArray(a) || !Array.isArray(b)) return false; if (a.length !== b.length) return false; for (let i=0;i<a.length;i++) if (a[i] !== b[i]) return false; return true; }
+function arraysEqual(a,b) {
+  if (window.KBCModules?.devtools?.arraysEqual) return window.KBCModules.devtools.arraysEqual(a, b);
+  if (!Array.isArray(a) || !Array.isArray(b)) return false;
+  if (a.length !== b.length) return false;
+  for (let i=0;i<a.length;i++) if (a[i] !== b[i]) return false;
+  return true;
+}
 
 function devFindMatchingEntry(type, entry) {
   if (!entry) return null;
@@ -4105,11 +4222,106 @@ function devSerializeEntry(entry, type) {
   return parts.join('\t');
 }
 
+let _devLoadPayload = null;
+let _devJsonPayload = null;
+
+function devShowLoadOverlay(payload) {
+  _devLoadPayload = payload;
+  const overlay = document.getElementById('dev-load-overlay');
+  if (!overlay) return;
+  const filenameEl = document.getElementById('dev-load-filename'); if (filenameEl) filenameEl.textContent = payload.filename || '';
+  const selType = document.getElementById('dev-load-type'); if (selType) selType.value = payload.guessedType || 'gatya';
+  const selLocale = document.getElementById('dev-load-locale'); if (selLocale) selLocale.value = payload.guessedLocale || 'ja';
+  const preview = document.getElementById('dev-load-preview'); if (preview) preview.textContent = payload.previewText || '';
+  const note = document.getElementById('dev-load-note'); if (note) note.textContent = '※ tsvの種類を間違えて読み込むとバグる可能性があります。内容を確認してください。';
+  overlay.style.display = 'flex';
+}
+
+function devCloseLoadOverlay() {
+  const overlay = document.getElementById('dev-load-overlay'); if (overlay) overlay.style.display = 'none';
+  _devLoadPayload = null;
+}
+
+async function devConfirmLoadOverlay() {
+  const payload = _devLoadPayload; if (!payload) return;
+  const type = document.getElementById('dev-load-type')?.value || payload.guessedType || 'gatya';
+  const locale = document.getElementById('dev-load-locale')?.value || payload.guessedLocale || 'ja';
+  devCloseLoadOverlay();
+  const status = document.getElementById('dev-local-status');
+  try {
+    if (payload.ext === 'json') {
+      if (status) status.textContent = 'JSONを処理中...';
+      await devProcessJsonImport(payload.jsonObj, type, locale, payload.filename);
+      if (status) status.textContent = `${payload.filename} を読み込みました`;
+    } else if (payload.ext === 'dat') {
+      // Decrypt via server API to avoid exposing secrets client-side
+      if (status) status.textContent = 'DAT をサーバーで復号中...';
+      let filename = payload.filename;
+      filename = DEV_FILE_MAP[payload.filename] || `${type}_${devLocaleLabel(locale)}.tsv`;
+      try {
+        const decryptedText = await clientDecryptDatViaApi(payload.datBase64, locale);
+        devOpenTsvEditor({ text: decryptedText, type, locale, filename, source: 'local encrypted DAT' });
+        if (status) status.textContent = `${filename} を読み込みました`;
+      } catch(e) {
+        if (status) status.textContent = '復号に失敗しました: ' + e.message;
+        console.error(e);
+      }
+    } else {
+      const src = payload.ext === 'dat' ? 'local encrypted DAT' : 'local TSV';
+      let filename = payload.filename;
+      devOpenTsvEditor({ text: payload.text, type, locale, filename, source: src });
+      if (status) status.textContent = `${filename} を読み込みました`;
+    }
+  } catch (e) {
+    if (status) status.textContent = '失敗: ' + e.message;
+    console.error(e);
+  }
+}
+
+async function devProcessJsonImport(jsonObj, importType, locale, filename) {
+  let entries = [];
+  if (Array.isArray(jsonObj)) entries = jsonObj;
+  else if (jsonObj && jsonObj.entries) entries = jsonObj.entries || [];
+  else throw new Error('JSON がエクスポート形式ではありません');
+  await ensureDataLoaded();
+  const lines = [];
+  for (const entry of entries) {
+    if (!entry) continue;
+    if (entry.raw) { lines.push(entry.raw); continue; }
+    const matched = devFindMatchingEntry(importType, entry);
+    if (matched && matched.raw) { lines.push(matched.raw); continue; }
+    lines.push(devSerializeEntry(entry, importType));
+  }
+  const textOut = lines.join('\n');
+  devOpenTsvEditor({ text: textOut, type: importType, locale, filename, source: 'local JSON' });
+  devSetStatus(`${filename} を読み込みました (${entries.length} 件)`);
+}
+
+function devShowJsonSaveConfirm(payload, filename) {
+  _devJsonPayload = { payload, filename };
+  const overlay = document.getElementById('dev-json-confirm-overlay');
+  if (!overlay) return;
+  const msg = document.getElementById('dev-json-confirm-msg');
+  if (msg) msg.textContent = `${filename} を JSON保存します。\nJSONから再インポートする際に一部情報が復元されない可能性があります。続行しますか？\nエントリ数: ${payload.entries?.length ?? 0}`;
+  overlay.style.display = 'flex';
+}
+
+function devCloseJsonConfirmOverlay() { const o = document.getElementById('dev-json-confirm-overlay'); if (o) o.style.display = 'none'; _devJsonPayload = null; }
+
+function devConfirmJsonSave() {
+  if (!_devJsonPayload) return;
+  devDownloadBlob(JSON.stringify(_devJsonPayload.payload, null, 2), _devJsonPayload.filename, 'application/json');
+  devCloseJsonConfirmOverlay();
+  devCloseSaveOverlay();
+}
+
 function initDeveloperOptions() {
   if (!isDeveloperOptionsOn()) return;
   document.querySelectorAll('.dev-only').forEach(el => el.style.display = 'block');
   const overlay = document.getElementById('dev-save-overlay');
   if (overlay) overlay.addEventListener('click', e => { if (e.target === e.currentTarget) devCloseSaveOverlay(); });
+  const loadOverlay = document.getElementById('dev-load-overlay'); if (loadOverlay) loadOverlay.addEventListener('click', e => { if (e.target === e.currentTarget) devCloseLoadOverlay(); });
+  const jsonOverlay = document.getElementById('dev-json-confirm-overlay'); if (jsonOverlay) jsonOverlay.addEventListener('click', e => { if (e.target === e.currentTarget) devCloseJsonConfirmOverlay(); });
   devSetStatus('開発者モードです。TSV取得は自動ダウンロードせず、このエディタに読み込みます。');
 }
 
