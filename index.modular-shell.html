@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KBC Schedule (Modular Shell Draft)</title>
+  <link rel="stylesheet" href="https://kbc-rakv0.vercel.app/assets/style.css" />
+  <link rel="stylesheet" href="https://kbc-rakv0.vercel.app/assets/event.css" />
+</head>
+<body>
+  <main style="padding: 16px; color: #ddd; font-family: sans-serif;">
+    <h1>Modular Shell Draft</h1>
+    <p>
+      このファイルは、<code>index.html</code> から分離済みロジックを除去していく途中の
+      確認用コピーです。UIの完全移植はまだ行わず、分割済みモジュールの読込確認を目的にしています。
+    </p>
+    <ul>
+      <li>CSV/TSV系: <code>src/utils/csv.js</code>, <code>src/utils/tsv.js</code></li>
+      <li>検索/フィルタ: <code>src/utils/search.js</code></li>
+      <li>API通信: <code>src/services/apiClient.js</code></li>
+      <li>parserロード: <code>src/parsers/loader.js</code></li>
+      <li>履歴ロジック: <code>src/features/history/historyService.js</code></li>
+      <li>devtools補助: <code>src/features/devtools/parserBridge.js</code></li>
+    </ul>
+    <p>次フェーズでこの shell に実UIを段階移植し、最終的に現行 <code>index.html</code> と置き換えます。</p>
+  </main>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

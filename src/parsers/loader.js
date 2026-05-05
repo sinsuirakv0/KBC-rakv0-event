@@ -9,6 +9,10 @@ const FALLBACKS = {
   parseItemBrowser: parseItem,
 };
 
+export function getFallbackParsers() {
+  return { ...FALLBACKS };
+}
+
 export async function loadParsers() {
   const map = [
     { file: "gatya", exportName: "parseGatya", globalName: "parseGatyaBrowser" },
