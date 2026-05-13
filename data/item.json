@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/04/30 10:59:19",
+  "updatedAt": "26/05/13 16:19:18",
   "data": [
     {
       "header": {
@@ -1151,27 +1151,6 @@
     },
     {
       "header": {
-        "startDate": "20260416",
-        "startTime": "1100",
-        "endDate": "20260508",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 80099,
-        "giftType": 11044,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20260416\t1100\t20260508\t1100\t150300\t999999\t0\t0\t80099\t11044\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260417",
         "startTime": "1100",
         "endDate": "20261015",
@@ -1190,90 +1169,6 @@
         "repeatFlag": 1
       },
       "raw": "20260417\t1100\t20261015\t1100\t150300\t999999\t0\t0\t51703\t981\t0\t13と1/2周年記念ログインスタンプ☆\tイベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めてレアチケ＆にゃんチケ最大10枚ずつゲット！(10/15まで)\t7\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260417",
-        "startTime": "1100",
-        "endDate": "20260501",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2490,
-        "giftType": 301,
-        "giftAmount": 0,
-        "title": "←全画面告知の表示と同時に付与する",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260417\t1100\t20260501\t1100\t150300\t999999\t0\t0\t2490\t301\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260417",
-        "startTime": "1100",
-        "endDate": "20260501",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2491,
-        "giftType": 302,
-        "giftAmount": 0,
-        "title": "←全画面告知の表示と同時に付与する",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260417\t1100\t20260501\t1100\t150300\t999999\t0\t0\t2491\t302\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260417",
-        "startTime": "1100",
-        "endDate": "20260501",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51704,
-        "giftType": 831,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260417\t1100\t20260501\t1100\t150300\t999999\t0\t0\t51704\t831\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260417",
-        "startTime": "1100",
-        "endDate": "20260501",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51705,
-        "giftType": 832,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260417\t1100\t20260501\t1100\t150300\t999999\t0\t0\t51705\t832\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
@@ -1298,90 +1193,6 @@
     },
     {
       "header": {
-        "startDate": "20260417",
-        "startTime": "1100",
-        "endDate": "20260501",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51706,
-        "giftType": 837,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260417\t1100\t20260501\t1100\t150300\t999999\t0\t0\t51706\t837\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260423",
-        "startTime": "1100",
-        "endDate": "20260507",
-        "endTime": "000",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2498,
-        "giftType": 203,
-        "giftAmount": 3,
-        "title": "イベント不具合のお詫び",
-        "message": "「魅惑の堕天楼」と「黄金にゃんこ塔」の報酬取得不具合のお詫びでレアチケット3枚が送られました。<br>詳細はアプリ内「運営からのお知らせ」をご確認ください。",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260423\t1100\t20260507\t000\t150300\t999999\t0\t0\t2498\t203\t3\tイベント不具合のお詫び\t「魅惑の堕天楼」と「黄金にゃんこ塔」の報酬取得不具合のお詫びでレアチケット3枚が送られました。<br>詳細はアプリ内「運営からのお知らせ」をご確認ください。\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260423",
-        "startTime": "1100",
-        "endDate": "20260507",
-        "endTime": "000",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2499,
-        "giftType": 220,
-        "giftAmount": 3,
-        "title": "イベント不具合のお詫び",
-        "message": "「魅惑の堕天楼」と「黄金にゃんこ塔」の報酬取得不具合のお詫びでリーダーシップ3枚が送られました。<br>詳細はアプリ内「運営からのお知らせ」をご確認ください。",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260423\t1100\t20260507\t000\t150300\t999999\t0\t0\t2499\t220\t3\tイベント不具合のお詫び\t「魅惑の堕天楼」と「黄金にゃんこ塔」の報酬取得不具合のお詫びでリーダーシップ3枚が送られました。<br>詳細はアプリ内「運営からのお知らせ」をご確認ください。\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260423",
-        "startTime": "1100",
-        "endDate": "20260507",
-        "endTime": "000",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2500,
-        "giftType": 200,
-        "giftAmount": 300,
-        "title": "イベント不具合のお詫び",
-        "message": "「魅惑の堕天楼」と「黄金にゃんこ塔」の報酬取得不具合のお詫びでネコカン300個が送られました。<br>詳細はアプリ内「運営からのお知らせ」をご確認ください。",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260423\t1100\t20260507\t000\t150300\t999999\t0\t0\t2500\t200\t300\tイベント不具合のお詫び\t「魅惑の堕天楼」と「黄金にゃんこ塔」の報酬取得不具合のお詫びでネコカン300個が送られました。<br>詳細はアプリ内「運営からのお知らせ」をご確認ください。\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260427",
         "startTime": "0",
         "endDate": "20260522",
@@ -1400,27 +1211,6 @@
         "repeatFlag": 0
       },
       "raw": "20260427\t0\t20260522\t1100\t150300\t999999\t0\t0\t2492\t721\t5000\tイベント不具合のお詫び\t「魅惑の堕天楼」一時停止のお詫びで経費5000円が送られました。\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260429",
-        "startTime": "000",
-        "endDate": "20260430",
-        "endTime": "000",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2493,
-        "giftType": 203,
-        "giftAmount": 1,
-        "title": "昭和の日記念☆",
-        "message": "祝日感謝！昭和の日を記念して<br>レアチケット1枚をプレゼント！",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260429\t000\t20260430\t000\t150300\t999999\t0\t0\t2493\t203\t1\t昭和の日記念☆\t祝日感謝！昭和の日を記念して<br>レアチケット1枚をプレゼント！\t7\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
@@ -1592,69 +1382,6 @@
     },
     {
       "header": {
-        "startDate": "20260503",
-        "startTime": "000",
-        "endDate": "20260504",
-        "endTime": "000",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2496,
-        "giftType": 203,
-        "giftAmount": 1,
-        "title": "憲法記念日記念☆",
-        "message": "祝日感謝！憲法記念日を記念してレアチケット1枚をプレゼント！<br>明日も祝日☆明日もレアチケをプレゼント☆",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260503\t000\t20260504\t000\t150300\t999999\t0\t0\t2496\t203\t1\t憲法記念日記念☆\t祝日感謝！憲法記念日を記念してレアチケット1枚をプレゼント！<br>明日も祝日☆明日もレアチケをプレゼント☆\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260504",
-        "startTime": "000",
-        "endDate": "20260505",
-        "endTime": "000",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2497,
-        "giftType": 203,
-        "giftAmount": 1,
-        "title": "みどりの日記念☆",
-        "message": "祝日感謝！みどりの日を記念してレアチケット1枚をプレゼント！<br>明日も祝日☆明日もレアチケをプレゼント☆",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260504\t000\t20260505\t000\t150300\t999999\t0\t0\t2497\t203\t1\tみどりの日記念☆\t祝日感謝！みどりの日を記念してレアチケット1枚をプレゼント！<br>明日も祝日☆明日もレアチケをプレゼント☆\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260505",
-        "startTime": "000",
-        "endDate": "20260506",
-        "endTime": "000",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2501,
-        "giftType": 203,
-        "giftAmount": 1,
-        "title": "こどもの日記念☆",
-        "message": "祝日感謝！こどもの日を記念して<br>レアチケット1枚をプレゼント！",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260505\t000\t20260506\t000\t150300\t999999\t0\t0\t2501\t203\t1\tこどもの日記念☆\t祝日感謝！こどもの日を記念して<br>レアチケット1枚をプレゼント！\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260424",
         "startTime": "1100",
         "endDate": "20260601",
@@ -1673,6 +1400,90 @@
         "repeatFlag": 0
       },
       "raw": "20260424\t1100\t20260601\t1100\t150301\t999999\t0\t0\t90012\t33000\t0\t\t\t1300\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260515",
+        "startTime": "1100",
+        "endDate": "20260529",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51712,
+        "giftType": 35018,
+        "giftAmount": 0,
+        "title": "にゃんこ強化週間！",
+        "message": "イベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>毎日ログインして最大でネコカン280個ゲット！(5/29まで)",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260515\t1100\t20260529\t1100\t150300\t999999\t0\t0\t51712\t35018\t0\tにゃんこ強化週間！\tイベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>毎日ログインして最大でネコカン280個ゲット！(5/29まで)\t7\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260516",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51713,
+        "giftType": 831,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260516\t1100\t20260522\t1100\t150300\t999999\t0\t0\t51713\t831\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260516",
+        "startTime": "1100",
+        "endDate": "20260522",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51714,
+        "giftType": 832,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260516\t1100\t20260522\t1100\t150300\t999999\t0\t0\t51714\t832\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260516",
+        "startTime": "1100",
+        "endDate": "20260608",
+        "endTime": "1100",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 80101,
+        "giftType": 11045,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260516\t1100\t20260608\t1100\t150300\t999999\t0\t0\t80101\t11045\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
     }
   ]
 }
