@@ -986,7 +986,7 @@ function isMissionId(id) {
   return (id >= 8000  && id <= 8999)  ||
          (id >= 9000  && id <= 9999)  ||
          (id >= 15000 && id <= 15999) ||
-         (id >= 17001 && id <= 17999);
+         (id >= 17000 && id <= 17999);
 }
 
 // =============================================
@@ -2647,7 +2647,7 @@ async function renderHistory() {
       const allBtn = `<button class="history-type-btn" style="color:#f90;border-color:#f90;" onclick="openHistoryDiffAll('${allFiles}',${ev.unix},'${dateStr}')">all</button>`;
 
       html += `<div class="history-event-card">
-        <div class="history-event-date">📅 ${dateStr}<span class="history-badge">更新検知</span></div>
+        <div class="history-event-date"> ${dateStr}<span class="history-badge">更新検知</span></div>
         <div class="history-event-types">${btns}${allBtn}</div>
       </div>`;
     }
