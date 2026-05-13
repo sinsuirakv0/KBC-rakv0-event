@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 function readBody(req) {
   return new Promise((resolve, reject) => {
@@ -12,7 +12,7 @@ function readBody(req) {
   });
 }
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   if (req.method !== 'POST') {
     res.statusCode = 405;
     res.end('Method Not Allowed');

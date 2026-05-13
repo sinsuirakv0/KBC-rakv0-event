@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 const SALTS = { ja: 'battlecats', jp: 'battlecats', kr: 'battlecatskr', en: 'battlecatsen', tw: 'battlecatstw' };
 
@@ -14,7 +14,7 @@ function readBody(req) {
   });
 }
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   if (req.method !== 'POST') {
     res.statusCode = 405;
     res.end('Method Not Allowed');
