@@ -3327,7 +3327,6 @@ function parseItemBrowser(tsv) {
 // =============================================
 const DEV_OPTIONS_ENABLED = new URLSearchParams(window.location.search).get('Developer_options') === 'ON';
 /* Secret keys moved to server-side. Do NOT store secrets in client code. */
-const DEV_KEY_BASE = null;
 const DEV_FILE_MAP = {
   '002a4b18244f32d7833fd81bc833b97f.dat': 'sale.tsv',
   '09b1058188348630d98a08e0f731f6bd.dat': 'gatya.tsv',
@@ -3337,7 +3336,6 @@ const DEV_FILE_MAP = {
   'item.tsv': '408f66def075926baea9466e70504a3b.dat',
 };
 /* DEV_SALTS moved to server-side */
-const DEV_SALTS = null;
 let devSheets = [];
 let devActiveSheet = -1;
 let devSelectedCell = { r:0, c:0 };
@@ -3784,34 +3782,7 @@ function devGoSearch(delta) {
     if (td) { td.focus(); }
   });
 }
-function devGetSecretKey() {
-  const hash = CryptoJS.MD5(DEV_KEY_BASE).toString();
-  return CryptoJS.enc.Utf8.parse(hash.substring(0, 16));
-}
-function devWordToUint8Array(wordArray) {
-  const l = wordArray.sigBytes;
-  const words = wordArray.words;
-  const result = new Uint8Array(l);
-  for (let i = 0; i < l; i++) result[i] = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
-  return result;
-}
-function devArrayBufferToWordArray(buffer) { return CryptoJS.lib.WordArray.create(buffer); }
-function devDecryptDat(arrayBuffer) {
-  if (typeof CryptoJS === 'undefined') throw new Error('CryptoJS is not loaded');
-  const encryptedSize = arrayBuffer.byteLength - 32;
-  if (encryptedSize <= 0) throw new Error('Encrypted file is too small');
-  const encryptedPart = CryptoJS.lib.WordArray.create(arrayBuffer.slice(0, encryptedSize));
-  const decrypted = CryptoJS.AES.decrypt({ ciphertext: encryptedPart }, devGetSecretKey(), { mode:CryptoJS.mode.ECB, padding:CryptoJS.pad.Pkcs7 });
-  return new TextDecoder().decode(devWordToUint8Array(decrypted));
-}
-function devEncryptText(text, locale) {
-  if (typeof CryptoJS === 'undefined') throw new Error('CryptoJS is not loaded');
-  const bytes = new TextEncoder().encode(text);
-  const encrypted = CryptoJS.AES.encrypt(devArrayBufferToWordArray(bytes.buffer), devGetSecretKey(), { mode:CryptoJS.mode.ECB, padding:CryptoJS.pad.Pkcs7 });
-  const salt = DEV_SALTS[locale] || DEV_SALTS.ja;
-  const hash = CryptoJS.MD5(CryptoJS.enc.Utf8.parse(salt).concat(encrypted.ciphertext)).toString();
-  return devWordToUint8Array(encrypted.ciphertext.concat(CryptoJS.enc.Utf8.parse(hash)));
-}
+
 async function devHandleLocalFile(input) {
   const file = input.files?.[0];
   if (!file) return;
