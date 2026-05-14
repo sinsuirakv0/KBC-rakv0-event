@@ -3799,10 +3799,11 @@ async function devHandleLocalFile(input) {
     let text = '';
     let jsonObj = null;
     let ext = 'tsv';
+    let datBase64 = null;
 
     if (lname.endsWith('.dat')) {
       // Encrypted DAT: do not decrypt in client. Send base64 to server for safe decryption.
-      const datBase64 = arrayBufferToBase64(buffer);
+      datBase64 = arrayBufferToBase64(buffer);
       ext = 'dat';
       text = null;
       jsonObj = null;
