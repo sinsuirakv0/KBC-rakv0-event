@@ -1,58 +1,795 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KBC Schedule (Modular Shell Draft)</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KBC スケジュール</title>
   <link rel="stylesheet" href="./assets/style.css" />
   <link rel="stylesheet" href="./assets/event.css" />
-  <style>
-    .shell-pane { display: none; }
-    .shell-pane.active { display: block; }
-    .shell-search { width: 100%; max-width: 360px; margin: 8px 0 12px; }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="https://kbc-rakv0.vercel.app/assets/favicon.ico">
+  <meta property="og:title" content="KBC スケジュール">
+  <meta property="og:description" content="スケジュールを閲覧することができます。">
+  <meta property="og:image" content="https://kbc-rakv0.vercel.app/assets/preview.png">
+  <meta property="og:url" content="https://kbc-rakv0.vercel.app/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="KBC スケジュール">
+  <meta name="twitter:description" content="スケジュールを閲覧することができます。">
+  <meta name="twitter:image" content="https://kbc-rakv0.vercel.app/assets/preview.png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+  <script src="https://kbc-rakv0.vercel.app/js/theme.js"></script>
+  <script>
+  (function(){var t=localStorage.getItem('kbc-theme');if(t&&t!=='original')document.documentElement.setAttribute('data-theme',t);})();
+  </script>
+<style>
+/* 検索ボックス */
+#search-wrap {
+  position: relative;
+  display: inline-block;
+}
+#searchInput {
+  padding: 3px 8px;
+  font-size: 0.8rem;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: var(--bg-secondary, #2a2a2a);
+  color: var(--text-primary, #eee);
+  width: 200px;
+  outline: none;
+}
+#searchInput:focus { border-color: #f90; }
+#search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  background: var(--bg-secondary, #2a2a2a);
+  border: 1px solid #555;
+  border-radius: 4px;
+  width: 260px;
+  max-height: 220px;
+  overflow-y: auto;
+  display: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+.suggestion-item {
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  color: var(--text-primary, #eee);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.suggestion-item:hover,
+.suggestion-item.active { background: #f90; color: #000; }
+/* JSON/生データ表示ボタン */
+.overlay-raw-buttons { display: flex; gap: 8px; margin-top: 4px; }
+.overlay-raw-btn {
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.08);
+  color: #eee;
+  transition: background 0.2s;
+}
+.overlay-raw-btn:hover { background: rgba(255,153,0,0.3); border-color: #f90; }
+/* テーマトグル */
+.theme-toggle-group {
+  display: flex; align-items: center; gap: 2px;
+  background: rgba(0,0,0,0.2); border-radius: 20px; padding: 3px;
+}
+.theme-btn {
+  background: none; border: none; cursor: pointer;
+  width: 28px; height: 28px; border-radius: 50%;
+  font-size: 0.9rem; display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, transform 0.1s;
+  color: var(--text-primary, #eee); opacity: 0.5;
+}
+.theme-btn:hover { background: rgba(255,255,255,0.12); opacity: 0.85; }
+.theme-btn.active {
+  background: rgba(255,153,0,0.25); opacity: 1;
+  box-shadow: 0 0 0 1px rgba(255,153,0,0.6);
+}
+.theme-btn.active:hover { background: rgba(255,153,0,0.35); }
+
+/* ライトモード用CSS変数（data-theme="light"のとき適用） */
+[data-theme="light"] {
+  --bg-primary:   #f4f5f7;
+  --bg-secondary: #ffffff;
+  --bg-tertiary:  #e8eaed;
+  --card:         #ffffff;
+  --border:       rgba(0,0,0,0.1);
+  --text-primary: #1a1a2e;
+  --text-secondary: #555;
+  --accent:       #f90;
+}
+[data-theme="light"] body {
+  background: var(--bg-primary, #f4f5f7);
+  color: var(--text-primary, #1a1a2e);
+}
+[data-theme="light"] .event-card {
+  background: #fff; border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+[data-theme="light"] .event-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+[data-theme="light"] .card-period,
+[data-theme="light"] .card-name { color: #222; }
+[data-theme="light"] .overlay-panel { background: #fff; color: #1a1a2e; }
+[data-theme="light"] .overlay-label { color: #555; }
+[data-theme="light"] .overlay-value { color: #222; }
+[data-theme="light"] #searchInput {
+  background: #fff; color: #222; border-color: #ccc;
+}
+[data-theme="light"] .suggestion-item { color: #222; background: #fff; }
+[data-theme="light"] .now-display { color: #444; }
+[data-theme="light"] .count-label { color: #444; }
+[data-theme="light"] .loading { color: #666; }
+[data-theme="light"] .settings-section {
+  background: #fff; border-color: rgba(0,0,0,0.1);
+}
+[data-theme="light"] .history-event-card { background: #fff; border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .history-event-date { color: #555; }
+[data-theme="light"] .history-type-btn { color: #333; background: rgba(0,0,0,0.05); border-color: #ccc; }
+[data-theme="light"] .occ-list { color: #444; }
+[data-theme="light"] .ver-badge.ver-need { background: rgba(200,0,0,0.1); color: #c00; }
+[data-theme="light"] .ver-badge.ver-limit { background: rgba(180,120,0,0.12); color: #a07000; }
+[data-theme="light"] .theme-toggle-group { background: rgba(0,0,0,0.08); }
+[data-theme="light"] .theme-btn { color: #333; }
+[data-theme="light"] .hist-section-header { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: #333; }
+[data-theme="light"] .hist-section-header.added   { color: #1a8a3a; }
+[data-theme="light"] .hist-section-header.removed { color: #c0392b; }
+[data-theme="light"] .hist-section-header.changed { color: #d47000; }
+/* タブ横幅を狭く */
+.tab { padding: 4px 8px !important; font-size: 0.78rem !important; }
+/* =============================================
+   カード文字サイズ設定（ここで一括変更可能）
+   ============================================= */
+.event-card   { padding: 4px 8px !important; min-height: unset !important; } /* カード縦幅 */
+.card-period  { font-size: 0.62rem !important; }  /* 期間テキスト */
+.card-name    { font-size: 0.62rem !important; }  /* イベント名テキスト */
+.card-tag     { font-size: 0.48rem !important; padding: 1px 4px !important; } /* 開催中/予定/終了バッジ */
+.card-arrow   { font-size: 0.7rem !important; }   /* カード右端の矢印 */
+/* ステージタグ（コラボ/イベント等） / itemタグ（1回限り等） */
+.stage-tag    { font-size: 0.48rem !important; padding: 1px 3px !important;
+                border-radius: 3px; vertical-align: middle; margin-left: 2px;
+                font-weight: bold; display: inline-block; }
+/* オーバーレイヘッダー行 */
+.overlay-header-row {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 8px; margin-bottom: 4px;
+}
+.overlay-header-row .overlay-title {
+  flex: 1; min-width: 0; word-break: break-word;
+}
+/* サブオーバーレイ（履歴内カード詳細）は z-index を上げる */
+#overlay-sub { z-index: 2100; }
+/* バージョンバッジ */
+.ver-badge  { font-size:0.6rem; padding:1px 4px; border-radius:3px; vertical-align:middle; margin-left:3px; }
+.ver-need   { background:rgba(255,80,80,0.2); color:#f99; }
+.ver-limit  { background:rgba(255,200,0,0.15); color:#fc8; }
+/* 次の開催リスト */
+.occ-list { font-size:0.7rem; color:#bbb; white-space:pre-wrap; line-height:1.8; }
+.occ-current { color:#4f8; font-weight:bold; }
+/* フィルターオーバーレイ */
+#filter-overlay {
+  display:none; position:fixed; inset:0; z-index:2500;
+  background:rgba(0,0,0,0.65); align-items:flex-start; justify-content:center;
+  padding-top:60px;
+}
+#filter-overlay.show { display:flex; }
+#filter-panel {
+  background:var(--card,#0a1931); border:1px solid var(--border,rgba(255,255,255,0.15));
+  border-radius:12px; padding:16px 20px; width:min(92vw,420px);
+  max-height:80vh; overflow-y:auto;
+}
+#filter-panel h4 { margin:0 0 12px; font-size:0.9rem; color:#eee; }
+.filter-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:5px 4px; border-radius:4px; cursor:pointer;
+}
+.filter-row:hover { background:rgba(255,255,255,0.06); }
+.filter-row-left { display:flex; align-items:center; gap:6px; }
+.filter-count { font-size:0.68rem; color:#888; }
+.filter-row input[type="checkbox"] { accent-color:#f90; width:15px; height:15px; cursor:pointer; }
+.filter-actions { display:flex; gap:8px; margin-top:12px; border-top:1px solid rgba(255,255,255,0.08); padding-top:10px; }
+.filter-btn-all, .filter-btn-none, .filter-btn-close {
+  padding:5px 14px; font-size:0.78rem; border-radius:4px; cursor:pointer; border:1px solid #555;
+}
+.filter-btn-all  { background:rgba(255,153,0,0.2); color:#f90; }
+.filter-btn-none { background:rgba(255,255,255,0.06); color:#ccc; }
+.filter-btn-close{ background:rgba(255,255,255,0.06); color:#ccc; margin-left:auto; }
+/* 履歴タブ */
+.history-event-card {
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 6px;
+  padding: 8px 10px; margin-bottom: 6px;
+  background: var(--card, #0a1931);
+}
+.history-event-date { font-size: 0.72rem; color: #bbb; margin-bottom: 6px; }
+.history-badge {
+  font-size: 0.6rem; background: #f90; color: #000;
+  border-radius: 3px; padding: 1px 5px; margin-left: 6px; font-weight: bold;
+}
+.history-event-types { display: flex; gap: 6px; flex-wrap: wrap; }
+.history-type-btn {
+  font-size: 0.72rem; padding: 2px 10px; border-radius: 4px; cursor: pointer;
+  border: 1px solid #555; background: rgba(255,255,255,0.07); color: #ddd;
+  transition: background 0.15s;
+}
+.history-type-btn:hover { background: rgba(255,153,0,0.25); border-color: #f90; color: #fff; }
+/* 差分オーバーレイ */
+.hist-section { margin-bottom: 8px; }
+.hist-section-header {
+  font-size: 0.8rem; padding: 6px 10px; border-radius: 5px;
+  cursor: pointer; user-select: none;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(255,255,255,0.05);
+}
+.hist-section-header:hover { background: rgba(255,255,255,0.1); }
+.hist-section-header.added   { border-left: 3px solid #2ecc71; color: #2ecc71; }
+.hist-section-header.removed { border-left: 3px solid #e74c3c; color: #e74c3c; }
+.hist-section-header.changed { border-left: 3px solid #f39c12; color: #f39c12; }
+.hist-section-body { padding: 4px 0 4px 6px; }
+.hist-entry {
+  font-size: 0.68rem; color: #ccc; padding: 4px 6px; border-radius: 3px;
+  border-left: 2px solid rgba(255,255,255,0.15); margin: 3px 0;
+  line-height: 1.5; background: rgba(255,255,255,0.03);
+}
+.hist-entry-period { opacity: 0.65; font-size: 0.62rem; }
+.hist-entry-name   { color: #eee; }
+.hist-entry-change { font-size: 0.62rem; color: #f39c12; margin-top: 2px; white-space: pre-wrap; }
+.hist-no-prev { font-size: 0.75rem; color: #888; padding: 8px 4px; }
+/* フィルターボタン */
+.filter-open-btn {
+  background:none; border:1px solid #555; color:#ccc; font-size:0.78rem;
+  padding:2px 10px; border-radius:4px; cursor:pointer; margin-left:4px;
+}
+.filter-open-btn:hover { border-color:#f90; color:#f90; }
+#ss-confirm-overlay {
+  display:none; position:fixed; inset:0; z-index:3000;
+  background:rgba(0,0,0,0.7); align-items:center; justify-content:center;
+}
+#ss-confirm-overlay.show { display:flex; }
+#ss-confirm-box {
+  background:var(--card,#0a1931); border:1px solid var(--border,rgba(255,255,255,0.1));
+  border-radius:12px; padding:24px 28px; min-width:280px; max-width:90vw; text-align:center;
+}
+#ss-confirm-msg { font-size:0.95rem; color:#eee; margin-bottom:18px; line-height:1.5; }
+.ss-confirm-btns { display:flex; gap:12px; justify-content:center; }
+.ss-btn-yes, .ss-btn-no {
+  padding:8px 28px; border-radius:6px; font-size:0.9rem; cursor:pointer; border:none;
+}
+.ss-btn-yes { background:#f90; color:#000; font-weight:bold; }
+.ss-btn-no  { background:rgba(255,255,255,0.12); color:#eee; }
+/* カメラボタン */
+.camera-btn {
+  background:none; border:1px solid #555; color:#ccc;
+  font-size:1rem; padding:2px 8px; border-radius:4px;
+  cursor:pointer; margin-left:4px; vertical-align:middle; line-height:1;
+}
+.camera-btn:hover { border-color:#f90; color:#f90; }
+/* 設定ボタン */
+.settings-btn {
+  padding: 6px 18px; font-size: 0.82rem; cursor: pointer;
+  border: 1px solid #555; border-radius: 4px;
+  background: rgba(255,255,255,0.08); color: #eee; transition: background 0.2s;
+  display: inline-block;
+}
+.settings-btn:hover { background: rgba(255,153,0,0.3); border-color: #f90; }
+/* アップロードファイル名 */
+.upload-filename {
+  font-size: 0.75rem; color: #aaa; margin-left: 8px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px;
+}
+/* rawファイル一覧チェックボックス */
+.raw-file-item {
+  display: flex; align-items: center; gap: 6px;
+  padding: 3px 6px; border-radius: 3px; cursor: pointer;
+}
+.raw-file-item:hover { background: rgba(255,255,255,0.06); }
+.raw-file-item input[type="checkbox"] { accent-color: #f90; flex-shrink: 0; }
+.raw-file-label { font-size: 0.75rem; color: #ccc; }
+.raw-file-group-header {
+  font-size: 0.72rem; color: #f90; padding: 4px 6px 2px;
+  border-bottom: 1px solid rgba(255,153,0,0.2); margin-bottom: 2px;
+}
+.all-section-header {
+  font-size:0.85rem; color:#f90; border-top:1px solid rgba(255,153,0,0.3);
+  border-bottom:1px solid rgba(255,153,0,0.3); padding:4px 8px;
+  margin:12px 0 4px 0; letter-spacing:0.1em; text-align:center;
+}
+/* 詳細スクショボタン */
+.overlay-ss-btn {
+  padding:4px 12px; font-size:0.75rem; cursor:pointer;
+  border:1px solid #555; border-radius:4px;
+  background:rgba(255,255,255,0.08); color:#eee; transition:background 0.2s;
+}
+.overlay-ss-btn:hover { background:rgba(255,153,0,0.3); border-color:#f90; }
+/* 設定タブ */
+.settings-section {
+  padding: 16px;
+  background: var(--card, #0a1931);
+  border: 1px solid var(--border, rgba(255,255,255,0.1));
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.settings-section h3 {
+  font-size: 0.95rem;
+  color: var(--text-primary, #eee);
+  margin: 0 0 12px 0;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 6px 0;
+}
+.settings-label {
+  font-size: 0.82rem;
+  color: #aaa;
+  min-width: 160px;
+}
+
+/* Developer TSV editor */
+.dev-only { display: none; }
+.dev-editor-head {
+  display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.dev-badge {
+  font-size:0.68rem; color:#000; background:#f90; border-radius:3px; padding:2px 7px;
+  font-weight:bold; letter-spacing:0.03em;
+}
+.dev-sheet-tabs { display:flex; gap:6px; flex-wrap:wrap; margin:8px 0; }
+.dev-sheet-tab {
+  border:1px solid #555; border-radius:4px; padding:4px 9px; cursor:pointer;
+  color:#ccc; background:rgba(255,255,255,0.06); font-size:0.74rem;
+}
+.dev-sheet-tab.active { color:#000; background:#f90; border-color:#f90; font-weight:bold; }
+.dev-toolbar {
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+  padding:8px; border:1px solid rgba(255,255,255,0.08); border-radius:6px;
+  background:rgba(0,0,0,0.12); margin:8px 0;
+}
+.dev-mini-btn {
+  padding:4px 9px; font-size:0.72rem; border-radius:4px; cursor:pointer;
+  border:1px solid #555; background:rgba(255,255,255,0.07); color:#ddd;
+}
+.dev-mini-btn:hover { border-color:#f90; color:#f90; }
+.dev-mini-btn:disabled { opacity:.35; cursor:not-allowed; }
+.dev-input, .dev-select {
+  font-size:0.76rem; padding:4px 7px; border-radius:4px; border:1px solid #555;
+  background:var(--bg-secondary,#222); color:var(--text-primary,#eee);
+}
+.dev-search { width:min(260px,70vw); }
+.dev-editor-frame {
+  height:460px; border:1px solid rgba(255,255,255,0.16); border-radius:8px;
+  overflow: auto; background:rgba(0,0,0,0.22); position:relative;
+  contain: layout style paint; scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: auto;
+}
+#dev-sheet-viewport {
+  transform-origin: top left; padding:0 0 120px 0;
+  display:block;
+  overflow: visible;
+  -webkit-overflow-scrolling: touch;
+}
+.dev-sheet-table { border-collapse:collapse; table-layout:fixed; font-family:Consolas, monospace; font-size: calc(12px * var(--dev-zoom, 1)); width: max-content; }
+.dev-sheet-table th {
+  position:sticky; top:0; z-index:4; background:#18243a; color:#aaa;
+  border:1px solid rgba(255,255,255,0.12); height:24px; min-width:46px; max-width:46px;
+  font-weight:normal; text-align:center;
+}
+.dev-sheet-table .dev-row-head { left:0; z-index:5; min-width:46px; max-width:46px; }
+.dev-cell {
+  width: calc(80px * var(--dev-zoom, 1)); min-width: calc(80px * var(--dev-zoom, 1)); max-width: calc(80px * var(--dev-zoom, 1)); height: calc(24px * var(--dev-zoom, 1)); max-height: calc(24px * var(--dev-zoom, 1));
+  border:1px solid rgba(255,255,255,0.10); padding:2px 5px;
+  color:#e9eef8; background:rgba(255,255,255,0.025); overflow:hidden;
+  white-space:nowrap; outline:none; vertical-align:top; box-sizing:border-box;
+}
+.dev-cell:hover { background:rgba(255,255,255,0.07); }
+.dev-cell.dev-selected { box-shadow:inset 0 0 0 2px #f90; background:rgba(255,153,0,0.12); }
+.dev-cell:focus {
+  position:absolute; z-index:10; /* ヘッダーより上 */
+  height: calc(24px * var(--dev-zoom, 1)) !important;
+  max-height: calc(24px * var(--dev-zoom, 1)) !important; /* 固定高さ（ズームに合わせる） */
+  min-width: calc(260px * var(--dev-zoom, 1)); /* 横のみ拡張（ズームに合わせる） */
+  background:#121b2d;
+  box-shadow:0 4px 16px rgba(0,0,0,.6), inset 0 0 0 2px #f90;
+  transform:translate(-2px, -2px); /* 視覚的浮き出し */
+}
+.dev-cell:focus::before {  /* ✅ 縦長偽装レイヤー */
+  content:''; position:absolute; inset:0; z-index:-1;
+  background:rgba(255,153,0,.08);
+}
+.dev-virtual-tbody { contain:strict; } /* ✅ layout+size+style完全分離 */
+
+
+/* Virtual Scrolling */
+.dev-virtual-tbody { will-change: transform; contain: layout style; }
+.dev-row-buffer { height: 24px !important; }
+
+.dev-cell.dev-search-hit { background:rgba(255,220,0,0.20); box-shadow:inset 0 0 0 1px rgba(255,220,0,0.65); }
+.dev-cell.dev-search-current { background:rgba(255,153,0,0.45); box-shadow:inset 0 0 0 2px #fff; }
+.dev-editor-foot { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.dev-status { font-size:0.76rem; color:#aaa; }
+#dev-save-overlay {
+  display:none; position:fixed; inset:0; z-index:3200; background:rgba(0,0,0,0.72);
+  align-items:center; justify-content:center;
+}
+#dev-save-overlay.show { display:flex; }
+#dev-save-panel {
+  width:min(92vw,420px); background:var(--card,#0a1931); color:var(--text-primary,#eee);
+  border:1px solid var(--border,rgba(255,255,255,0.14)); border-radius:12px; padding:18px;
+}
+#dev-save-panel h4 { margin:0 0 12px; font-size:0.92rem; }
+.dev-save-actions { display:flex; justify-content:flex-end; gap:8px; flex-wrap:wrap; margin-top:14px; }
+[data-theme="light"] .dev-editor-frame { background:#f6f7f9; border-color:rgba(0,0,0,0.12); }
+[data-theme="light"] .dev-toolbar { background:rgba(0,0,0,0.035); border-color:rgba(0,0,0,0.08); }
+[data-theme="light"] .dev-cell { color:#222; background:#fff; border-color:rgba(0,0,0,0.12); }
+[data-theme="light"] .dev-cell:focus { background:#fff7e8; }
+[data-theme="light"] .dev-sheet-table th { background:#e8eaed; color:#444; }
+#utc-select { font-size: 0.8rem; padding: 3px 6px; }
+</style>
 </head>
 <body>
-  <main style="padding: 16px; color: #ddd; font-family: sans-serif;">
-    <h1>Modular Shell Draft</h1>
-    <p>
-      このファイルは、<code>index.html</code> から分離済みロジックを除去していく途中の
-      確認用コピーです。UIの完全移植はまだ行わず、分割済みモジュールの読込確認を目的にしています。
-    </p>
-    <ul>
-      <li>CSV/TSV系: <code>src/utils/csv.js</code>, <code>src/utils/tsv.js</code></li>
-      <li>検索/フィルタ: <code>src/utils/search.js</code></li>
-      <li>API通信: <code>src/services/apiClient.js</code></li>
-      <li>parserロード: <code>src/parsers/loader.js</code></li>
-      <li>履歴ロジック: <code>src/features/history/historyService.js</code></li>
-      <li>devtools補助: <code>src/features/devtools/parserBridge.js</code></li>
-    </ul>
-    <p>次フェーズでこの shell に実UIを段階移植し、最終的に現行 <code>index.html</code> と置き換えます。</p>
-    <input id="shell-search" class="shell-search" type="text" placeholder="Search by date token (e.g. 202401)" />
-    <div id="shell-status" style="margin: 12px 0; color: #f8b84e;"></div>
-    <div class="tabs" style="margin-bottom: 10px;">
-      <div class="tab shell-tab active" data-tab="gatya">gatya</div>
-      <div class="tab shell-tab" data-tab="sale">sale</div>
-      <div class="tab shell-tab" data-tab="item">item</div>
-      <div class="tab shell-tab" data-tab="history">history</div>
+  <div class="container fade-in">
+    <header class="header">
+      <div class="header-left">
+        <img src="./assets/logo.png" alt="ロゴ" id="logo">
+        <h1 class="site-title">KBC</h1>
+      </div>
+      <nav class="nav">
+        <div class="theme-toggle-group" id="theme-toggle-group">
+          <button class="theme-btn" id="theme-btn-original" onclick="setTheme('original')" title="オリジナル">🎨</button>
+          <button class="theme-btn" id="theme-btn-dark"     onclick="setTheme('dark')"     title="ダーク">🌙</button>
+          <button class="theme-btn" id="theme-btn-light"    onclick="setTheme('light')"    title="ライト">☀️</button>
+        </div>
+        <a href="https://kbc-rakv0.vercel.app/index.html">Home</a>
+      </nav>
+    </header>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="gatya">gatya</div>
+      <div class="tab" data-tab="sale">sale</div>
+      <div class="tab" data-tab="item">item</div>
+      <div class="tab" data-tab="mission">mission</div>
+      <div class="tab" data-tab="all">全て</div>
+      <div class="tab" data-tab="history">履歴</div>
+      <div class="tab" data-tab="settings">⚙</div>
     </div>
-    <section id="shell-gatya" class="shell-pane active">
-      <div id="shell-gatya-list"></div>
-    </section>
-    <section id="shell-sale" class="shell-pane">
-      <div id="shell-sale-list"></div>
-    </section>
-    <section id="shell-item" class="shell-pane">
-      <div id="shell-item-list"></div>
-    </section>
-    <section id="shell-history" class="shell-pane">
-      <div id="shell-history-list"></div>
-    </section>
-  </main>
-  <script type="module" src="./src/main.js"></script>
-  <script type="module">
-    import { bootShellApp } from "./src/shell-app.js";
-    bootShellApp();
-  </script>
+
+    <div class="controls">
+      <label>
+        <input type="checkbox" id="showCurrent">
+        開催中も表示
+      </label>
+      <label>
+        <input type="checkbox" id="showPast">
+        過去も表示
+      </label>
+      <label>
+        <input type="checkbox" id="sortByDate">
+        日付順に並べる
+      </label>
+      <label>
+        <input type="checkbox" id="sortById">
+        ID順に並べる
+      </label>
+      <label id="label-showAllSale">
+        <input type="checkbox" id="showAllSale">
+        全イベントを表示
+      </label>
+      <button class="camera-btn" onclick="confirmScreenshot()" title="スクリーンショット">📷</button>
+      <div id="search-wrap">
+        <input type="text" id="searchInput" placeholder="ID or ステージ名..."
+               autocomplete="off"
+               oninput="onSearchInput()"
+               onkeydown="onSearchKeydown(event)"
+               onfocus="showSuggestions(document.getElementById('searchInput').value.trim())"
+               onblur="setTimeout(()=>closeSuggestions(),200)">
+        <div id="search-suggestions"></div>
+      </div>
+      <button class="filter-open-btn" onclick="openFilter('sale')" id="filter-btn-sale" style="display:none;">🔽 フィルター</button>
+      <button class="filter-open-btn" onclick="openFilter('mission')" id="filter-btn-mission" style="display:none;">🔽 フィルター</button>
+      <span id="lastmod-toggle" class="now-display" onclick="toggleLastmod()" style="cursor:pointer;">前回の更新時間を表示▶</span>
+      <div id="lastmod-detail" class="now-display" style="display:none;"></div>
+      <span id="locale-display" class="now-display" style="margin-right:4px;"></span><span id="now-display" class="now-display"></span>
+    </div>
+
+    <main>
+      <div id="gatya" class="content active"><div class="loading">読み込み中...</div></div>
+      <div id="sale"    class="content"><div class="loading">読み込み中...</div></div>
+      <div id="item"    class="content"><div class="loading">読み込み中...</div></div>
+      <div id="mission" class="content"><div class="loading">読み込み中...</div></div>
+      <div id="all"     class="content"><div class="loading">読み込み中...</div></div>
+      <div id="history" class="content"><div class="loading">読み込み中...</div></div>
+      <div id="settings" class="content">
+        <!-- カード1: タイムゾーン -->
+        <div class="settings-section">
+          <h3>⚙ 設定</h3>
+          <div class="settings-row">
+            <span class="settings-label">タイムゾーン変更</span>
+            <select id="utc-select" onchange="onUtcChange(this.value)">
+              <option value="local">ローカル時間</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- カード2: TSVダウンロード -->
+        <div class="settings-section">
+          <h3>TSVダウンロード</h3>
+          <div class="settings-row">
+            <span class="settings-label">国コード</span>
+            <select id="tsv-locale">
+              <option value="ja">jp</option>
+              <option value="en">en</option>
+              <option value="kr">kr</option>
+              <option value="tw">tw</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">ファイル</span>
+            <select id="tsv-file">
+              <option value="gatya">gatya.tsv</option>
+              <option value="sale">sale.tsv</option>
+              <option value="item">item.tsv</option>
+              <option value="all">全て</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <button class="settings-btn" onclick="downloadTsv()">ダウンロード</button>
+            <span id="tsv-status" style="font-size:0.8rem;color:#aaa;margin-left:8px;"></span>
+          </div>
+        </div>
+
+        <!-- カード3: 海外スケジュール -->
+        <div class="settings-section">
+          <h3>海外スケジュールに変更</h3>
+          <div class="settings-row">
+            <span class="settings-label">現在</span>
+            <span id="current-locale-label" style="font-size:0.85rem;color:#f90;">jp</span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">切り替え先</span>
+            <select id="overseas-locale">
+              <option value="ja">jp</option>
+              <option value="en">en</option>
+              <option value="kr">kr</option>
+              <option value="tw">tw</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <button class="settings-btn" onclick="switchLocale()">切り替え</button>
+            <span id="overseas-status" style="font-size:0.8rem;color:#aaa;margin-left:8px;"></span>
+          </div>
+        </div>
+
+        <div class="settings-section dev-only" id="dev-editor-section">
+          <div class="dev-editor-head">
+            <h3 style="margin:0;">開発者用 TSV エディタ</h3>
+            <span class="dev-badge">Developer_options=ON</span>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">ローカル TSV/DAT</span>
+            <select id="dev-local-type" class="dev-select">
+              <option value="gatya">gatya</option>
+              <option value="sale">sale</option>
+              <option value="item">item</option>
+            </select>
+            <select id="dev-local-locale" class="dev-select">
+              <option value="ja">jp</option>
+              <option value="en">en</option>
+              <option value="kr">kr</option>
+              <option value="tw">tw</option>
+            </select>
+            <label class="settings-btn" style="cursor:pointer;">
+              ファイル選択
+              <input type="file" id="dev-local-file" accept=".tsv,.dat,.json,application/json,application/octet-stream,text/tab-separated-values" style="display:none;" onchange="devHandleLocalFile(this)">
+            </label>
+            <span id="dev-local-status" class="dev-status"></span>
+          </div>
+          <div id="dev-sheet-tabs" class="dev-sheet-tabs"></div>
+          <div class="dev-toolbar">
+            <button class="dev-mini-btn" onclick="devUndo()">元に戻す</button>
+            <button class="dev-mini-btn" onclick="devRedo()">やり直し</button>
+            <input id="dev-row-count" class="dev-input" type="number" min="1" max="5000" value="1" title="追加する行数" style="width:70px;">
+            <button class="dev-mini-btn" onclick="devAddRows()">行を追加</button>
+            <button class="dev-mini-btn" onclick="devAddCol()">列を追加</button>
+            <button class="dev-mini-btn" onclick="devDeleteRow()">行を削除</button>
+            <button class="dev-mini-btn" onclick="devDeleteCol()">列を削除</button>
+            <button class="dev-mini-btn" onclick="devClearCell()">セルを空にする</button>
+            <span style="width:1px;height:22px;background:rgba(255,255,255,.15);"></span>
+            <button class="dev-mini-btn" onclick="devZoom(-0.1)">-</button>
+            <span id="dev-zoom-label" class="dev-status">100%</span>
+            <button class="dev-mini-btn" onclick="devZoom(0.1)">+</button>
+            <button class="dev-mini-btn" onclick="devZoom(0,true)">等倍</button>
+            <input id="dev-search-input" class="dev-input dev-search" placeholder="セル検索: 999999 0 0" oninput="devSearchDebounce()">
+            <button class="dev-mini-btn" onclick="devGoSearch(-1)">前へ</button>
+            <button class="dev-mini-btn" onclick="devGoSearch(1)">次へ</button>
+            <span id="dev-search-count" class="dev-status">0/0</span>
+          </div>
+          <div class="dev-editor-frame" id="dev-editor-frame">
+            <div id="dev-sheet-viewport"><table id="dev-sheet-table" class="dev-sheet-table"></table></div>
+          </div>
+          <div class="dev-editor-foot">
+            <button class="settings-btn" onclick="devLoadCurrentToList()">現在の内容を一覧に読み込む</button>
+            <button class="settings-btn" onclick="devOpenSaveOverlay()">ファイルを保存</button>
+            <span id="dev-editor-status" class="dev-status">TSVはまだ読み込まれていません。</span>
+          </div>
+        </div>
+
+
+        <!-- カード4: TSV読み込み -->
+        <div class="settings-section">
+          <h3>📂 TSV読み込み</h3>
+
+          <!-- セクション A: 一覧から選ぶ -->
+          <div style="margin-bottom:12px;">
+            <div style="font-size:0.82rem;color:#aaa;margin-bottom:6px;">一覧から選ぶ</div>
+            <div class="settings-row">
+              <button class="settings-btn" onclick="fetchRawFileList()">ファイル一覧を取得</button>
+              <span id="raw-list-status" style="font-size:0.8rem;color:#aaa;margin-left:8px;"></span>
+            </div>
+            <div id="raw-file-list" style="margin-top:8px;max-height:200px;overflow-y:auto;font-size:0.78rem;"></div>
+            <div class="settings-row" style="margin-top:6px;">
+              <button class="settings-btn" id="raw-load-btn" style="display:none;" onclick="loadSelectedRawFiles()">選択したファイルを読み込む</button>
+              <span id="raw-load-status" style="font-size:0.8rem;color:#aaa;margin-left:8px;"></span>
+            </div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:10px 0;">
+
+          <!-- セクション B: TSVを読み込む（ローカルファイル） -->
+          <div>
+            <div style="font-size:0.82rem;color:#aaa;margin-bottom:8px;">TSVを読み込む</div>
+            <div class="settings-row tsv-upload-row">
+              <span class="settings-label">gatyaを読み込む</span>
+              <label class="settings-btn" style="cursor:pointer;">
+                ファイル選択
+                <input type="file" accept=".tsv" id="upload-gatya" style="display:none;" onchange="handleTsvUpload('gatya',this)">
+              </label>
+              <span id="upload-gatya-name" class="upload-filename"></span>
+            </div>
+            <div class="settings-row tsv-upload-row">
+              <span class="settings-label">saleを読み込む</span>
+              <label class="settings-btn" style="cursor:pointer;">
+                ファイル選択
+                <input type="file" accept=".tsv" id="upload-sale" style="display:none;" onchange="handleTsvUpload('sale',this)">
+              </label>
+              <span id="upload-sale-name" class="upload-filename"></span>
+            </div>
+            <div class="settings-row tsv-upload-row">
+              <span class="settings-label">itemを読み込む</span>
+              <label class="settings-btn" style="cursor:pointer;">
+                ファイル選択
+                <input type="file" accept=".tsv" id="upload-item" style="display:none;" onchange="handleTsvUpload('item',this)">
+              </label>
+              <span id="upload-item-name" class="upload-filename"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div><!-- /.container ここで閉じる -->
+
+  <!-- フィルターオーバーレイ -->
+  <div id="filter-overlay">
+    <div id="filter-panel">
+      <h4 id="filter-title">フィルター</h4>
+      <div id="filter-list"></div>
+      <div class="filter-actions">
+        <button class="filter-btn-all"  onclick="filterSelectAll()">すべて選択</button>
+        <button class="filter-btn-none" onclick="filterSelectNone()">すべて解除</button>
+        <button class="filter-btn-close" onclick="closeFilter()">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- スクリーンショット確認オーバーレイ -->
+  <div id="ss-confirm-overlay">
+    <div id="ss-confirm-box">
+      <div id="ss-confirm-msg"></div>
+      <div class="ss-confirm-btns">
+        <button class="ss-btn-yes" onclick="doScreenshot()">Yes</button>
+        <button class="ss-btn-no"  onclick="cancelScreenshot()">No</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- オーバーレイは container の外 → position:fixed がビューポート基準になる -->
+
+
+  <div id="dev-save-overlay">
+    <div id="dev-save-panel">
+      <h4>TSVエディタの内容を保存</h4>
+      <div class="settings-row">
+        <span class="settings-label">ファイル名</span>
+        <input id="dev-save-filename" class="dev-input" style="flex:1;min-width:180px;">
+      </div>
+      <div class="dev-status" id="dev-save-status">保存方法を選んでください。</div>
+      <div class="dev-save-actions">
+        <button class="dev-mini-btn" onclick="devCloseSaveOverlay()">キャンセル</button>
+        <button class="settings-btn" onclick="devDownloadPlain()">TSVで保存</button>
+        <button class="settings-btn" onclick="devDownloadEncrypted()">暗号化DATで保存</button>
+        <button class="settings-btn" onclick="devDownloadJson()">JSONで保存</button>
+      </div>
+    </div>
+  </div>
+  <div id="dev-load-overlay" style="display:none; position:fixed; inset:0; z-index:3300; background:rgba(0,0,0,0.72); align-items:center; justify-content:center;">
+    <div id="dev-load-panel" style="width:min(92vw,540px); background:var(--card,#0a1931); color:var(--text-primary,#eee); border:1px solid rgba(255,255,255,0.14); border-radius:12px; padding:18px;">
+      <h4 style="margin:0 0 12px;font-size:0.92rem;">ローカルファイルの読み込み確認</h4>
+      <div class="settings-row"><span class="settings-label">ファイル</span><span id="dev-load-filename" style="margin-left:8px;"></span></div>
+      <div class="settings-row" style="margin-top:8px;">
+        <span class="settings-label">判定</span>
+        <select id="dev-load-type" class="dev-select">
+          <option value="gatya">gatya</option>
+          <option value="sale">sale</option>
+          <option value="item">item</option>
+        </select>
+        <select id="dev-load-locale" class="dev-select">
+          <option value="ja">jp</option>
+          <option value="en">en</option>
+          <option value="kr">kr</option>
+          <option value="tw">tw</option>
+        </select>
+      </div>
+      <div id="dev-load-note" style="font-size:0.8rem;color:#f39c12;margin-top:8px;"></div>
+      <pre id="dev-load-preview" style="max-height:140px;overflow:auto;background:#021226;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:6px;margin-top:8px;white-space:pre-wrap;color:#dfefff;"></pre>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+        <button class="dev-mini-btn" onclick="devCloseLoadOverlay()">キャンセル</button>
+        <button class="settings-btn" onclick="devConfirmLoadOverlay()">読み込む</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dev-json-confirm-overlay" style="display:none; position:fixed; inset:0; z-index:3301; background:rgba(0,0,0,0.72); align-items:center; justify-content:center;">
+    <div id="dev-json-confirm-panel" style="width:min(92vw,480px); background:var(--card,#0a1931); color:var(--text-primary,#eee); border:1px solid rgba(255,255,255,0.14); border-radius:12px; padding:18px;">
+      <h4 style="margin:0 0 12px;font-size:0.92rem;">JSONで保存 - 確認</h4>
+      <div id="dev-json-confirm-msg" style="white-space:pre-wrap;color:#eee;"></div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+        <button class="dev-mini-btn" onclick="devCloseJsonConfirmOverlay()">キャンセル</button>
+        <button class="settings-btn" onclick="devConfirmJsonSave()">JSONで保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlay" class="overlay-backdrop">
+    <div class="overlay-panel">
+      <div class="overlay-header-row">
+        <div class="overlay-title" id="overlay-title"></div>
+        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+          <button class="overlay-ss-btn" onclick="screenshotOverlay()" title="スクリーンショット">📷</button>
+          <button class="overlay-ss-btn" id="share-btn" onclick="copyShareUrl()" title="共有リンクをコピー">🔗</button>
+          <span class="overlay-close" id="overlay-close">&times;</span>
+        </div>
+      </div>
+      <hr class="overlay-divider">
+      <div id="overlay-body"></div>
+    </div>
+  </div>
+
+  <!-- 詳細サブオーバーレイ（履歴差分内のカードクリック用） -->
+  <div id="overlay-sub" class="overlay-backdrop">
+    <div class="overlay-panel">
+      <div class="overlay-header-row">
+        <div class="overlay-title" id="overlay-sub-title"></div>
+        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+          <span class="overlay-close" id="overlay-sub-close">&times;</span>
+        </div>
+      </div>
+      <hr class="overlay-divider">
+      <div id="overlay-sub-body"></div>
+    </div>
+  </div>
+
+<script src="/api/app-bundle"></script>
 </body>
 </html>
