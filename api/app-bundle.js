@@ -1,3 +1,12 @@
+const ALLOWED_ORIGIN = 'https://kbc-rakv0-event.vercel.app';
+
+const referer = req.headers['referer'] || req.headers['origin'] || '';
+if (!referer.startsWith(ALLOWED_ORIGIN)) {
+  res.statusCode = 403;
+  res.end('// Forbidden');
+  return;
+}
+
 const CACHE_TTL = 5 * 60 * 1000; // 5分
 let cache = { content: null, timestamp: 0 };
 
