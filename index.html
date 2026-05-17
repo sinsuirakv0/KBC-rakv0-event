@@ -20,7 +20,128 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
   <script src="https://kbc-rakv0.vercel.app/js/theme.js"></script>
-  
+
+  <style>
+    /* ===== [押してみて] ボタン ===== */
+    .try-btn {
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: inherit;
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      opacity: 0.75;
+      transition: opacity 0.15s;
+    }
+    .try-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    /* ===== 他サイトオーバーレイ ===== */
+    #othersites-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 4000;
+      background: rgba(0, 0, 0, 0.65);
+      align-items: center;
+      justify-content: center;
+    }
+    #othersites-overlay.open {
+      display: flex;
+    }
+    #othersites-panel {
+      width: min(92vw, 480px);
+      background: var(--card, #0a1931);
+      color: var(--text-primary, #eee);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 14px;
+      padding: 24px 22px 20px;
+      position: relative;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+      animation: othersites-in 0.18s ease;
+    }
+    @keyframes othersites-in {
+      from { opacity: 0; transform: translateY(-12px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)    scale(1); }
+    }
+    #othersites-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 1.4rem;
+      cursor: pointer;
+      opacity: 0.6;
+      line-height: 1;
+      background: none;
+      border: none;
+      color: inherit;
+      transition: opacity 0.15s;
+    }
+    #othersites-close:hover { opacity: 1; }
+
+    .othersites-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 0 0 14px;
+    }
+
+    /* 警告ボックス */
+    .othersites-warning {
+      border: 2px solid #f5c518;
+      border-radius: 8px;
+      background: rgba(245, 197, 24, 0.08);
+      padding: 11px 14px;
+      margin-bottom: 18px;
+      color: #f5e07a;
+      font-size: 0.88rem;
+      line-height: 1.65;
+    }
+    .othersites-warning strong {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+      color: #ffe066;
+    }
+
+    /* サイトリスト */
+    .othersites-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .othersites-item-name {
+      font-weight: 700;
+      font-size: 0.97rem;
+      margin-bottom: 6px;
+    }
+    .othersites-links {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .othersites-link {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.05);
+      color: var(--text-primary, #eee);
+      text-decoration: none;
+      font-size: 0.83rem;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .othersites-link:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.4);
+    }
+    .othersites-link.x-link {
+      border-color: rgba(255,255,255,0.3);
+    }
+  </style>
 </head>
 <body>
   <div class="container fade-in">
@@ -35,7 +156,9 @@
           <button class="theme-btn" id="theme-btn-dark"     onclick="setTheme('dark')"     title="ダーク">🌙</button>
           <button class="theme-btn" id="theme-btn-light"    onclick="setTheme('light')"    title="ライト">☀️</button>
         </div>
-        <a href="https://kbc-rakv0.vercel.app/index.html">Home</a>
+        <a href="#" class="try-btn" onclick="openOtherSites(); return false;">[押してみて]</a>
+        <a href="#">Home</a>
+        <a href="https://x.com/kenkou_rakv0_4">contact me</a>
       </nav>
     </header>
 
@@ -287,8 +410,45 @@
     </div>
   </div>
 
-  <!-- オーバーレイは container の外 → position:fixed がビューポート基準になる -->
+  <!-- ===== 他のスケジュールサイト オーバーレイ ===== -->
+  <div id="othersites-overlay" onclick="onOtherSitesOverlayClick(event)">
+    <div id="othersites-panel">
+      <button id="othersites-close" onclick="closeOtherSites()" title="閉じる">&times;</button>
 
+      <p class="othersites-title">他のスケジュールサイト</p>
+
+      <div class="othersites-warning">
+        <strong>⚠️ 当サイトには間違いがある可能性があります!!</strong>
+        他のスケサイトも見て間違いがないか確認することで正確な情報を得ることができるかもしれません (>_<&nbsp;&nbsp;)
+      </div>
+
+      <div class="othersites-list">
+        <!-- にゃんスケ -->
+        <div>
+          <div class="othersites-item-name">・にゃんスケ</div>
+          <div class="othersites-links">
+            <!-- ↓ URLを実際のものに差し替えてください -->
+            <a class="othersites-link x-link"
+               href="https://x.com/BCevent_bot?s=20"
+               target="_blank" rel="noopener">𝕏 (Twitter)</a>
+            <a class="othersites-link"
+               href="https://bc-event.onrender.com/"
+               target="_blank" rel="noopener">にゃんスケ</a>
+          </div>
+        </div>
+
+        <!-- JDB -->
+        <div>
+          <div class="othersites-item-name">・JDB</div>
+          <div class="othersites-links">
+            <a class="othersites-link"
+               href="https://jarjarblink.github.io/JDB/"
+               target="_blank" rel="noopener">JDB</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div id="dev-save-overlay">
     <div id="dev-save-panel">
@@ -372,6 +532,26 @@
       <div id="overlay-sub-body"></div>
     </div>
   </div>
+
+  <!-- 他サイトオーバーレイ制御スクリプト -->
+  <script>
+    function openOtherSites() {
+      document.getElementById('othersites-overlay').classList.add('open');
+    }
+    function closeOtherSites() {
+      document.getElementById('othersites-overlay').classList.remove('open');
+    }
+    function onOtherSitesOverlayClick(e) {
+      // パネル外クリックで閉じる
+      if (e.target === document.getElementById('othersites-overlay')) {
+        closeOtherSites();
+      }
+    }
+    // Escキーでも閉じる
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeOtherSites();
+    });
+  </script>
 
 <script>
 (async()=>{
