@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/05/13 16:19:18",
+  "updatedAt": "26/05/27 16:26:23",
   "data": [
     {
       "header": {
@@ -1172,48 +1172,6 @@
     },
     {
       "header": {
-        "startDate": "20260417",
-        "startTime": "1100",
-        "endDate": "20260522",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 5201,
-        "giftType": 814,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260417\t1100\t20260522\t1100\t150300\t999999\t0\t0\t5201\t814\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260427",
-        "startTime": "0",
-        "endDate": "20260522",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2492,
-        "giftType": 721,
-        "giftAmount": 5000,
-        "title": "イベント不具合のお詫び",
-        "message": "「魅惑の堕天楼」一時停止のお詫びで経費5000円が送られました。",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260427\t0\t20260522\t1100\t150300\t999999\t0\t0\t2492\t721\t5000\tイベント不具合のお詫び\t「魅惑の堕天楼」一時停止のお詫びで経費5000円が送られました。\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260501",
         "startTime": "1100",
         "endDate": "20300101",
@@ -1253,111 +1211,6 @@
         "repeatFlag": 0
       },
       "raw": "20260501\t1100\t20300101\t000\t150300\t999999\t0\t0\t2495\t302\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260501",
-        "startTime": "1100",
-        "endDate": "20260516",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51707,
-        "giftType": 831,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260501\t1100\t20260516\t1100\t150300\t999999\t0\t0\t51707\t831\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260501",
-        "startTime": "1100",
-        "endDate": "20260516",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51708,
-        "giftType": 832,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260501\t1100\t20260516\t1100\t150300\t999999\t0\t0\t51708\t832\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260501",
-        "startTime": "1100",
-        "endDate": "20260522",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51709,
-        "giftType": 828,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 4
-      },
-      "raw": "20260501\t1100\t20260522\t1100\t150300\t999999\t0\t0\t51709\t828\t0\t\t\t7\t0\t4\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260501",
-        "startTime": "1100",
-        "endDate": "20260522",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51710,
-        "giftType": 835,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 2
-      },
-      "raw": "20260501\t1100\t20260522\t1100\t150300\t999999\t0\t0\t51710\t835\t0\t\t\t7\t0\t2\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260501",
-        "startTime": "1100",
-        "endDate": "20260522",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51711,
-        "giftType": 829,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260501\t1100\t20260522\t1100\t150300\t999999\t0\t0\t51711\t829\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
@@ -1426,48 +1279,6 @@
       "header": {
         "startDate": "20260516",
         "startTime": "1100",
-        "endDate": "20260522",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51713,
-        "giftType": 831,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260516\t1100\t20260522\t1100\t150300\t999999\t0\t0\t51713\t831\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260516",
-        "startTime": "1100",
-        "endDate": "20260522",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51714,
-        "giftType": 832,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260516\t1100\t20260522\t1100\t150300\t999999\t0\t0\t51714\t832\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260516",
-        "startTime": "1100",
         "endDate": "20260608",
         "endTime": "1100",
         "minVersion": "150300",
@@ -1484,6 +1295,195 @@
         "repeatFlag": 1
       },
       "raw": "20260516\t1100\t20260608\t1100\t150300\t999999\t0\t0\t80101\t11045\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260525",
+        "startTime": "000",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51715,
+        "giftType": 35047,
+        "giftAmount": 0,
+        "title": "にゃんこスタンプ",
+        "message": "毎日ゲームをプレイすれば、１日１個ずつスタンプを押して行くにゃ！",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260525\t000\t20300101\t000\t150400\t999999\t0\t0\t51715\t35047\t0\tにゃんこスタンプ\t毎日ゲームをプレイすれば、１日１個ずつスタンプを押して行くにゃ！\t3\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260529",
+        "startTime": "1100",
+        "endDate": "20260615",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51716,
+        "giftType": 35046,
+        "giftAmount": 0,
+        "title": "劇場版「Fate/stay night [Heaven's Feel]」ログインスタンプ",
+        "message": "イベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めて便利なアイテムや限定キャラクターをゲット！（6/15まで）",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260529\t1100\t20260615\t1100\t150400\t999999\t0\t0\t51716\t35046\t0\t劇場版「Fate/stay night [Heaven's Feel]」ログインスタンプ\tイベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めて便利なアイテムや限定キャラクターをゲット！（6/15まで）\t7\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260529",
+        "startTime": "1100",
+        "endDate": "20260615",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2502,
+        "giftType": 201,
+        "giftAmount": 10000,
+        "title": "初心者応援！！ログインボーナス☆",
+        "message": "日本編クリアを応援！育成に役立つアイテムを毎日プレゼント！<br>今がにゃんこ軍団の戦力をアップする大チャンス！(6/15まで)",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260529\t1100\t20260615\t1100\t150400\t999999\t0\t0\t2502\t201\t10000\t初心者応援！！ログインボーナス☆\t日本編クリアを応援！育成に役立つアイテムを毎日プレゼント！<br>今がにゃんこ軍団の戦力をアップする大チャンス！(6/15まで)\t300\t2\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260529",
+        "startTime": "1100",
+        "endDate": "20260620",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 82000,
+        "giftType": 11048,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260529\t1100\t20260620\t1100\t150400\t999999\t0\t0\t82000\t11048\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260529",
+        "startTime": "1100",
+        "endDate": "20260615",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51717,
+        "giftType": 852,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260529\t1100\t20260615\t1100\t150400\t999999\t0\t0\t51717\t852\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260601",
+        "startTime": "1100",
+        "endDate": "20260615",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51718,
+        "giftType": 833,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260601\t1100\t20260615\t1100\t150400\t999999\t0\t0\t51718\t833\t0\t\t\t300\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260601",
+        "startTime": "1100",
+        "endDate": "20260615",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51719,
+        "giftType": 834,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260601\t1100\t20260615\t1100\t150400\t999999\t0\t0\t51719\t834\t0\t\t\t300\t2\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260601",
+        "startTime": "000",
+        "endDate": "20260602",
+        "endTime": "000",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51720,
+        "giftType": 828,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 4
+      },
+      "raw": "20260601\t000\t20260602\t000\t150400\t999999\t0\t0\t51720\t828\t0\t\t\t7\t0\t4\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260601",
+        "startTime": "000",
+        "endDate": "20260602",
+        "endTime": "000",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51721,
+        "giftType": 835,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 2
+      },
+      "raw": "20260601\t000\t20260602\t000\t150400\t999999\t0\t0\t51721\t835\t0\t\t\t7\t0\t2\t0\t0\t0\t0"
     }
   ]
 }
