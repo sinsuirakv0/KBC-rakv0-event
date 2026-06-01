@@ -44,9 +44,13 @@
     }
 
     ensureKBCPublic();
+    const loading = window.KBCLoadingScreen;
+    if(loading && loading.isSharedLoad) loading.set(10, 'バンドル取得中', '非公開バンドルを取得しています');
     const r = await fetch('/api/app-bundle');
     if(!r.ok) return;
+    if(loading && loading.isSharedLoad) loading.set(24, 'バンドル取得完了', '復号キーを確認しています');
     const { b, k } = await r.json();
+    if(loading && loading.isSharedLoad) loading.set(36, '復号化中', 'スケジュール表示用スクリプトを復号しています');
     const [ivH, enc] = b.split(':');
     const key = CryptoJS.enc.Hex.parse(CryptoJS.SHA256(k).toString());
     const iv = CryptoJS.enc.Hex.parse(ivH);
@@ -57,6 +61,7 @@
     );
     const js = dec.toString(CryptoJS.enc.Utf8);
     if(!js) return;
+    if(loading && loading.isSharedLoad) loading.set(50, 'スクリプト初期化中', '復号した機能を画面へ接続しています');
     const protectedGlobals = {
       fetch: window.fetch,
       performance: window.performance,
@@ -69,6 +74,7 @@
     const s = document.createElement('script');
     s.textContent = js;
     document.head.appendChild(s);
+    if(loading && loading.isSharedLoad) loading.set(60, 'データ読み込み中', 'イベントデータを取得しています');
 
     // The private bundle is obfuscated and may accidentally shadow browser
     // globals/public bridge functions. Keep the public shell stable.
@@ -90,5 +96,8 @@
     }catch(e){ console.warn('KBCPublic register failed:', e); }
   }catch(e){
     console.error('modular/loader:', e);
+    if(window.KBCLoadingScreen && window.KBCLoadingScreen.isSharedLoad){
+      window.KBCLoadingScreen.fail('バンドルの読み込みに失敗しました');
+    }
   }
 })();

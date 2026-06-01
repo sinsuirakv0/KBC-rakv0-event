@@ -23,6 +23,80 @@
   
 </head>
 <body>
+  <div id="share-loading-overlay" class="share-loading-overlay" aria-live="polite" aria-busy="true">
+    <div class="share-loading-panel" role="status">
+      <img class="share-loading-logo" src="./assets/logo.png" alt="KBC">
+      <div class="share-loading-title">読み込み中...</div>
+      <div class="share-loading-spinner" aria-hidden="true"></div>
+      <div class="share-loading-progress-row">
+        <div class="share-loading-progress-track">
+          <div id="share-loading-progress-bar" class="share-loading-progress-bar"></div>
+        </div>
+        <span id="share-loading-percent" class="share-loading-percent">0%</span>
+      </div>
+      <div id="share-loading-status" class="share-loading-status">準備中</div>
+      <div id="share-loading-detail" class="share-loading-detail">共有URLの読み込みを開始しています</div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      const params = new URLSearchParams(window.location.search);
+      const isSharedLoad = ['tab','id','tsv','row','type','schedule'].some(k => params.has(k));
+      const overlay = document.getElementById('share-loading-overlay');
+      const bar = document.getElementById('share-loading-progress-bar');
+      const percent = document.getElementById('share-loading-percent');
+      const status = document.getElementById('share-loading-status');
+      const detail = document.getElementById('share-loading-detail');
+      let hideTimer = null;
+
+      function clampProgress(value){
+        const n = Number(value);
+        if(!Number.isFinite(n)) return 0;
+        return Math.max(0, Math.min(100, Math.round(n)));
+      }
+
+      function set(progress, statusText, detailText){
+        if(!overlay) return;
+        const p = clampProgress(progress);
+        overlay.classList.add('show');
+        document.body.classList.add('share-loading-active');
+        if(bar) bar.style.width = p + '%';
+        if(percent) percent.textContent = p + '%';
+        if(statusText && status) status.textContent = statusText;
+        if(detailText && detail) detail.textContent = detailText;
+        if(hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+      }
+
+      function finish(detailText){
+        set(100, '読み込み完了', detailText || '共有URLの表示を準備しました');
+        hideTimer = setTimeout(() => {
+          overlay.classList.remove('show');
+          document.body.classList.remove('share-loading-active');
+          overlay.setAttribute('aria-busy', 'false');
+        }, 420);
+      }
+
+      function fail(detailText){
+        set(100, '読み込みに失敗しました', detailText || '時間を置いて再度お試しください');
+        overlay.classList.add('error');
+        hideTimer = setTimeout(() => {
+          overlay.classList.remove('show');
+          document.body.classList.remove('share-loading-active');
+          overlay.setAttribute('aria-busy', 'false');
+        }, 1800);
+      }
+
+      window.KBCLoadingScreen = {
+        isSharedLoad,
+        show: (statusText, detailText) => set(4, statusText || '準備中', detailText || '共有URLの読み込みを開始しています'),
+        set,
+        finish,
+        fail
+      };
+
+      if(isSharedLoad) window.KBCLoadingScreen.show();
+    })();
+  </script>
   <div class="container fade-in">
     <header class="header">
       <div class="header-left">
