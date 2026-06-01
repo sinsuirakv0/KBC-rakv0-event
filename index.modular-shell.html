@@ -373,26 +373,9 @@
     </div>
   </div>
 
-<script>
-(async()=>{
-  try{
-    const r=await fetch('/api/app-bundle');
-    if(!r.ok)return;
-    const{b,k}=await r.json();
-    const[ivH,enc]=b.split(':');
-    const key=CryptoJS.enc.Hex.parse(CryptoJS.SHA256(k).toString());
-    const iv=CryptoJS.enc.Hex.parse(ivH);
-    const dec=CryptoJS.AES.decrypt(
-      {ciphertext:CryptoJS.enc.Base64.parse(enc)},
-      key,{iv,mode:CryptoJS.mode.CBC,padding:CryptoJS.pad.Pkcs7}
-    );
-    const js=dec.toString(CryptoJS.enc.Utf8);
-    if(!js)return;
-    const s=document.createElement('script');
-    s.textContent=js;
-    document.head.appendChild(s);
-  }catch(e){console.error('loader:',e);}
-})();
-</script>
+<script src="./modular/kbc_public_bridge.js"></script>
+<script src="./modular/time.js"></script>
+<script src="./modular/ui.js"></script>
+<script src="./modular/loader.js"></script>
 </body>
 </html>
