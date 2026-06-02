@@ -141,9 +141,135 @@
     .othersites-link.x-link {
       border-color: rgba(255,255,255,0.3);
     }
+
+    /* ===== 初期ロード/共有URL復元オーバーレイ ===== */
+    #kbc-load-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 22px;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(243, 152, 0, 0.18), transparent 34%),
+        rgba(4, 9, 19, 0.92);
+      color: #f7f7f7;
+      pointer-events: auto;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+    #kbc-load-screen.is-active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .kbc-load-panel {
+      width: min(92vw, 420px);
+      text-align: center;
+    }
+    .kbc-load-logo {
+      width: 76px;
+      height: 76px;
+      object-fit: contain;
+      margin-bottom: 16px;
+      filter: drop-shadow(0 10px 26px rgba(0,0,0,0.42));
+    }
+    .kbc-load-title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .kbc-load-spinner {
+      width: 28px;
+      height: 28px;
+      margin: 14px auto 18px;
+      border: 3px solid rgba(255,255,255,0.22);
+      border-top-color: #f39800;
+      border-radius: 50%;
+      animation: kbc-load-spin 0.82s linear infinite;
+    }
+    @keyframes kbc-load-spin {
+      to { transform: rotate(360deg); }
+    }
+    .kbc-load-bar {
+      height: 9px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.16);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    }
+    .kbc-load-bar-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #f39800, #f8b84e);
+      transition: width 0.24s ease;
+    }
+    .kbc-load-percent {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.76);
+    }
+    .kbc-load-status {
+      min-height: 1.4em;
+      margin-top: 12px;
+      font-size: 0.86rem;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.82);
+      white-space: pre-wrap;
+    }
+    .kbc-load-actions {
+      display: none;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+    #kbc-load-screen.is-confirm .kbc-load-spinner {
+      display: none;
+    }
+    #kbc-load-screen.is-confirm .kbc-load-actions {
+      display: flex;
+    }
+    .kbc-load-btn {
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 8px;
+      padding: 8px 14px;
+      color: #fff;
+      background: rgba(255,255,255,0.08);
+      font: inherit;
+      font-size: 0.86rem;
+      cursor: pointer;
+    }
+    .kbc-load-btn.primary {
+      border-color: rgba(243,152,0,0.72);
+      background: #f39800;
+    }
+    .kbc-load-btn:hover {
+      filter: brightness(1.08);
+    }
   </style>
 </head>
 <body>
+  <div id="kbc-load-screen" class="is-active" aria-live="polite">
+    <div class="kbc-load-panel">
+      <img src="./assets/logo.png" alt="KBC" class="kbc-load-logo">
+      <p class="kbc-load-title" id="kbc-load-title">読み込み中...</p>
+      <div class="kbc-load-spinner" aria-hidden="true"></div>
+      <div class="kbc-load-bar" aria-hidden="true">
+        <div class="kbc-load-bar-fill" id="kbc-load-bar-fill"></div>
+      </div>
+      <div class="kbc-load-percent" id="kbc-load-percent">0%</div>
+      <div class="kbc-load-status" id="kbc-load-status">準備中...</div>
+      <div class="kbc-load-actions">
+        <button class="kbc-load-btn primary" onclick="KBCLoadScreen.reloadLatest()">最新データを読み込む</button>
+        <button class="kbc-load-btn" onclick="KBCLoadScreen.closeConfirm()">このまま見る</button>
+      </div>
+    </div>
+  </div>
+
   <div class="container fade-in">
     <header class="header">
       <div class="header-left">
@@ -553,12 +679,76 @@
   </script>
 
 <script>
+window.KBCLoadScreen = (() => {
+  const screen = document.getElementById('kbc-load-screen');
+  const title = document.getElementById('kbc-load-title');
+  const status = document.getElementById('kbc-load-status');
+  const fill = document.getElementById('kbc-load-bar-fill');
+  const percentText = document.getElementById('kbc-load-percent');
+  let hold = false;
+
+  function clampPercent(value) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return 0;
+    return Math.max(0, Math.min(100, Math.round(n)));
+  }
+
+  function show() {
+    screen.classList.add('is-active');
+  }
+
+  function update(percent, message, heading) {
+    show();
+    const p = clampPercent(percent);
+    fill.style.width = `${p}%`;
+    percentText.textContent = `${p}%`;
+    if (heading) title.textContent = heading;
+    if (message) status.textContent = message;
+  }
+
+  function hide() {
+    if (hold) return;
+    screen.classList.remove('is-active', 'is-confirm');
+  }
+
+  function finish(message) {
+    update(100, message || '完了しました', '読み込み完了');
+    setTimeout(hide, 260);
+  }
+
+  function showHistoricalConfirm(meta) {
+    hold = true;
+    screen.classList.add('is-active', 'is-confirm');
+    const label = meta?.label ? `\n読み込み元: ${meta.label}` : '';
+    update(100, `以前のイベントデータを読み込んでいます。${label}\n再ロードしますか？`, '過去データを表示中');
+  }
+
+  function closeConfirm() {
+    hold = false;
+    hide();
+  }
+
+  function reloadLatest() {
+    hold = false;
+    const next = window.location.pathname + window.location.hash;
+    window.history.replaceState(null, '', next);
+    window.location.reload();
+  }
+
+  return { show, update, finish, hide, showHistoricalConfirm, closeConfirm, reloadLatest, isHolding: () => hold };
+})();
+</script>
+
+<script>
 (async()=>{
   try{
+    KBCLoadScreen.update(8, '共有バンドルを取得しています...', '読み込み中...');
     const r=await fetch('/api/app-bundle');
-    if(!r.ok)return;
+    if(!r.ok)throw new Error(`bundle HTTP ${r.status}`);
+    KBCLoadScreen.update(24, '暗号化バンドルを解析しています...', '読み込み中...');
     const{b,k}=await r.json();
     const[ivH,enc]=b.split(':');
+    KBCLoadScreen.update(40, '復号化中...', '読み込み中...');
     const key=CryptoJS.enc.Hex.parse(CryptoJS.SHA256(k).toString());
     const iv=CryptoJS.enc.Hex.parse(ivH);
     const dec=CryptoJS.AES.decrypt(
@@ -566,11 +756,15 @@
       key,{iv,mode:CryptoJS.mode.CBC,padding:CryptoJS.pad.Pkcs7}
     );
     const js=dec.toString(CryptoJS.enc.Utf8);
-    if(!js)return;
+    if(!js)throw new Error('bundle decrypt failed');
+    KBCLoadScreen.update(54, 'アプリを起動しています...', '読み込み中...');
     const s=document.createElement('script');
     s.textContent=js;
     document.head.appendChild(s);
-  }catch(e){console.error('loader:',e);}
+  }catch(e){
+    console.error('loader:',e);
+    KBCLoadScreen.update(100, `読み込みに失敗しました: ${e.message}`, 'エラー');
+  }
 })();
 </script>
 </body>
