@@ -293,6 +293,7 @@
       <div class="tab" data-tab="item">item</div>
       <div class="tab" data-tab="mission">mission</div>
       <div class="tab" data-tab="all">全て</div>
+      <div class="tab" data-tab="list">リスト</div>
       <div class="tab" data-tab="history">履歴</div>
       <div class="tab" data-tab="settings">⚙</div>
     </div>
@@ -341,6 +342,7 @@
       <div id="item"    class="content"><div class="loading">読み込み中...</div></div>
       <div id="mission" class="content"><div class="loading">読み込み中...</div></div>
       <div id="all"     class="content"><div class="loading">読み込み中...</div></div>
+      <div id="list"    class="content"><div class="loading">リストを読み込み中...</div></div>
       <div id="history" class="content"><div class="loading">読み込み中...</div></div>
       <div id="settings" class="content">
         <!-- カード1: タイムゾーン -->
@@ -635,12 +637,36 @@
         <div class="overlay-title" id="overlay-title"></div>
         <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
           <button class="overlay-ss-btn" onclick="screenshotOverlay()" title="スクリーンショット">📷</button>
+          <button class="overlay-ss-btn" id="list-add-btn" onclick="openAddToListOverlay()" title="リストに追加">＋</button>
           <button class="overlay-ss-btn" id="share-btn" onclick="copyShareUrl()" title="共有リンクをコピー">🔗</button>
           <span class="overlay-close" id="overlay-close">&times;</span>
         </div>
       </div>
       <hr class="overlay-divider">
       <div id="overlay-body"></div>
+    </div>
+  </div>
+
+  <div id="list-add-overlay" class="list-modal-backdrop">
+    <div class="list-modal-panel">
+      <div class="list-modal-head">
+        <div class="list-modal-title">リストに追加</div>
+        <button class="list-modal-close" onclick="closeAddToListOverlay()" title="閉じる">&times;</button>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">追加先</span>
+        <select id="list-add-select" class="list-select"></select>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">新規</span>
+        <input id="list-add-new-name" class="list-input" maxlength="40" placeholder="リスト名">
+      </div>
+      <div id="list-add-preview" class="list-preview"></div>
+      <div id="list-add-status" class="list-status"></div>
+      <div class="list-modal-actions">
+        <button class="list-action-btn" onclick="closeAddToListOverlay()">キャンセル</button>
+        <button class="settings-btn" onclick="confirmAddToList()">追加</button>
+      </div>
     </div>
   </div>
 
