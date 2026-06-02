@@ -686,6 +686,7 @@ window.KBCLoadScreen = (() => {
   const fill = document.getElementById('kbc-load-bar-fill');
   const percentText = document.getElementById('kbc-load-percent');
   let hold = false;
+  let currentPercent = 0;
 
   function clampPercent(value) {
     const n = Number(value);
@@ -700,6 +701,7 @@ window.KBCLoadScreen = (() => {
   function update(percent, message, heading) {
     show();
     const p = clampPercent(percent);
+    currentPercent = p;
     fill.style.width = `${p}%`;
     percentText.textContent = `${p}%`;
     if (heading) title.textContent = heading;
@@ -735,8 +737,22 @@ window.KBCLoadScreen = (() => {
     window.location.reload();
   }
 
-  return { show, update, finish, hide, showHistoricalConfirm, closeConfirm, reloadLatest, isHolding: () => hold };
+  return { show, update, finish, hide, showHistoricalConfirm, closeConfirm, reloadLatest, isHolding: () => hold, current: () => currentPercent };
 })();
+
+window.addEventListener('error', event => {
+  if (window.KBCLoadScreen?.current?.() >= 54 && window.KBCLoadScreen?.current?.() < 100) {
+    const msg = event.message || 'アプリ起動中にエラーが発生しました';
+    KBCLoadScreen.update(100, `アプリの起動に失敗しました: ${msg}`, 'エラー');
+  }
+});
+
+window.addEventListener('unhandledrejection', event => {
+  if (window.KBCLoadScreen?.current?.() >= 54 && window.KBCLoadScreen?.current?.() < 100) {
+    const reason = event.reason?.message || String(event.reason || '不明なエラー');
+    KBCLoadScreen.update(100, `アプリの起動に失敗しました: ${reason}`, 'エラー');
+  }
+});
 </script>
 
 <script>
@@ -761,6 +777,11 @@ window.KBCLoadScreen = (() => {
     const s=document.createElement('script');
     s.textContent=js;
     document.head.appendChild(s);
+    setTimeout(() => {
+      if (KBCLoadScreen.current() <= 54 && !KBCLoadScreen.isHolding()) {
+        KBCLoadScreen.update(100, 'アプリの起動が止まりました。ページを再読み込みしてください。', 'エラー');
+      }
+    }, 8000);
   }catch(e){
     console.error('loader:',e);
     KBCLoadScreen.update(100, `読み込みに失敗しました: ${e.message}`, 'エラー');
