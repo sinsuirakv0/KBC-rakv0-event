@@ -111,9 +111,10 @@ export async function updateFiles(name, tsvText, hash, force = false) {
 
     // 1. TSVをraw/に保存（ユニックス時間付きファイル名）
     const unixTime = Math.floor(Date.now() / 1000);
+    const rawFilename = `raw/${name}_${unixTime}.tsv`;
     console.log(`[${name}] TSVを raw/${name}_${unixTime}.tsv に保存中...`);
     await updateGitHubFile({
-      path:    `raw/${name}_${unixTime}.tsv`,
+      path:    rawFilename,
       content: tsvText,
       message: `save ${name}.tsv (${unixTime})`,
     });
@@ -148,7 +149,7 @@ export async function updateFiles(name, tsvText, hash, force = false) {
     });
 
     console.log(`[${name}] 完了`);
-    return { success: true, error: null };
+    return { success: true, error: null, rawUnix: unixTime, rawFilename };
 
   } catch (err) {
     console.error(`[${name}] updateFiles エラー:`, err.message);

@@ -30,6 +30,9 @@ jobs:
           PRIVATE_REPO_NAME: ${{ secrets.PRIVATE_REPO_NAME }}
           GITHUB_PRIVATE_TOKEN: ${{ secrets.GITHUB_PRIVATE_TOKEN }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          BOT_EVENT_UPDATE_URL: ${{ secrets.BOT_EVENT_UPDATE_URL }}
+          BOT_EVENT_UPDATE_SECRET: ${{ secrets.BOT_EVENT_UPDATE_SECRET }}
+          EVENT_SITE_URL: ${{ vars.EVENT_SITE_URL }}
 
       - name: 強制更新
         if: ${{ github.event.inputs.force != '' }}
@@ -40,3 +43,6 @@ jobs:
           PRIVATE_REPO_NAME: ${{ secrets.PRIVATE_REPO_NAME }}
           GITHUB_PRIVATE_TOKEN: ${{ secrets.GITHUB_PRIVATE_TOKEN }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          BOT_EVENT_UPDATE_URL: ${{ secrets.BOT_EVENT_UPDATE_URL }}
+          BOT_EVENT_UPDATE_SECRET: ${{ secrets.BOT_EVENT_UPDATE_SECRET }}
+          EVENT_SITE_URL: ${{ vars.EVENT_SITE_URL }}

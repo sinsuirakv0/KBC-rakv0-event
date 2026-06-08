@@ -11,7 +11,7 @@
  */
 
 import { getJWT }        from "../lib/jwt.js";
-import { notifyDiscord } from "../lib/discord.js";
+import { notifyDiscord, notifyEventBot } from "../lib/discord.js";
 import { fetchAndCheck } from "./fetch-tsv.js";
 import { updateFiles }   from "./update-files.js";
 
@@ -67,6 +67,18 @@ async function main() {
     const failed = results.filter(r => !r.success && !r.skipped);
     if (failed.length > 0) {
       throw new Error(`更新失敗: ${failed.map(r => `${r.name}=${r.error}`).join(', ')}`);
+    }
+
+    const updated = results.filter(r => r.success && r.changed);
+    if (updated.length > 0) {
+      const rawUnixValues = updated.map(r => r.rawUnix).filter(Number.isFinite);
+      const historyUnix = rawUnixValues.length ? Math.max(...rawUnixValues) : null;
+      await notifyEventBot({
+        types: updated.map(r => r.name),
+        detectedAt: startedAt,
+        historyUnix,
+        force,
+      });
     }
 
   } catch (err) {
