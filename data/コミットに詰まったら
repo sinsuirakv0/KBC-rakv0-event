@@ -1,4 +1,0 @@
-ターミナルで
-git status --short
-git diff --name-status -- data
-git add data
