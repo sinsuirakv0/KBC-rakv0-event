@@ -29,6 +29,7 @@ jobs:
           PRIVATE_REPO_OWNER: ${{ secrets.PRIVATE_REPO_OWNER }}
           PRIVATE_REPO_NAME: ${{ secrets.PRIVATE_REPO_NAME }}
           GITHUB_PRIVATE_TOKEN: ${{ secrets.GITHUB_PRIVATE_TOKEN }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
       - name: 強制更新
         if: ${{ github.event.inputs.force != '' }}
@@ -38,3 +39,4 @@ jobs:
           PRIVATE_REPO_OWNER: ${{ secrets.PRIVATE_REPO_OWNER }}
           PRIVATE_REPO_NAME: ${{ secrets.PRIVATE_REPO_NAME }}
           GITHUB_PRIVATE_TOKEN: ${{ secrets.GITHUB_PRIVATE_TOKEN }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}

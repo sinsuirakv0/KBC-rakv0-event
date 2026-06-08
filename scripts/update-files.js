@@ -60,7 +60,12 @@ async function loadParsers() {
   const repo  = process.env.PRIVATE_REPO_NAME;
   const token = process.env.GITHUB_PRIVATE_TOKEN || process.env.GH_TOKEN_EVENT;
   if (!owner || !repo || !token) {
-    throw new Error('parsers not found locally and PRIVATE_REPO_OWNER/PRIVATE_REPO_NAME/GITHUB_PRIVATE_TOKEN not set');
+    const missing = [
+      !owner ? 'PRIVATE_REPO_OWNER' : null,
+      !repo  ? 'PRIVATE_REPO_NAME' : null,
+      !token ? 'GITHUB_PRIVATE_TOKEN or GH_TOKEN_EVENT' : null,
+    ].filter(Boolean).join(', ');
+    throw new Error(`parsers not found locally and private parser settings missing: ${missing}`);
   }
 
   try {

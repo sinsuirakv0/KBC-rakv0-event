@@ -1,18 +1,15 @@
 // scripts/test_parsers.js
-// 簡易テスト: 公開 parsers と event-app 内 parsers の import を試みる
+// 簡易テスト: 公開 parsers の import を確認する。
 (async function(){
   try {
-    const pub = await import('../parsers/gatya.js');
-    console.log('public.parseGatya:', typeof pub.parseGatya === 'function');
+    const gatya = await import('../parsers/gatya.js');
+    const sale = await import('../parsers/sale.js');
+    const item = await import('../parsers/item.js');
+    console.log('public.parseGatya:', typeof gatya.parseGatya === 'function');
+    console.log('public.parseSale:', typeof sale.parseSale === 'function');
+    console.log('public.parseItem:', typeof item.parseItem === 'function');
   } catch (e) {
     console.warn('public parser load failed:', e.message);
-  }
-
-  try {
-    const priv = await import('../../KBC-rakv0-event-app/src/parsers/gatya.js');
-    console.log('event-app.parseGatya:', typeof priv.parseGatya === 'function');
-  } catch (e) {
-    console.warn('event-app parser load failed:', e.message);
   }
 
   process.exit(0);

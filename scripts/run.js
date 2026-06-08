@@ -11,6 +11,7 @@
  */
 
 import { getJWT }        from "../lib/jwt.js";
+import { notifyDiscord } from "../lib/discord.js";
 import { fetchAndCheck } from "./fetch-tsv.js";
 import { updateFiles }   from "./update-files.js";
 
@@ -26,6 +27,31 @@ const types = (force && targets.length > 0)
   ? targets.filter(t => ALL_TYPES.includes(t))
   : ALL_TYPES;
 
+async function processType(name, jwt) {
+  console.log(`\n--- ${name} ---`);
+
+  const fetchResult = await fetchAndCheck(name, jwt);
+  if (fetchResult.error) {
+    console.error(`[${name}] スキップ（取得エラー）`);
+    await notifyDiscord({ type: name, status: 'failed', force, error: fetchResult.error });
+    return { name, success: false, skipped: true, error: fetchResult.error };
+  }
+
+  if (!fetchResult.changed && !force) {
+    console.log(`[${name}] 変更なし、スキップ`);
+    return { name, success: true, changed: false };
+  }
+
+  await notifyDiscord({ type: name, status: 'detected', force, hash: fetchResult.hash });
+  const result = await updateFiles(name, fetchResult.text, fetchResult.hash, force);
+  if (result.success) {
+    await notifyDiscord({ type: name, status: 'updated', force, hash: fetchResult.hash });
+  } else {
+    await notifyDiscord({ type: name, status: 'failed', force, hash: fetchResult.hash, error: result.error });
+  }
+  return { name, ...result, changed: true };
+}
+
 async function main() {
   const startedAt = new Date().toISOString();
   console.log(`=== 実行開始: ${startedAt}${force ? " [--force]" : ""} ===`);
@@ -36,21 +62,11 @@ async function main() {
     const jwt = await getJWT();
     console.log("JWT取得成功");
 
-    for (const name of types) {
-      console.log(`\n--- ${name} ---`);
-
-      const fetchResult = await fetchAndCheck(name, jwt);
-      if (fetchResult.error) {
-        console.error(`[${name}] スキップ（取得エラー）`);
-        continue;
-      }
-
-      if (!fetchResult.changed && !force) {
-        console.log(`[${name}] 変更なし、スキップ`);
-        continue;
-      }
-
-      await updateFiles(name, fetchResult.text, fetchResult.hash, force);
+    console.log(`並列処理開始: ${types.join(", ")}`);
+    const results = await Promise.all(types.map(name => processType(name, jwt)));
+    const failed = results.filter(r => !r.success && !r.skipped);
+    if (failed.length > 0) {
+      throw new Error(`更新失敗: ${failed.map(r => `${r.name}=${r.error}`).join(', ')}`);
     }
 
   } catch (err) {
