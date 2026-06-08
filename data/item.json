@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/05/27 16:26:23",
+  "updatedAt": "26/06/08 23:37:16",
   "data": [
     {
       "header": {
@@ -1214,69 +1214,6 @@
     },
     {
       "header": {
-        "startDate": "20260501",
-        "startTime": "1100",
-        "endDate": "20260529",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 80100,
-        "giftType": 11039,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20260501\t1100\t20260529\t1100\t150300\t999999\t0\t0\t80100\t11039\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260424",
-        "startTime": "1100",
-        "endDate": "20260601",
-        "endTime": "1100",
-        "minVersion": "150301",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 90012,
-        "giftType": 33000,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260424\t1100\t20260601\t1100\t150301\t999999\t0\t0\t90012\t33000\t0\t\t\t1300\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260515",
-        "startTime": "1100",
-        "endDate": "20260529",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51712,
-        "giftType": 35018,
-        "giftAmount": 0,
-        "title": "にゃんこ強化週間！",
-        "message": "イベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>毎日ログインして最大でネコカン280個ゲット！(5/29まで)",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20260515\t1100\t20260529\t1100\t150300\t999999\t0\t0\t51712\t35018\t0\tにゃんこ強化週間！\tイベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>毎日ログインして最大でネコカン280個ゲット！(5/29まで)\t7\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260516",
         "startTime": "1100",
         "endDate": "20260608",
@@ -1445,16 +1382,58 @@
     },
     {
       "header": {
-        "startDate": "20260601",
-        "startTime": "000",
-        "endDate": "20260602",
-        "endTime": "000",
+        "startDate": "20260615",
+        "startTime": "1100",
+        "endDate": "20260706",
+        "endTime": "1100",
         "minVersion": "150400",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 51720,
+        "eventId": 51722,
+        "giftType": 965,
+        "giftAmount": 0,
+        "title": "「悪魔のジューンブライド」参列記念！",
+        "message": "イベント期間中、1日1回結婚式の引き出物を受け取れるにゃ！<br>毎日参列して、様々な記念品をゲットしよう！(7/6まで)",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260615\t1100\t20260706\t1100\t150400\t999999\t0\t0\t51722\t965\t0\t「悪魔のジューンブライド」参列記念！\tイベント期間中、1日1回結婚式の引き出物を受け取れるにゃ！<br>毎日参列して、様々な記念品をゲットしよう！(7/6まで)\t7\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260619",
+        "startTime": "1100",
+        "endDate": "20260622",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51723,
+        "giftType": 827,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260619\t1100\t20260622\t1100\t150400\t999999\t0\t0\t51723\t827\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260615",
+        "startTime": "1100",
+        "endDate": "20260626",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51724,
         "giftType": 828,
         "giftAmount": 0,
         "title": "",
@@ -1462,20 +1441,20 @@
         "url": "",
         "repeatFlag": 4
       },
-      "raw": "20260601\t000\t20260602\t000\t150400\t999999\t0\t0\t51720\t828\t0\t\t\t7\t0\t4\t0\t0\t0\t0"
+      "raw": "20260615\t1100\t20260626\t1100\t150400\t999999\t0\t0\t51724\t828\t0\t\t\t7\t0\t4\t0\t0\t0\t0"
     },
     {
       "header": {
-        "startDate": "20260601",
-        "startTime": "000",
-        "endDate": "20260602",
-        "endTime": "000",
+        "startDate": "20260615",
+        "startTime": "1100",
+        "endDate": "20260626",
+        "endTime": "1100",
         "minVersion": "150400",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 51721,
+        "eventId": 51725,
         "giftType": 835,
         "giftAmount": 0,
         "title": "",
@@ -1483,7 +1462,28 @@
         "url": "",
         "repeatFlag": 2
       },
-      "raw": "20260601\t000\t20260602\t000\t150400\t999999\t0\t0\t51721\t835\t0\t\t\t7\t0\t2\t0\t0\t0\t0"
+      "raw": "20260615\t1100\t20260626\t1100\t150400\t999999\t0\t0\t51725\t835\t0\t\t\t7\t0\t2\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260616",
+        "startTime": "1100",
+        "endDate": "20260708",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 85000,
+        "giftType": 11046,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260616\t1100\t20260708\t1100\t150400\t999999\t0\t0\t85000\t11046\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
     }
   ]
 }
