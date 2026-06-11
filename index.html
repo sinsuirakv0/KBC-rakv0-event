@@ -6,6 +6,7 @@
   <title>KBC スケジュール</title>
   <link rel="stylesheet" href="./assets/style.css" />
   <link rel="stylesheet" href="./assets/event.css" />
+  <link rel="stylesheet" href="./assets/advanced-search.css" />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" href="https://kbc-rakv0.vercel.app/assets/favicon.ico">
   <meta property="og:title" content="KBC スケジュール">
@@ -298,28 +299,171 @@
       <div class="tab" data-tab="settings">⚙</div>
     </div>
 
-    <div class="controls">
-      <label>
-        <input type="checkbox" id="showCurrent">
-        開催中も表示
-      </label>
-      <label>
-        <input type="checkbox" id="showPast">
-        過去も表示
-      </label>
-      <label>
-        <input type="checkbox" id="sortByDate">
-        日付順に並べる
-      </label>
-      <label>
-        <input type="checkbox" id="sortById">
-        ID順に並べる
-      </label>
-      <label id="label-showAllSale">
-        <input type="checkbox" id="showAllSale">
-        全イベントを表示
-      </label>
-      <button class="camera-btn" onclick="confirmScreenshot()" title="スクリーンショット">📷</button>
+    <section class="advanced-filter" id="advanced-filter" aria-label="高度検索">
+      <div class="advanced-filter-head">
+        <div class="advanced-filter-search">
+          <input id="advanced-filter-query" type="search" placeholder='名前・ID・詳細を検索 / id:123 -tag:終了 "完全一致"' autocomplete="off">
+        </div>
+        <select id="advanced-filter-query-mode" title="複数の検索語をすべて含むか、いずれかを含むか">
+          <option value="all">検索語: すべて</option>
+          <option value="any">検索語: いずれか</option>
+        </select>
+        <select id="advanced-filter-scope" title="検索対象">
+          <option value="all">対象: カード全体</option>
+          <option value="name">対象: イベント名</option>
+          <option value="period">対象: 開催期間</option>
+          <option value="tag">対象: タグ</option>
+        </select>
+        <button class="advanced-filter-icon-btn" id="advanced-filter-reset" type="button" title="検索条件をリセット">↺</button>
+        <button class="advanced-filter-icon-btn" id="advanced-filter-help-open" type="button" title="詳細検索の使い方">?</button>
+        <button class="advanced-filter-icon-btn" id="advanced-filter-collapse" type="button" title="検索条件を折りたたむ">⌃</button>
+        <span class="advanced-filter-badge" id="advanced-filter-badge">0</span>
+      </div>
+
+      <div class="advanced-filter-body">
+        <div class="advanced-filter-row">
+          <span class="advanced-filter-label">検索指定</span>
+          <div class="advanced-filter-actions" id="advanced-filter-query-tools">
+            <button class="advanced-filter-preset" type="button" data-query-token="id:">ID</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="name:">名前</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="status:">状態</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="type:">種類</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="tag:">タグ</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="gacha:">ガチャ</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="stage:">ステージ分類</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="start:">開始日</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="end:">終了日</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="detail:">詳細データ</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="-">除外</button>
+          </div>
+        </div>
+
+        <div class="advanced-filter-row">
+          <span class="advanced-filter-label">すぐ絞る</span>
+          <div class="advanced-filter-actions" id="advanced-filter-presets">
+            <button class="advanced-filter-preset" type="button" data-preset="current">開催中</button>
+            <button class="advanced-filter-preset" type="button" data-preset="within">期間内</button>
+            <button class="advanced-filter-preset" type="button" data-preset="future">予定</button>
+            <button class="advanced-filter-preset" type="button" data-preset="permanent">常設</button>
+            <button class="advanced-filter-preset" type="button" data-preset="ending-soon">まもなく終了</button>
+            <button class="advanced-filter-preset" type="button" data-preset="starting-soon">まもなく開始</button>
+            <button class="advanced-filter-preset" type="button" data-preset="guaranteed">確定ガチャ</button>
+            <button class="advanced-filter-preset" type="button" data-preset="event-guaranteed">確定枠あり</button>
+            <button class="advanced-filter-preset" type="button" data-preset="unknown">名前未登録</button>
+            <button class="advanced-filter-preset" type="button" data-preset="one-time">1回限り</button>
+          </div>
+        </div>
+
+        <div class="advanced-filter-row">
+          <span class="advanced-filter-label">状態</span>
+          <div class="advanced-filter-group" data-filter-group="status">
+            <label class="advanced-filter-chip"><input type="checkbox" value="開催中"><span>開催中</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="期間内"><span>期間内</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="予定" checked><span>予定</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="終了"><span>終了</span></label>
+          </div>
+          <span class="advanced-filter-label">期間</span>
+          <div class="advanced-filter-group" data-filter-group="duration">
+            <label class="advanced-filter-chip"><input type="checkbox" value="permanent"><span>常設</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="limited"><span>期間限定</span></label>
+          </div>
+        </div>
+
+        <div class="advanced-filter-row">
+          <span class="advanced-filter-label">種類</span>
+          <div class="advanced-filter-group" data-filter-group="type">
+            <label class="advanced-filter-chip"><input type="checkbox" value="gatya"><span>gatya</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="sale"><span>sale</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="item"><span>item</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="mission"><span>mission</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="list"><span>リスト</span></label>
+          </div>
+          <span class="advanced-filter-label">ガチャ</span>
+          <div class="advanced-filter-group" data-filter-group="gacha">
+            <label class="advanced-filter-chip"><input type="checkbox" value="ノーマル"><span>ノーマル</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="レア"><span>レア</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="イベント"><span>イベント</span></label>
+          </div>
+          <span class="advanced-filter-label">分類</span>
+          <select id="advanced-filter-stage-type" title="sale / missionのステージ分類">
+            <option value="">ステージ分類: すべて</option>
+          </select>
+        </div>
+
+        <div class="advanced-filter-row">
+          <span class="advanced-filter-label">特徴</span>
+          <div class="advanced-filter-group" data-filter-group="feature">
+            <label class="advanced-filter-chip"><input type="checkbox" value="guaranteed"><span>確定を含む</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="event-guaranteed"><span>確定枠あり</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="one-time"><span>1回限り</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="unknown"><span>ID名のまま</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="has-extra-tag"><span>追加タグあり</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="no-extra-tag"><span>追加タグなし</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="has-time-blocks"><span>時間帯指定あり</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="has-popup"><span>ポップアップあり</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="has-target-stages"><span>対象ステージあり</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="repeating"><span>繰り返し</span></label>
+          </div>
+          <span class="advanced-filter-label">追加タグ</span>
+          <select id="advanced-filter-extra-tag" title="描画されたカードから見つけた追加タグ">
+            <option value="">すべて</option>
+          </select>
+        </div>
+
+        <div class="advanced-filter-row">
+          <span class="advanced-filter-label">近日</span>
+          <div class="advanced-filter-group" data-filter-group="relative">
+            <label class="advanced-filter-chip"><input type="checkbox" value="starts-today"><span>今日開始</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="ends-today"><span>今日終了</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="starts-3d"><span>3日以内に開始</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="ends-3d"><span>3日以内に終了</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="starts-7d"><span>7日以内に開始</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="ends-7d"><span>7日以内に終了</span></label>
+          </div>
+        </div>
+
+        <div class="advanced-filter-row">
+          <span class="advanced-filter-label">開始日</span>
+          <input class="advanced-filter-field" id="advanced-filter-start-from" type="date" title="この日以降に開始">
+          <span>～</span>
+          <input class="advanced-filter-field" id="advanced-filter-start-to" type="date" title="この日以前に開始">
+          <span class="advanced-filter-label">終了日</span>
+          <input class="advanced-filter-field" id="advanced-filter-end-from" type="date" title="この日以降に終了">
+          <span>～</span>
+          <input class="advanced-filter-field" id="advanced-filter-end-to" type="date" title="この日以前に終了">
+        </div>
+
+        <div class="advanced-filter-row">
+          <span class="advanced-filter-label">ID範囲</span>
+          <input class="advanced-filter-field" id="advanced-filter-id-min" type="number" inputmode="numeric" placeholder="最小ID">
+          <span>～</span>
+          <input class="advanced-filter-field" id="advanced-filter-id-max" type="number" inputmode="numeric" placeholder="最大ID">
+          <span class="advanced-filter-label">並び順</span>
+          <select id="advanced-filter-sort">
+            <option value="default">標準</option>
+            <option value="date">開始日順</option>
+            <option value="id">ID順</option>
+          </select>
+          <span class="advanced-filter-spacer"></span>
+          <button class="advanced-filter-tool-btn" type="button" onclick="openFilter('sale')" id="filter-btn-sale" style="display:none;">sale分類</button>
+          <button class="advanced-filter-tool-btn" type="button" onclick="openFilter('mission')" id="filter-btn-mission" style="display:none;">mission分類</button>
+          <button class="advanced-filter-tool-btn" type="button" onclick="confirmScreenshot()" title="スクリーンショット">📷</button>
+        </div>
+
+        <div class="advanced-filter-summary">
+          <span id="advanced-filter-count">カード待機中</span>
+          <span id="advanced-filter-description">条件なし</span>
+          <span><span id="locale-display" class="now-display"></span> <span id="now-display" class="now-display"></span></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="controls legacy-controls" aria-hidden="true">
+      <input type="checkbox" id="showCurrent" checked>
+      <input type="checkbox" id="showPast" checked>
+      <input type="checkbox" id="sortByDate">
+      <input type="checkbox" id="sortById">
+      <label id="label-showAllSale"><input type="checkbox" id="showAllSale" checked></label>
       <div id="search-wrap">
         <input type="text" id="searchInput" placeholder="ID or ステージ名..."
                autocomplete="off"
@@ -329,9 +473,6 @@
                onblur="setTimeout(()=>closeSuggestions(),200)">
         <div id="search-suggestions"></div>
       </div>
-      <button class="filter-open-btn" onclick="openFilter('sale')" id="filter-btn-sale" style="display:none;">🔽 フィルター</button>
-      <button class="filter-open-btn" onclick="openFilter('mission')" id="filter-btn-mission" style="display:none;">🔽 フィルター</button>
-      <span id="locale-display" class="now-display" style="margin-right:4px;"></span><span id="now-display" class="now-display"></span>
     </div>
 
     <main>
@@ -668,6 +809,56 @@
     </div>
   </div>
 
+  <div id="advanced-filter-help" class="advanced-filter-help-backdrop" role="dialog" aria-modal="true" aria-labelledby="advanced-filter-help-title">
+    <div class="advanced-filter-help-panel">
+      <div class="advanced-filter-help-head">
+        <span id="advanced-filter-help-title">詳細検索の使い方</span>
+        <button class="advanced-filter-icon-btn" id="advanced-filter-help-close" type="button" title="閉じる">&times;</button>
+      </div>
+      <div class="advanced-filter-help-body">
+        <h3>基本検索</h3>
+        <p>通常の単語はイベント名・ID・タグ・詳細データ全体から検索します。空白で区切ると複数条件になります。</p>
+        <p>検索語の判定は上部の「検索語: すべて / いずれか」で切り替えられます。ボタンや日付条件など、検索欄以外の分類同士はすべてAND条件です。</p>
+        <div class="advanced-filter-help-examples">
+          <code>ネコ祭</code><span>「ネコ祭」を含むカード</span>
+          <code>"超ネコ祭"</code><span>空白を含む語句をひとまとまりとして検索</span>
+          <code>ネコ -終了</code><span>「ネコ」を含み、「終了」を含まないカード</span>
+          <code>2270</code><span>名前だけでなく、詳細データ内のIDにも一致</span>
+        </div>
+
+        <h3>フィールド指定</h3>
+        <p><code>項目:検索語</code>で検索場所を限定できます。検索指定ボタンを押すと入力欄へ項目名を挿入できます。</p>
+        <div class="advanced-filter-help-examples">
+          <code>id:2270</code><span>ID・イベントID・対象ステージIDなどから検索</span>
+          <code>name:ネコ</code><span>イベント名のみ検索</span>
+          <code>status:開催中</code><span>開催状態のみ検索</span>
+          <code>type:sale</code><span>gatya / sale / item / missionから検索</span>
+          <code>tag:ログイン</code><span>状態・ガチャ種別・追加タグから検索</span>
+          <code>gacha:レア</code><span>ガチャ種別のみ検索</span>
+          <code>stage:A010</code><span>sale / missionの表示用ステージコードで検索</span>
+          <code>start:20260611</code><span>開始日から検索</span>
+          <code>end:20300101</code><span>終了日から検索</span>
+          <code>detail:popupText</code><span>カード詳細データ全体から検索</span>
+          <code>-type:item</code><span>指定した種類を除外</span>
+        </div>
+
+        <h3>常設イベント</h3>
+        <p>終了日が2030年1月1日のイベント、または詳細データで常設と判定されたイベントは、初期状態では表示されません。「常設」にチェックを入れた場合のみ表示されます。</p>
+
+        <h3>条件の組み合わせ例</h3>
+        <div class="advanced-filter-help-examples">
+          <code>stage:A -name:コラボ</code><span>A分類で、名前にコラボを含まないイベント</span>
+          <code>id:2270 status:予定</code><span>ID 2270かつ予定状態</span>
+          <code>type:sale tag:ログイン</code><span>saleのログイン分類</span>
+          <code>end:20300101</code><span>終了日が20300101の常設候補。表示には常設チェックも必要</span>
+        </div>
+
+        <h3>補足</h3>
+        <p>サイトを開いた直後とリセット後は「予定」のみが選択されます。<code>Ctrl+K</code>で検索欄へ移動できます。</p>
+      </div>
+    </div>
+  </div>
+
   <!-- 詳細サブオーバーレイ（履歴差分内のカードクリック用） -->
   <div id="overlay-sub" class="overlay-backdrop">
     <div class="overlay-panel">
@@ -681,6 +872,8 @@
       <div id="overlay-sub-body"></div>
     </div>
   </div>
+
+  <script src="./assets/advanced-search.js"></script>
 
   <!-- 他サイトオーバーレイ制御スクリプト -->
   <script>
