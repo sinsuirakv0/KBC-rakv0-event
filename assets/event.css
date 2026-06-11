@@ -30,8 +30,15 @@ main { max-width: 800px; margin: 0 auto; padding: 12px 12px 40px; }
 .event-card.is-current { border-left-color: var(--green); }
 .card-tag { flex-shrink: 0; display: inline-block; padding: 2px 7px; border-radius: 99px; font-size: 0.7rem; font-weight: bold; white-space: nowrap; }
 .tag-current { background: var(--green); color: white; }
+.tag-within { background: #7c6f45; color: #fff3c4; }
 .tag-future { background: var(--blue); color: white; }
 .tag-past { background: #555; color: #aaa; }
+
+/* ガチャ種別タグ: 色を変える場合はここを編集 */
+.gacha-type-tag { flex-shrink: 0; display: inline-block; padding: 2px 7px; border-radius: 99px; font-size: 0.7rem; font-weight: bold; white-space: nowrap; }
+.gacha-type-normal { background: #586069; color: #fff; }
+.gacha-type-rare { background: #c0392b; color: #fff; }
+.gacha-type-event { background: #8e44ad; color: #fff; }
 .card-body { flex: 1; min-width: 0; }
 .card-period { font-size: 0.75rem; color: var(--muted); margin-bottom: 2px; }
 .card-name { font-weight: bold; font-size: 0.9rem; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }

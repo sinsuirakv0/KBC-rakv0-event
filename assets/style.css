@@ -335,6 +335,7 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
 .card-period  { font-size: 0.62rem !important; }
 .card-name    { font-size: 0.62rem !important; }
 .card-tag     { font-size: 0.48rem !important; padding: 1px 4px !important; }
+.gacha-type-tag { font-size: 0.48rem !important; padding: 1px 4px !important; }
 .card-arrow   { font-size: 0.7rem !important; }
 
 /* ステージタグ / itemタグ */
