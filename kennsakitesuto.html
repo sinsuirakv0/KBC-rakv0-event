@@ -1226,6 +1226,7 @@
       let pendingFrame = 0;
       let knownExtraTags = '';
       let knownStageTypes = '';
+      const cardDataCache = new WeakMap();
 
       function normalize(value) {
         return String(value || '').normalize('NFKC').toLocaleLowerCase('ja').replace(/\s+/g, ' ').trim();
@@ -1346,6 +1347,8 @@
       }
 
       function cardData(card) {
+        const cached = cardDataCache.get(card);
+        if (cached) return cached;
         const name = card.querySelector('.card-name')?.textContent || '';
         const period = card.querySelector('.card-period')?.textContent || '';
         const status = card.querySelector('.card-tag')?.textContent?.trim() || '';
@@ -1363,7 +1366,7 @@
         const startDate = parseEventDate(header.startDate, header.startTime);
         const endDate = parseEventDate(header.endDate, header.endTime);
         const permanent = detail.steady === true || endCompact === '20300101';
-        return {
+        const data = {
           name,
           period,
           status,
@@ -1385,6 +1388,8 @@
           periodText: normalize(period),
           tagText: normalize(tags)
         };
+        cardDataCache.set(card, data);
+        return data;
       }
 
       function matchesFeatures(data, features) {
