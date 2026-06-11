@@ -338,6 +338,72 @@
       border-color: var(--orange);
       background: rgba(243, 152, 0, 0.14);
     }
+    .advanced-filter-help-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 4500;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.72);
+      padding: 16px;
+    }
+    .advanced-filter-help-backdrop.show {
+      display: flex;
+    }
+    .advanced-filter-help-panel {
+      width: min(760px, 100%);
+      max-height: min(86vh, 900px);
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--text);
+      box-shadow: 0 14px 48px rgba(0, 0, 0, 0.5);
+    }
+    .advanced-filter-help-head {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+    .advanced-filter-help-body {
+      padding: 14px 16px 20px;
+      font-size: 0.76rem;
+      line-height: 1.75;
+    }
+    .advanced-filter-help-body h3 {
+      margin: 15px 0 5px;
+      color: var(--orange-light);
+      font-size: 0.8rem;
+    }
+    .advanced-filter-help-body h3:first-child {
+      margin-top: 0;
+    }
+    .advanced-filter-help-body p {
+      margin: 4px 0;
+    }
+    .advanced-filter-help-body code {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: rgba(0, 0, 0, 0.22);
+      padding: 1px 5px;
+      color: var(--orange-light);
+      white-space: nowrap;
+    }
+    .advanced-filter-help-examples {
+      display: grid;
+      grid-template-columns: minmax(120px, auto) 1fr;
+      gap: 5px 12px;
+      margin-top: 7px;
+    }
     .advanced-filter-body {
       display: grid;
       gap: 8px;
@@ -576,6 +642,7 @@
           <option value="tag">対象: タグ</option>
         </select>
         <button class="advanced-filter-icon-btn" id="advanced-filter-reset" type="button" title="検索条件をリセット">↺</button>
+        <button class="advanced-filter-icon-btn" id="advanced-filter-help-open" type="button" title="詳細検索の使い方">?</button>
         <button class="advanced-filter-icon-btn" id="advanced-filter-collapse" type="button" title="検索条件を折りたたむ">⌃</button>
         <span class="advanced-filter-badge" id="advanced-filter-badge">0</span>
       </div>
@@ -590,6 +657,7 @@
             <button class="advanced-filter-preset" type="button" data-query-token="type:">種類</button>
             <button class="advanced-filter-preset" type="button" data-query-token="tag:">タグ</button>
             <button class="advanced-filter-preset" type="button" data-query-token="gacha:">ガチャ</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="stage:">ステージ分類</button>
             <button class="advanced-filter-preset" type="button" data-query-token="start:">開始日</button>
             <button class="advanced-filter-preset" type="button" data-query-token="end:">終了日</button>
             <button class="advanced-filter-preset" type="button" data-query-token="detail:">詳細データ</button>
@@ -618,7 +686,7 @@
           <div class="advanced-filter-group" data-filter-group="status">
             <label class="advanced-filter-chip"><input type="checkbox" value="開催中"><span>開催中</span></label>
             <label class="advanced-filter-chip"><input type="checkbox" value="期間内"><span>期間内</span></label>
-            <label class="advanced-filter-chip"><input type="checkbox" value="予定"><span>予定</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="予定" checked><span>予定</span></label>
             <label class="advanced-filter-chip"><input type="checkbox" value="終了"><span>終了</span></label>
           </div>
           <span class="advanced-filter-label">期間</span>
@@ -643,6 +711,10 @@
             <label class="advanced-filter-chip"><input type="checkbox" value="レア"><span>レア</span></label>
             <label class="advanced-filter-chip"><input type="checkbox" value="イベント"><span>イベント</span></label>
           </div>
+          <span class="advanced-filter-label">分類</span>
+          <select id="advanced-filter-stage-type" title="sale / missionのステージ分類">
+            <option value="">ステージ分類: すべて</option>
+          </select>
         </div>
 
         <div class="advanced-filter-row">
@@ -1064,6 +1136,56 @@
     </div>
   </div>
 
+  <div id="advanced-filter-help" class="advanced-filter-help-backdrop" role="dialog" aria-modal="true" aria-labelledby="advanced-filter-help-title">
+    <div class="advanced-filter-help-panel">
+      <div class="advanced-filter-help-head">
+        <span id="advanced-filter-help-title">詳細検索の使い方</span>
+        <button class="advanced-filter-icon-btn" id="advanced-filter-help-close" type="button" title="閉じる">&times;</button>
+      </div>
+      <div class="advanced-filter-help-body">
+        <h3>基本検索</h3>
+        <p>通常の単語はイベント名・ID・タグ・詳細データ全体から検索します。空白で区切ると複数条件になります。</p>
+        <p>検索語の判定は上部の「検索語: すべて / いずれか」で切り替えられます。ボタンや日付条件など、検索欄以外の分類同士はすべてAND条件です。</p>
+        <div class="advanced-filter-help-examples">
+          <code>ネコ祭</code><span>「ネコ祭」を含むカード</span>
+          <code>"超ネコ祭"</code><span>空白を含む語句をひとまとまりとして検索</span>
+          <code>ネコ -終了</code><span>「ネコ」を含み、「終了」を含まないカード</span>
+          <code>2270</code><span>名前だけでなく、詳細データ内のIDにも一致</span>
+        </div>
+
+        <h3>フィールド指定</h3>
+        <p><code>項目:検索語</code>で検索場所を限定できます。検索指定ボタンを押すと入力欄へ項目名を挿入できます。</p>
+        <div class="advanced-filter-help-examples">
+          <code>id:2270</code><span>ID・イベントID・対象ステージIDなどから検索</span>
+          <code>name:ネコ</code><span>イベント名のみ検索</span>
+          <code>status:開催中</code><span>開催状態のみ検索</span>
+          <code>type:sale</code><span>gatya / sale / item / missionから検索</span>
+          <code>tag:ログイン</code><span>状態・ガチャ種別・追加タグから検索</span>
+          <code>gacha:レア</code><span>ガチャ種別のみ検索</span>
+          <code>stage:A010</code><span>sale / missionの表示用ステージコードで検索</span>
+          <code>start:20260611</code><span>開始日から検索</span>
+          <code>end:20300101</code><span>終了日から検索</span>
+          <code>detail:popupText</code><span>カード詳細データ全体から検索</span>
+          <code>-type:item</code><span>指定した種類を除外</span>
+        </div>
+
+        <h3>常設イベント</h3>
+        <p>終了日が2030年1月1日のイベント、または詳細データで常設と判定されたイベントは、初期状態では表示されません。「常設」にチェックを入れた場合のみ表示されます。</p>
+
+        <h3>条件の組み合わせ例</h3>
+        <div class="advanced-filter-help-examples">
+          <code>stage:A -name:コラボ</code><span>A分類で、名前にコラボを含まないイベント</span>
+          <code>id:2270 status:予定</code><span>ID 2270かつ予定状態</span>
+          <code>type:sale tag:ログイン</code><span>saleのログイン分類</span>
+          <code>end:20300101</code><span>終了日が20300101の常設候補。表示には常設チェックも必要</span>
+        </div>
+
+        <h3>補足</h3>
+        <p>サイトを開いた直後とリセット後は「予定」のみが選択されます。<code>Ctrl+K</code>で検索欄へ移動できます。</p>
+      </div>
+    </div>
+  </div>
+
   <!-- 詳細サブオーバーレイ（履歴差分内のカードクリック用） -->
   <div id="overlay-sub" class="overlay-backdrop">
     <div class="overlay-panel">
@@ -1088,6 +1210,7 @@
       const queryMode = document.getElementById('advanced-filter-query-mode');
       const queryScope = document.getElementById('advanced-filter-scope');
       const extraTagSelect = document.getElementById('advanced-filter-extra-tag');
+      const stageTypeSelect = document.getElementById('advanced-filter-stage-type');
       const sortSelect = document.getElementById('advanced-filter-sort');
       const rangeFields = {
         startFrom: document.getElementById('advanced-filter-start-from'),
@@ -1102,6 +1225,7 @@
       const badge = document.getElementById('advanced-filter-badge');
       let pendingFrame = 0;
       let knownExtraTags = '';
+      let knownStageTypes = '';
 
       function normalize(value) {
         return String(value || '').normalize('NFKC').toLocaleLowerCase('ja').replace(/\s+/g, ' ').trim();
@@ -1117,6 +1241,7 @@
           type: 'type', '種類': 'type',
           tag: 'tag', 'タグ': 'tag',
           gacha: 'gacha', gatya: 'gacha', 'ガチャ': 'gacha',
+          stage: 'stageType', map: 'stageType', class: 'stageType', '分類': 'stageType',
           start: 'start', '開始': 'start',
           end: 'end', '終了': 'end',
           detail: 'detail', data: 'detail', '詳細': 'detail'
@@ -1199,6 +1324,14 @@
         return key ? window.KBCSearchBridge?.getDetail?.(key) || null : null;
       }
 
+      function getStageType(id) {
+        return window.KBCSearchBridge?.getStageType?.(id) || null;
+      }
+
+      function getStageCode(id) {
+        return window.KBCSearchBridge?.getStageCode?.(id) || null;
+      }
+
       function getCardType(card) {
         const content = card.closest('.content');
         if (!content) return '';
@@ -1222,6 +1355,8 @@
         const detail = getDetail(card) || {};
         const header = detail._header || {};
         const ids = [...collectIds(detail)];
+        const stageTypes = [...new Set(ids.map(getStageType).filter(Boolean))];
+        const stageCodes = [...new Set(ids.map(getStageCode).filter(Boolean))];
         const detailText = normalize(JSON.stringify(detail));
         const startCompact = compactDate(header.startDate);
         const endCompact = compactDate(header.endDate);
@@ -1237,13 +1372,15 @@
           type: getCardType(card),
           detail,
           ids,
+          stageTypes,
+          stageCodes,
           startCompact,
           endCompact,
           startDate,
           endDate,
           permanent,
           detailText,
-          allText: normalize(`${card.textContent} ${detailText}`),
+          allText: normalize(`${card.textContent} ${detailText} ${stageTypes.join(' ')} ${stageCodes.join(' ')}`),
           nameText: normalize(name),
           periodText: normalize(period),
           tagText: normalize(tags)
@@ -1293,6 +1430,7 @@
         if (field === 'type') return normalize(data.type);
         if (field === 'tag') return data.tagText;
         if (field === 'gacha') return normalize(data.gacha);
+        if (field === 'stageType') return normalize(`${data.stageTypes.join(' ')} ${data.stageCodes.join(' ')}`);
         if (field === 'start') return normalize(`${data.startCompact} ${data.startDate?.toLocaleDateString('ja-JP') || ''}`);
         if (field === 'end') return normalize(`${data.endCompact} ${data.endDate?.toLocaleDateString('ja-JP') || ''}`);
         if (field === 'detail') return data.detailText;
@@ -1325,7 +1463,9 @@
         if (conditions.statuses.length && !conditions.statuses.includes(data.status)) return false;
         if (conditions.types.length && !conditions.types.includes(data.type)) return false;
         if (conditions.gacha.length && !conditions.gacha.includes(data.gacha)) return false;
-        if (conditions.duration.length && !conditions.duration.some(value => value === 'permanent' ? data.permanent : !data.permanent)) return false;
+        if (data.permanent && !conditions.duration.includes('permanent')) return false;
+        if (!data.permanent && conditions.duration.length && !conditions.duration.includes('limited')) return false;
+        if (conditions.stageType && !data.stageTypes.includes(conditions.stageType)) return false;
         if (conditions.extraTag && !data.extraTags.includes(conditions.extraTag)) return false;
         if (!matchesFeatures(data, conditions.features)) return false;
         if (!matchesRelative(data, conditions.relative)) return false;
@@ -1357,6 +1497,7 @@
           features: selectedValues('feature'),
           relative: selectedValues('relative'),
           extraTag: extraTagSelect.value,
+          stageType: stageTypeSelect.value,
           startFrom: rangeFields.startFrom.value,
           startTo: rangeFields.startTo.value,
           endFrom: rangeFields.endFrom.value,
@@ -1376,6 +1517,7 @@
           + conditions.features.length
           + conditions.relative.length
           + [conditions.startFrom, conditions.startTo, conditions.endFrom, conditions.endTo, conditions.idMin, conditions.idMax].filter(value => value !== '' && value != null).length
+          + (conditions.stageType ? 1 : 0)
           + (conditions.extraTag ? 1 : 0);
       }
 
@@ -1424,6 +1566,19 @@
         }
       }
 
+      function discoverStageTypes() {
+        const types = window.KBCSearchBridge?.getStageTypes?.() || [];
+        const signature = types.map(entry => `${entry.type}:${entry.from}-${entry.to}`).join('|');
+        if (!signature || signature === knownStageTypes) return;
+        knownStageTypes = signature;
+        const selected = stageTypeSelect.value;
+        stageTypeSelect.replaceChildren(new Option('ステージ分類: すべて', ''));
+        types.forEach(entry => {
+          stageTypeSelect.add(new Option(`${entry.type} (${entry.from}～${entry.to})`, entry.type));
+        });
+        if (types.some(entry => entry.type === selected)) stageTypeSelect.value = selected;
+      }
+
       function describeConditions(conditions) {
         const parts = [];
         const clauseLabel = clause => `${clause.field ? `${clause.field}:` : ''}${clause.term}`;
@@ -1432,6 +1587,7 @@
         if (conditions.statuses.length) parts.push(`状態: ${conditions.statuses.join(', ')}`);
         if (conditions.types.length) parts.push(`種類: ${conditions.types.join(', ')}`);
         if (conditions.gacha.length) parts.push(`ガチャ: ${conditions.gacha.join(', ')}`);
+        if (conditions.stageType) parts.push(`ステージ分類: ${conditions.stageType}`);
         if (conditions.duration.length) parts.push(`期間: ${conditions.duration.join(', ')}`);
         if (conditions.features.length) parts.push(`特徴: ${conditions.features.length}件`);
         if (conditions.relative.length) parts.push(`近日: ${conditions.relative.length}件`);
@@ -1454,6 +1610,7 @@
           feature: selectedValues('feature'),
           relative: selectedValues('relative'),
           extraTag: extraTagSelect.value,
+          stageType: stageTypeSelect.value,
           sort: sortSelect.value,
           ranges: Object.fromEntries(Object.entries(rangeFields).map(([key, field]) => [key, field.value])),
           collapsed: panel.classList.contains('is-collapsed')
@@ -1464,6 +1621,7 @@
       function applyFilters() {
         pendingFrame = 0;
         discoverExtraTags();
+        discoverStageTypes();
         const conditions = readConditions();
         const activeCount = conditionCount(conditions);
         let total = 0;
@@ -1507,7 +1665,9 @@
           queryScope.value = 'all';
         }
         ['status', 'type', 'gacha', 'duration', 'feature', 'relative'].forEach(group => setSelectedValues(group, []));
+        setSelectedValues('status', ['予定']);
         extraTagSelect.value = '';
+        stageTypeSelect.value = '';
         Object.values(rangeFields).forEach(field => { field.value = ''; });
         sortSelect.value = 'default';
         syncLegacySort();
@@ -1535,23 +1695,9 @@
       }
 
       function restoreState() {
-        try {
-          const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-          queryInput.value = state.query || '';
-          queryMode.value = state.mode || 'all';
-          queryScope.value = state.scope || 'all';
-          ['status', 'type', 'gacha', 'duration', 'feature', 'relative'].forEach(group => setSelectedValues(group, state[group] || []));
-          extraTagSelect.dataset.restoreValue = state.extraTag || '';
-          sortSelect.value = state.sort || 'default';
-          Object.entries(state.ranges || {}).forEach(([key, value]) => {
-            if (rangeFields[key]) rangeFields[key].value = value || '';
-          });
-          syncLegacySort(false);
-          panel.classList.toggle('is-collapsed', Boolean(state.collapsed));
-          document.getElementById('advanced-filter-collapse').textContent = state.collapsed ? '⌄' : '⌃';
-        } catch (error) {
-          console.warn('[advanced-filter] 保存条件を復元できませんでした', error);
-        }
+        resetFilters(false);
+        panel.classList.remove('is-collapsed');
+        document.getElementById('advanced-filter-collapse').textContent = '⌃';
       }
 
       panel.addEventListener('input', event => {
@@ -1565,6 +1711,21 @@
         resetFilters();
         scheduleApply();
         queryInput.focus();
+      });
+      const helpOverlay = document.getElementById('advanced-filter-help');
+      document.getElementById('advanced-filter-help-open').addEventListener('click', () => {
+        helpOverlay.classList.add('show');
+        document.body.classList.add('overlay-open');
+      });
+      document.getElementById('advanced-filter-help-close').addEventListener('click', () => {
+        helpOverlay.classList.remove('show');
+        document.body.classList.remove('overlay-open');
+      });
+      helpOverlay.addEventListener('click', event => {
+        if (event.target === helpOverlay) {
+          helpOverlay.classList.remove('show');
+          document.body.classList.remove('overlay-open');
+        }
       });
       document.getElementById('advanced-filter-collapse').addEventListener('click', event => {
         panel.classList.toggle('is-collapsed');
@@ -1592,6 +1753,11 @@
       });
       sortSelect.addEventListener('change', () => syncLegacySort());
       document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && helpOverlay.classList.contains('show')) {
+          helpOverlay.classList.remove('show');
+          document.body.classList.remove('overlay-open');
+          return;
+        }
         if ((event.ctrlKey || event.metaKey) && event.key.toLocaleLowerCase() === 'k') {
           event.preventDefault();
           panel.classList.remove('is-collapsed');
@@ -1740,7 +1906,10 @@ window.addEventListener('unhandledrejection', event => {
     const s=document.createElement('script');
     s.textContent=js + `
       ;window.KBCSearchBridge = Object.freeze({
-        getDetail: key => _cardDetails.get(key) || null
+        getDetail: key => _cardDetails.get(key) || null,
+        getStageType: id => getStageDisplayType(id),
+        getStageCode: id => getStageDisplayCode(id),
+        getStageTypes: () => STAGE_DISPLAY_TYPE_MAP.map(({ from, to, type }) => ({ from, to, type }))
       });
     `;
     document.head.appendChild(s);
