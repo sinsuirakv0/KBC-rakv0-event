@@ -289,7 +289,8 @@
       pointer-events: none;
     }
     #advanced-filter-query,
-    .advanced-filter select {
+    .advanced-filter select,
+    .advanced-filter-field {
       border: 1px solid var(--border);
       border-radius: 5px;
       background: rgba(0, 0, 0, 0.18);
@@ -310,6 +311,17 @@
     }
     .advanced-filter select {
       padding: 4px 24px 4px 8px;
+    }
+    .advanced-filter-field {
+      box-sizing: border-box;
+      width: 125px;
+      padding: 4px 7px;
+    }
+    .advanced-filter-field[type="number"] {
+      width: 92px;
+    }
+    .advanced-filter-field::placeholder {
+      color: var(--muted);
     }
     .advanced-filter-icon-btn {
       width: 32px;
@@ -391,6 +403,26 @@
       cursor: pointer;
       font-family: inherit;
     }
+    .advanced-filter-tool-btn {
+      min-height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      padding: 4px 9px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.68rem;
+      font-weight: bold;
+    }
+    .advanced-filter-tool-btn:hover {
+      border-color: var(--orange);
+      color: var(--orange-light);
+    }
+    .advanced-filter .now-display {
+      margin-left: 0;
+      font-size: 0.68rem;
+    }
     .advanced-filter-actions {
       flex-wrap: wrap;
       gap: 6px;
@@ -441,6 +473,9 @@
     .advanced-filter-empty-wrap {
       display: none !important;
     }
+    .legacy-controls {
+      display: none !important;
+    }
     @media (max-width: 640px) {
       .advanced-filter {
         padding: 8px 9px;
@@ -461,6 +496,17 @@
       .advanced-filter-summary {
         align-items: flex-start;
         flex-direction: column;
+      }
+      .advanced-filter-body {
+        max-height: 66vh;
+        overflow-y: auto;
+        padding-right: 2px;
+      }
+      .advanced-filter-summary {
+        position: sticky;
+        bottom: 0;
+        background: var(--card);
+        padding-bottom: 4px;
       }
       #advanced-filter-description {
         max-width: 100%;
@@ -517,7 +563,7 @@
     <section class="advanced-filter" id="advanced-filter" aria-label="高度検索">
       <div class="advanced-filter-head">
         <div class="advanced-filter-search">
-          <input id="advanced-filter-query" type="search" placeholder='高度検索: 複数語、"完全一致"、-除外語' autocomplete="off">
+          <input id="advanced-filter-query" type="search" placeholder='名前・ID・詳細を検索 / id:123 -tag:終了 "完全一致"' autocomplete="off">
         </div>
         <select id="advanced-filter-query-mode" title="複数の検索語をすべて含むか、いずれかを含むか">
           <option value="all">検索語: すべて</option>
@@ -536,11 +582,30 @@
 
       <div class="advanced-filter-body">
         <div class="advanced-filter-row">
+          <span class="advanced-filter-label">検索指定</span>
+          <div class="advanced-filter-actions" id="advanced-filter-query-tools">
+            <button class="advanced-filter-preset" type="button" data-query-token="id:">ID</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="name:">名前</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="status:">状態</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="type:">種類</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="tag:">タグ</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="gacha:">ガチャ</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="start:">開始日</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="end:">終了日</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="detail:">詳細データ</button>
+            <button class="advanced-filter-preset" type="button" data-query-token="-">除外</button>
+          </div>
+        </div>
+
+        <div class="advanced-filter-row">
           <span class="advanced-filter-label">すぐ絞る</span>
           <div class="advanced-filter-actions" id="advanced-filter-presets">
             <button class="advanced-filter-preset" type="button" data-preset="current">開催中</button>
             <button class="advanced-filter-preset" type="button" data-preset="within">期間内</button>
             <button class="advanced-filter-preset" type="button" data-preset="future">予定</button>
+            <button class="advanced-filter-preset" type="button" data-preset="permanent">常設</button>
+            <button class="advanced-filter-preset" type="button" data-preset="ending-soon">まもなく終了</button>
+            <button class="advanced-filter-preset" type="button" data-preset="starting-soon">まもなく開始</button>
             <button class="advanced-filter-preset" type="button" data-preset="guaranteed">確定ガチャ</button>
             <button class="advanced-filter-preset" type="button" data-preset="event-guaranteed">確定枠あり</button>
             <button class="advanced-filter-preset" type="button" data-preset="unknown">名前未登録</button>
@@ -555,6 +620,11 @@
             <label class="advanced-filter-chip"><input type="checkbox" value="期間内"><span>期間内</span></label>
             <label class="advanced-filter-chip"><input type="checkbox" value="予定"><span>予定</span></label>
             <label class="advanced-filter-chip"><input type="checkbox" value="終了"><span>終了</span></label>
+          </div>
+          <span class="advanced-filter-label">期間</span>
+          <div class="advanced-filter-group" data-filter-group="duration">
+            <label class="advanced-filter-chip"><input type="checkbox" value="permanent"><span>常設</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="limited"><span>期間限定</span></label>
           </div>
         </div>
 
@@ -584,6 +654,10 @@
             <label class="advanced-filter-chip"><input type="checkbox" value="unknown"><span>ID名のまま</span></label>
             <label class="advanced-filter-chip"><input type="checkbox" value="has-extra-tag"><span>追加タグあり</span></label>
             <label class="advanced-filter-chip"><input type="checkbox" value="no-extra-tag"><span>追加タグなし</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="has-time-blocks"><span>時間帯指定あり</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="has-popup"><span>ポップアップあり</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="has-target-stages"><span>対象ステージあり</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="repeating"><span>繰り返し</span></label>
           </div>
           <span class="advanced-filter-label">追加タグ</span>
           <select id="advanced-filter-extra-tag" title="描画されたカードから見つけた追加タグ">
@@ -591,36 +665,60 @@
           </select>
         </div>
 
+        <div class="advanced-filter-row">
+          <span class="advanced-filter-label">近日</span>
+          <div class="advanced-filter-group" data-filter-group="relative">
+            <label class="advanced-filter-chip"><input type="checkbox" value="starts-today"><span>今日開始</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="ends-today"><span>今日終了</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="starts-3d"><span>3日以内に開始</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="ends-3d"><span>3日以内に終了</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="starts-7d"><span>7日以内に開始</span></label>
+            <label class="advanced-filter-chip"><input type="checkbox" value="ends-7d"><span>7日以内に終了</span></label>
+          </div>
+        </div>
+
+        <div class="advanced-filter-row">
+          <span class="advanced-filter-label">開始日</span>
+          <input class="advanced-filter-field" id="advanced-filter-start-from" type="date" title="この日以降に開始">
+          <span>～</span>
+          <input class="advanced-filter-field" id="advanced-filter-start-to" type="date" title="この日以前に開始">
+          <span class="advanced-filter-label">終了日</span>
+          <input class="advanced-filter-field" id="advanced-filter-end-from" type="date" title="この日以降に終了">
+          <span>～</span>
+          <input class="advanced-filter-field" id="advanced-filter-end-to" type="date" title="この日以前に終了">
+        </div>
+
+        <div class="advanced-filter-row">
+          <span class="advanced-filter-label">ID範囲</span>
+          <input class="advanced-filter-field" id="advanced-filter-id-min" type="number" inputmode="numeric" placeholder="最小ID">
+          <span>～</span>
+          <input class="advanced-filter-field" id="advanced-filter-id-max" type="number" inputmode="numeric" placeholder="最大ID">
+          <span class="advanced-filter-label">並び順</span>
+          <select id="advanced-filter-sort">
+            <option value="default">標準</option>
+            <option value="date">開始日順</option>
+            <option value="id">ID順</option>
+          </select>
+          <span class="advanced-filter-spacer"></span>
+          <button class="advanced-filter-tool-btn" type="button" onclick="openFilter('sale')" id="filter-btn-sale" style="display:none;">sale分類</button>
+          <button class="advanced-filter-tool-btn" type="button" onclick="openFilter('mission')" id="filter-btn-mission" style="display:none;">mission分類</button>
+          <button class="advanced-filter-tool-btn" type="button" onclick="confirmScreenshot()" title="スクリーンショット">📷</button>
+        </div>
+
         <div class="advanced-filter-summary">
           <span id="advanced-filter-count">カード待機中</span>
           <span id="advanced-filter-description">条件なし</span>
-          <span>Ctrl+K で高度検索</span>
+          <span><span id="locale-display" class="now-display"></span> <span id="now-display" class="now-display"></span></span>
         </div>
       </div>
     </section>
 
-    <div class="controls">
-      <label>
-        <input type="checkbox" id="showCurrent">
-        開催中も表示
-      </label>
-      <label>
-        <input type="checkbox" id="showPast">
-        過去も表示
-      </label>
-      <label>
-        <input type="checkbox" id="sortByDate">
-        日付順に並べる
-      </label>
-      <label>
-        <input type="checkbox" id="sortById">
-        ID順に並べる
-      </label>
-      <label id="label-showAllSale">
-        <input type="checkbox" id="showAllSale">
-        全イベントを表示
-      </label>
-      <button class="camera-btn" onclick="confirmScreenshot()" title="スクリーンショット">📷</button>
+    <div class="controls legacy-controls" aria-hidden="true">
+      <input type="checkbox" id="showCurrent" checked>
+      <input type="checkbox" id="showPast" checked>
+      <input type="checkbox" id="sortByDate">
+      <input type="checkbox" id="sortById">
+      <label id="label-showAllSale"><input type="checkbox" id="showAllSale" checked></label>
       <div id="search-wrap">
         <input type="text" id="searchInput" placeholder="ID or ステージ名..."
                autocomplete="off"
@@ -630,9 +728,6 @@
                onblur="setTimeout(()=>closeSuggestions(),200)">
         <div id="search-suggestions"></div>
       </div>
-      <button class="filter-open-btn" onclick="openFilter('sale')" id="filter-btn-sale" style="display:none;">🔽 フィルター</button>
-      <button class="filter-open-btn" onclick="openFilter('mission')" id="filter-btn-mission" style="display:none;">🔽 フィルター</button>
-      <span id="locale-display" class="now-display" style="margin-right:4px;"></span><span id="now-display" class="now-display"></span>
     </div>
 
     <main>
@@ -993,6 +1088,15 @@
       const queryMode = document.getElementById('advanced-filter-query-mode');
       const queryScope = document.getElementById('advanced-filter-scope');
       const extraTagSelect = document.getElementById('advanced-filter-extra-tag');
+      const sortSelect = document.getElementById('advanced-filter-sort');
+      const rangeFields = {
+        startFrom: document.getElementById('advanced-filter-start-from'),
+        startTo: document.getElementById('advanced-filter-start-to'),
+        endFrom: document.getElementById('advanced-filter-end-from'),
+        endTo: document.getElementById('advanced-filter-end-to'),
+        idMin: document.getElementById('advanced-filter-id-min'),
+        idMax: document.getElementById('advanced-filter-id-max')
+      };
       const countDisplay = document.getElementById('advanced-filter-count');
       const descriptionDisplay = document.getElementById('advanced-filter-description');
       const badge = document.getElementById('advanced-filter-badge');
@@ -1007,12 +1111,27 @@
         const positive = [];
         const negative = [];
         const matcher = /(-?)"([^"]+)"|(-?)(\S+)/g;
+        const fieldAliases = {
+          id: 'id', name: 'name', '名前': 'name',
+          status: 'status', state: 'status', '状態': 'status',
+          type: 'type', '種類': 'type',
+          tag: 'tag', 'タグ': 'tag',
+          gacha: 'gacha', gatya: 'gacha', 'ガチャ': 'gacha',
+          start: 'start', '開始': 'start',
+          end: 'end', '終了': 'end',
+          detail: 'detail', data: 'detail', '詳細': 'detail'
+        };
         let match;
         while ((match = matcher.exec(value)) !== null) {
           const isNegative = (match[1] || match[3]) === '-';
-          const term = normalize(match[2] || match[4]);
+          const rawTerm = normalize(match[2] || match[4]);
+          if (!rawTerm) continue;
+          const separator = rawTerm.search(/[:：]/);
+          const rawField = separator > 0 ? rawTerm.slice(0, separator) : '';
+          const field = fieldAliases[rawField] || '';
+          const term = field ? rawTerm.slice(separator + 1) : rawTerm;
           if (!term) continue;
-          (isNegative ? negative : positive).push(term);
+          (isNegative ? negative : positive).push({ field, term });
         }
         return { positive, negative };
       }
@@ -1026,6 +1145,58 @@
         panel.querySelectorAll(`[data-filter-group="${groupName}"] input`).forEach(input => {
           input.checked = selected.has(input.value);
         });
+      }
+
+      function syncLegacySort(trigger = true) {
+        const dateInput = document.getElementById('sortByDate');
+        const idInput = document.getElementById('sortById');
+        dateInput.checked = sortSelect.value === 'date';
+        idInput.checked = sortSelect.value === 'id';
+        if (trigger) {
+          const target = dateInput.checked ? dateInput : idInput.checked ? idInput : dateInput;
+          target.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      }
+
+      function collectIds(value, output = new Set(), key = '') {
+        if (value == null) return output;
+        if (Array.isArray(value)) {
+          value.forEach(item => collectIds(item, output, key));
+        } else if (typeof value === 'object') {
+          Object.entries(value).forEach(([childKey, child]) => collectIds(child, output, childKey));
+        } else if (/^(id|eventid|stageid|stageids|targetid|targetids|giftid|unitid)$/i.test(key)
+          && (typeof value === 'number' || /^\d+$/.test(String(value)))) {
+          output.add(String(value));
+        }
+        return output;
+      }
+
+      function compactDate(value) {
+        return String(value ?? '').replace(/\D/g, '').slice(0, 8);
+      }
+
+      function parseEventDate(dateValue, timeValue = 0) {
+        const date = compactDate(dateValue);
+        if (date.length !== 8) return null;
+        const time = String(timeValue ?? 0).padStart(6, '0').slice(-6);
+        const parsed = new Date(
+          Number(date.slice(0, 4)),
+          Number(date.slice(4, 6)) - 1,
+          Number(date.slice(6, 8)),
+          Number(time.slice(0, 2)),
+          Number(time.slice(2, 4)),
+          Number(time.slice(4, 6))
+        );
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+      }
+
+      function dayStart(value = new Date()) {
+        return new Date(value.getFullYear(), value.getMonth(), value.getDate());
+      }
+
+      function getDetail(card) {
+        const key = card.dataset.detailKey;
+        return key ? window.KBCSearchBridge?.getDetail?.(key) || null : null;
       }
 
       function getCardType(card) {
@@ -1048,6 +1219,15 @@
         const gacha = card.querySelector('.gacha-type-tag')?.textContent?.trim() || '';
         const extraTags = Array.from(card.querySelectorAll('.stage-tag'), tag => tag.textContent.trim()).filter(Boolean);
         const tags = [status, gacha, ...extraTags].filter(Boolean).join(' ');
+        const detail = getDetail(card) || {};
+        const header = detail._header || {};
+        const ids = [...collectIds(detail)];
+        const detailText = normalize(JSON.stringify(detail));
+        const startCompact = compactDate(header.startDate);
+        const endCompact = compactDate(header.endDate);
+        const startDate = parseEventDate(header.startDate, header.startTime);
+        const endDate = parseEventDate(header.endDate, header.endTime);
+        const permanent = detail.steady === true || endCompact === '20300101';
         return {
           name,
           period,
@@ -1055,7 +1235,15 @@
           gacha,
           extraTags,
           type: getCardType(card),
-          allText: normalize(card.textContent),
+          detail,
+          ids,
+          startCompact,
+          endCompact,
+          startDate,
+          endDate,
+          permanent,
+          detailText,
+          allText: normalize(`${card.textContent} ${detailText}`),
           nameText: normalize(name),
           periodText: normalize(period),
           tagText: normalize(tags)
@@ -1070,8 +1258,58 @@
           if (feature === 'unknown') return /(?:^|\s)(?:id|名称不明)\s*[:：]?\s*\d*/i.test(data.nameText);
           if (feature === 'has-extra-tag') return data.extraTags.length > 0;
           if (feature === 'no-extra-tag') return data.extraTags.length === 0;
+          if (feature === 'has-time-blocks') return Array.isArray(data.detail._timeBlocks) && data.detail._timeBlocks.length > 0;
+          if (feature === 'has-popup') return Boolean(data.detail.popupText);
+          if (feature === 'has-target-stages') return Array.isArray(data.detail.targetStages) && data.detail.targetStages.length > 0;
+          if (feature === 'repeating') return data.detail.repeatFlag === 1;
           return true;
         });
+      }
+
+      function matchesRelative(data, relative) {
+        if (!relative.length || (!data.startDate && !data.endDate)) return relative.length === 0;
+        const today = dayStart();
+        const tomorrow = new Date(today.getTime() + 86400000);
+        const inThreeDays = new Date(today.getTime() + 4 * 86400000);
+        const inSevenDays = new Date(today.getTime() + 8 * 86400000);
+        const now = new Date();
+        const isToday = date => date && date >= today && date < tomorrow;
+        const isUpcoming = (date, limit) => date && date >= now && date < limit;
+        return relative.some(value => {
+          if (value === 'starts-today') return isToday(data.startDate);
+          if (value === 'ends-today') return isToday(data.endDate);
+          if (value === 'starts-3d') return isUpcoming(data.startDate, inThreeDays);
+          if (value === 'ends-3d') return isUpcoming(data.endDate, inThreeDays);
+          if (value === 'starts-7d') return isUpcoming(data.startDate, inSevenDays);
+          if (value === 'ends-7d') return isUpcoming(data.endDate, inSevenDays);
+          return false;
+        });
+      }
+
+      function fieldText(data, field, fallbackText) {
+        if (field === 'id') return normalize(data.ids.join(' '));
+        if (field === 'name') return data.nameText;
+        if (field === 'status') return normalize(data.status);
+        if (field === 'type') return normalize(data.type);
+        if (field === 'tag') return data.tagText;
+        if (field === 'gacha') return normalize(data.gacha);
+        if (field === 'start') return normalize(`${data.startCompact} ${data.startDate?.toLocaleDateString('ja-JP') || ''}`);
+        if (field === 'end') return normalize(`${data.endCompact} ${data.endDate?.toLocaleDateString('ja-JP') || ''}`);
+        if (field === 'detail') return data.detailText;
+        return fallbackText;
+      }
+
+      function matchesTerm(data, clause, fallbackText) {
+        return fieldText(data, clause.field, fallbackText).includes(clause.term);
+      }
+
+      function withinDateRange(date, from, to) {
+        if (!from && !to) return true;
+        if (!date) return false;
+        const value = dayStart(date).getTime();
+        if (from && value < new Date(`${from}T00:00:00`).getTime()) return false;
+        if (to && value > new Date(`${to}T23:59:59`).getTime()) return false;
+        return true;
       }
 
       function cardMatches(card, conditions) {
@@ -1087,13 +1325,23 @@
         if (conditions.statuses.length && !conditions.statuses.includes(data.status)) return false;
         if (conditions.types.length && !conditions.types.includes(data.type)) return false;
         if (conditions.gacha.length && !conditions.gacha.includes(data.gacha)) return false;
+        if (conditions.duration.length && !conditions.duration.some(value => value === 'permanent' ? data.permanent : !data.permanent)) return false;
         if (conditions.extraTag && !data.extraTags.includes(conditions.extraTag)) return false;
         if (!matchesFeatures(data, conditions.features)) return false;
-        if (conditions.negative.some(term => searchText.includes(term))) return false;
+        if (!matchesRelative(data, conditions.relative)) return false;
+        if (!withinDateRange(data.startDate, conditions.startFrom, conditions.startTo)) return false;
+        if (!withinDateRange(data.endDate, conditions.endFrom, conditions.endTo)) return false;
+        if ((conditions.idMin != null || conditions.idMax != null) && !data.ids.some(id => {
+          const value = Number(id);
+          return Number.isFinite(value)
+            && (conditions.idMin == null || value >= conditions.idMin)
+            && (conditions.idMax == null || value <= conditions.idMax);
+        })) return false;
+        if (conditions.negative.some(clause => matchesTerm(data, clause, searchText))) return false;
         if (!conditions.positive.length) return true;
         return conditions.mode === 'any'
-          ? conditions.positive.some(term => searchText.includes(term))
-          : conditions.positive.every(term => searchText.includes(term));
+          ? conditions.positive.some(clause => matchesTerm(data, clause, searchText))
+          : conditions.positive.every(clause => matchesTerm(data, clause, searchText));
       }
 
       function readConditions() {
@@ -1105,8 +1353,16 @@
           statuses: selectedValues('status'),
           types: selectedValues('type'),
           gacha: selectedValues('gacha'),
+          duration: selectedValues('duration'),
           features: selectedValues('feature'),
-          extraTag: extraTagSelect.value
+          relative: selectedValues('relative'),
+          extraTag: extraTagSelect.value,
+          startFrom: rangeFields.startFrom.value,
+          startTo: rangeFields.startTo.value,
+          endFrom: rangeFields.endFrom.value,
+          endTo: rangeFields.endTo.value,
+          idMin: rangeFields.idMin.value === '' ? null : Number(rangeFields.idMin.value),
+          idMax: rangeFields.idMax.value === '' ? null : Number(rangeFields.idMax.value)
         };
       }
 
@@ -1116,7 +1372,10 @@
           + conditions.statuses.length
           + conditions.types.length
           + conditions.gacha.length
+          + conditions.duration.length
           + conditions.features.length
+          + conditions.relative.length
+          + [conditions.startFrom, conditions.startTo, conditions.endFrom, conditions.endTo, conditions.idMin, conditions.idMax].filter(value => value !== '' && value != null).length
           + (conditions.extraTag ? 1 : 0);
       }
 
@@ -1167,13 +1426,19 @@
 
       function describeConditions(conditions) {
         const parts = [];
-        if (conditions.positive.length) parts.push(`検索: ${conditions.positive.join(', ')}`);
-        if (conditions.negative.length) parts.push(`除外: ${conditions.negative.join(', ')}`);
+        const clauseLabel = clause => `${clause.field ? `${clause.field}:` : ''}${clause.term}`;
+        if (conditions.positive.length) parts.push(`検索: ${conditions.positive.map(clauseLabel).join(', ')}`);
+        if (conditions.negative.length) parts.push(`除外: ${conditions.negative.map(clauseLabel).join(', ')}`);
         if (conditions.statuses.length) parts.push(`状態: ${conditions.statuses.join(', ')}`);
         if (conditions.types.length) parts.push(`種類: ${conditions.types.join(', ')}`);
         if (conditions.gacha.length) parts.push(`ガチャ: ${conditions.gacha.join(', ')}`);
+        if (conditions.duration.length) parts.push(`期間: ${conditions.duration.join(', ')}`);
         if (conditions.features.length) parts.push(`特徴: ${conditions.features.length}件`);
+        if (conditions.relative.length) parts.push(`近日: ${conditions.relative.length}件`);
         if (conditions.extraTag) parts.push(`追加タグ: ${conditions.extraTag}`);
+        if (conditions.startFrom || conditions.startTo) parts.push(`開始: ${conditions.startFrom || '指定なし'}～${conditions.startTo || '指定なし'}`);
+        if (conditions.endFrom || conditions.endTo) parts.push(`終了: ${conditions.endFrom || '指定なし'}～${conditions.endTo || '指定なし'}`);
+        if (conditions.idMin != null || conditions.idMax != null) parts.push(`ID: ${conditions.idMin ?? '指定なし'}～${conditions.idMax ?? '指定なし'}`);
         return parts.join(' / ') || '条件なし';
       }
 
@@ -1185,8 +1450,12 @@
           status: selectedValues('status'),
           type: selectedValues('type'),
           gacha: selectedValues('gacha'),
+          duration: selectedValues('duration'),
           feature: selectedValues('feature'),
+          relative: selectedValues('relative'),
           extraTag: extraTagSelect.value,
+          sort: sortSelect.value,
+          ranges: Object.fromEntries(Object.entries(rangeFields).map(([key, field]) => [key, field.value])),
           collapsed: panel.classList.contains('is-collapsed')
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -1237,8 +1506,11 @@
           queryMode.value = 'all';
           queryScope.value = 'all';
         }
-        ['status', 'type', 'gacha', 'feature'].forEach(group => setSelectedValues(group, []));
+        ['status', 'type', 'gacha', 'duration', 'feature', 'relative'].forEach(group => setSelectedValues(group, []));
         extraTagSelect.value = '';
+        Object.values(rangeFields).forEach(field => { field.value = ''; });
+        sortSelect.value = 'default';
+        syncLegacySort();
         document.querySelectorAll('.advanced-filter-preset').forEach(button => button.classList.remove('is-selected'));
       }
 
@@ -1248,6 +1520,9 @@
           current: { status: ['開催中'] },
           within: { status: ['期間内'] },
           future: { status: ['予定'] },
+          permanent: { duration: ['permanent'] },
+          'ending-soon': { relative: ['ends-3d'] },
+          'starting-soon': { relative: ['starts-3d'] },
           guaranteed: { type: ['gatya'], feature: ['guaranteed'] },
           'event-guaranteed': { type: ['gatya'], gacha: ['イベント'], feature: ['event-guaranteed'] },
           unknown: { feature: ['unknown'] },
@@ -1265,8 +1540,13 @@
           queryInput.value = state.query || '';
           queryMode.value = state.mode || 'all';
           queryScope.value = state.scope || 'all';
-          ['status', 'type', 'gacha', 'feature'].forEach(group => setSelectedValues(group, state[group] || []));
+          ['status', 'type', 'gacha', 'duration', 'feature', 'relative'].forEach(group => setSelectedValues(group, state[group] || []));
           extraTagSelect.dataset.restoreValue = state.extraTag || '';
+          sortSelect.value = state.sort || 'default';
+          Object.entries(state.ranges || {}).forEach(([key, value]) => {
+            if (rangeFields[key]) rangeFields[key].value = value || '';
+          });
+          syncLegacySort(false);
           panel.classList.toggle('is-collapsed', Boolean(state.collapsed));
           document.getElementById('advanced-filter-collapse').textContent = state.collapsed ? '⌄' : '⌃';
         } catch (error) {
@@ -1295,6 +1575,22 @@
         const button = event.target.closest('[data-preset]');
         if (button) applyPreset(button.dataset.preset, button);
       });
+      document.getElementById('advanced-filter-query-tools').addEventListener('click', event => {
+        const button = event.target.closest('[data-query-token]');
+        if (!button) return;
+        const token = button.dataset.queryToken;
+        const start = queryInput.selectionStart ?? queryInput.value.length;
+        const end = queryInput.selectionEnd ?? start;
+        const before = queryInput.value.slice(0, start);
+        const after = queryInput.value.slice(end);
+        const spacer = before && !/\s$/.test(before) ? ' ' : '';
+        queryInput.value = `${before}${spacer}${token}${after}`;
+        const cursor = before.length + spacer.length + token.length;
+        queryInput.focus();
+        queryInput.setSelectionRange(cursor, cursor);
+        scheduleApply();
+      });
+      sortSelect.addEventListener('change', () => syncLegacySort());
       document.addEventListener('keydown', event => {
         if ((event.ctrlKey || event.metaKey) && event.key.toLocaleLowerCase() === 'k') {
           event.preventDefault();
@@ -1442,7 +1738,11 @@ window.addEventListener('unhandledrejection', event => {
     if(!js)throw new Error('bundle decrypt failed');
     KBCLoadScreen.update(54, 'アプリを起動しています...', '読み込み中...');
     const s=document.createElement('script');
-    s.textContent=js;
+    s.textContent=js + `
+      ;window.KBCSearchBridge = Object.freeze({
+        getDetail: key => _cardDetails.get(key) || null
+      });
+    `;
     document.head.appendChild(s);
     setTimeout(() => {
       if (KBCLoadScreen.current() <= 54 && !KBCLoadScreen.isHolding()) {
