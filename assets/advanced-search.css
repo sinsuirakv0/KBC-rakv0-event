@@ -18,6 +18,7 @@
 }
 .advanced-filter-head {
   gap: 8px;
+  position: relative;
 }
 .advanced-filter-search {
   position: relative;
@@ -300,6 +301,17 @@
   }
   .advanced-filter-head select {
     flex: 1;
+  }
+  .advanced-filter.is-collapsed .advanced-filter-head select {
+    display: none;
+  }
+  .advanced-filter.is-collapsed .advanced-filter-search {
+    flex-basis: calc(100% - 128px);
+  }
+  .advanced-filter.is-collapsed .advanced-filter-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
   }
   .advanced-filter-label {
     width: 100%;

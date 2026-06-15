@@ -279,24 +279,24 @@
       </div>
       <nav class="nav">
         <div class="theme-toggle-group" id="theme-toggle-group">
-          <button class="theme-btn" id="theme-btn-original" onclick="setTheme('original')" title="オリジナル">🎨</button>
-          <button class="theme-btn" id="theme-btn-dark"     onclick="setTheme('dark')"     title="ダーク">🌙</button>
-          <button class="theme-btn" id="theme-btn-light"    onclick="setTheme('light')"    title="ライト">☀️</button>
+          <button class="theme-btn" id="theme-btn-original" onclick="setTheme('original')" title="オリジナル" aria-label="オリジナルテーマ">🎨</button>
+          <button class="theme-btn" id="theme-btn-dark"     onclick="setTheme('dark')"     title="ダーク" aria-label="ダークテーマ">🌙</button>
+          <button class="theme-btn" id="theme-btn-light"    onclick="setTheme('light')"    title="ライト" aria-label="ライトテーマ">☀️</button>
         </div>
-        <a href="#" class="try-btn" onclick="openOtherSites(); return false;">[押してみて]</a>
-        <a href="https://x.com/kenkou_rakv0_4">contact me</a>
+        <a href="#" class="try-btn" onclick="openOtherSites(); return false;">他サイト</a>
+        <a href="https://x.com/kenkou_rakv0_4">連絡先</a>
       </nav>
     </header>
 
-    <div class="tabs">
-      <div class="tab active" data-tab="gatya">gatya</div>
-      <div class="tab" data-tab="sale">sale</div>
-      <div class="tab" data-tab="item">item</div>
-      <div class="tab" data-tab="mission">mission</div>
-      <div class="tab" data-tab="all">全て</div>
-      <div class="tab" data-tab="list">リスト</div>
-      <div class="tab" data-tab="history">履歴</div>
-      <div class="tab" data-tab="settings">⚙</div>
+    <div class="tabs" role="tablist" aria-label="イベント種別">
+      <button type="button" class="tab active" data-tab="gatya" role="tab" aria-selected="true">gatya</button>
+      <button type="button" class="tab" data-tab="sale" role="tab" aria-selected="false">sale</button>
+      <button type="button" class="tab" data-tab="item" role="tab" aria-selected="false">item</button>
+      <button type="button" class="tab" data-tab="mission" role="tab" aria-selected="false">mission</button>
+      <button type="button" class="tab" data-tab="all" role="tab" aria-selected="false">全て</button>
+      <button type="button" class="tab" data-tab="list" role="tab" aria-selected="false">リスト</button>
+      <button type="button" class="tab" data-tab="history" role="tab" aria-selected="false">履歴</button>
+      <button type="button" class="tab" data-tab="settings" role="tab" aria-selected="false" aria-label="設定">⚙</button>
     </div>
 
     <section class="advanced-filter" id="advanced-filter" aria-label="高度検索">
@@ -314,9 +314,9 @@
           <option value="period">対象: 開催期間</option>
           <option value="tag">対象: タグ</option>
         </select>
-        <button class="advanced-filter-icon-btn" id="advanced-filter-reset" type="button" title="検索条件をリセット">↺</button>
-        <button class="advanced-filter-icon-btn" id="advanced-filter-help-open" type="button" title="詳細検索の使い方">?</button>
-        <button class="advanced-filter-icon-btn" id="advanced-filter-collapse" type="button" title="検索条件を折りたたむ">⌃</button>
+        <button class="advanced-filter-icon-btn" id="advanced-filter-reset" type="button" title="検索条件をリセット" aria-label="検索条件をリセット">↺</button>
+        <button class="advanced-filter-icon-btn" id="advanced-filter-help-open" type="button" title="詳細検索の使い方" aria-label="詳細検索の使い方">?</button>
+        <button class="advanced-filter-icon-btn" id="advanced-filter-collapse" type="button" title="検索条件を折りたたむ" aria-label="検索条件を折りたたむ" aria-expanded="true">⌃</button>
         <span class="advanced-filter-badge" id="advanced-filter-badge">0</span>
       </div>
 
@@ -447,7 +447,7 @@
           <span class="advanced-filter-spacer"></span>
           <button class="advanced-filter-tool-btn" type="button" onclick="openFilter('sale')" id="filter-btn-sale" style="display:none;">sale分類</button>
           <button class="advanced-filter-tool-btn" type="button" onclick="openFilter('mission')" id="filter-btn-mission" style="display:none;">mission分類</button>
-          <button class="advanced-filter-tool-btn" type="button" onclick="confirmScreenshot()" title="スクリーンショット">📷</button>
+          <button class="advanced-filter-tool-btn" type="button" onclick="confirmScreenshot()" title="スクリーンショット" aria-label="表示中タブのスクリーンショット">📷</button>
         </div>
 
         <div class="advanced-filter-summary">
@@ -476,14 +476,14 @@
     </div>
 
     <main>
-      <div id="gatya" class="content active"><div class="loading">読み込み中...</div></div>
-      <div id="sale"    class="content"><div class="loading">読み込み中...</div></div>
-      <div id="item"    class="content"><div class="loading">読み込み中...</div></div>
-      <div id="mission" class="content"><div class="loading">読み込み中...</div></div>
-      <div id="all"     class="content"><div class="loading">読み込み中...</div></div>
-      <div id="list"    class="content"><div class="loading">リストを読み込み中...</div></div>
-      <div id="history" class="content"><div class="loading">読み込み中...</div></div>
-      <div id="settings" class="content">
+      <div id="gatya" class="content active" role="tabpanel"><div class="loading">読み込み中...</div></div>
+      <div id="sale"    class="content" role="tabpanel"><div class="loading">読み込み中...</div></div>
+      <div id="item"    class="content" role="tabpanel"><div class="loading">読み込み中...</div></div>
+      <div id="mission" class="content" role="tabpanel"><div class="loading">読み込み中...</div></div>
+      <div id="all"     class="content" role="tabpanel"><div class="loading">読み込み中...</div></div>
+      <div id="list"    class="content" role="tabpanel"><div class="loading">リストを読み込み中...</div></div>
+      <div id="history" class="content" role="tabpanel"><div class="loading">読み込み中...</div></div>
+      <div id="settings" class="content" role="tabpanel">
         <!-- カード1: タイムゾーン -->
         <div class="settings-section">
           <h3>⚙ 設定</h3>
@@ -775,10 +775,10 @@
       <div class="overlay-header-row">
         <div class="overlay-title" id="overlay-title"></div>
         <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
-          <button class="overlay-ss-btn" onclick="screenshotOverlay()" title="スクリーンショット">📷</button>
-          <button class="overlay-ss-btn" id="list-add-btn" onclick="openAddToListOverlay()" title="リストに追加">＋</button>
-          <button class="overlay-ss-btn" id="share-btn" onclick="copyShareUrl()" title="共有リンクをコピー">🔗</button>
-          <span class="overlay-close" id="overlay-close">&times;</span>
+          <button class="overlay-ss-btn" onclick="screenshotOverlay()" title="スクリーンショット" aria-label="詳細のスクリーンショット">📷</button>
+          <button class="overlay-ss-btn" id="list-add-btn" onclick="openAddToListOverlay()" title="リストに追加" aria-label="リストに追加">＋</button>
+          <button class="overlay-ss-btn" id="share-btn" onclick="copyShareUrl()" title="共有リンクをコピー" aria-label="共有リンクをコピー">🔗</button>
+          <button type="button" class="overlay-close" id="overlay-close" aria-label="詳細を閉じる">&times;</button>
         </div>
       </div>
       <hr class="overlay-divider">
@@ -865,7 +865,7 @@
       <div class="overlay-header-row">
         <div class="overlay-title" id="overlay-sub-title"></div>
         <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
-          <span class="overlay-close" id="overlay-sub-close">&times;</span>
+          <button type="button" class="overlay-close" id="overlay-sub-close" aria-label="詳細を閉じる">&times;</button>
         </div>
       </div>
       <hr class="overlay-divider">

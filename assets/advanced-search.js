@@ -23,6 +23,7 @@
   let pendingFrame = 0;
   let knownExtraTags = '';
   let knownStageTypes = '';
+  let discoveryDirty = true;
   const cardDataCache = new WeakMap();
 
   function normalize(value) {
@@ -324,16 +325,16 @@
       + (conditions.extraTag ? 1 : 0);
   }
 
-  function updateSectionVisibility() {
-    document.querySelectorAll('.gatya-section').forEach(section => {
+  function updateSectionVisibility(content) {
+    if (!content) return;
+    content.querySelectorAll('.gatya-section').forEach(section => {
       const hasMatch = Array.from(section.querySelectorAll('.event-card')).some(card => !card.classList.contains('advanced-filter-hidden'));
       section.classList.toggle('advanced-filter-section-hidden', !hasMatch);
     });
 
-    const allContent = document.getElementById('all');
-    if (allContent) {
-      const headers = Array.from(allContent.querySelectorAll('.all-section-header'));
-      const cards = Array.from(allContent.querySelectorAll('.event-card'));
+    if (content.id === 'all') {
+      const headers = Array.from(content.querySelectorAll('.all-section-header'));
+      const cards = Array.from(content.querySelectorAll('.event-card'));
       headers.forEach((header, index) => {
         const nextHeader = headers[index + 1];
         const hasMatch = cards.some(card => {
@@ -345,13 +346,15 @@
       });
     }
 
-    document.querySelectorAll('.list-card-wrap').forEach(wrap => {
+    content.querySelectorAll('.list-card-wrap').forEach(wrap => {
       const card = wrap.querySelector('.event-card');
       wrap.classList.toggle('advanced-filter-empty-wrap', Boolean(card?.classList.contains('advanced-filter-hidden')));
     });
   }
 
   function discoverExtraTags() {
+    if (!discoveryDirty) return;
+    discoveryDirty = false;
     const tags = Array.from(document.querySelectorAll('.event-card .stage-tag'), tag => tag.textContent.trim())
       .filter(Boolean)
       .sort((a, b) => a.localeCompare(b, 'ja'));
@@ -430,28 +433,31 @@
     let total = 0;
     let matched = 0;
 
-    TARGET_CONTENT_IDS.forEach(id => {
-      document.getElementById(id)?.querySelectorAll('.event-card').forEach(card => {
-        total += 1;
-        const matches = cardMatches(card, conditions);
-        if (matches) matched += 1;
-        card.classList.toggle('advanced-filter-hidden', !matches);
-        card.classList.toggle('advanced-filter-card-match', matches && activeCount > 0);
-      });
+    const activeContent = document.querySelector('.content.active');
+    const targetContent = activeContent && TARGET_CONTENT_IDS.includes(activeContent.id)
+      ? activeContent
+      : null;
+    targetContent?.querySelectorAll('.event-card').forEach(card => {
+      total += 1;
+      const matches = cardMatches(card, conditions);
+      if (matches) matched += 1;
+      card.classList.toggle('advanced-filter-hidden', !matches);
+      card.classList.toggle('advanced-filter-card-match', matches && activeCount > 0);
     });
 
-    updateSectionVisibility();
+    updateSectionVisibility(targetContent);
     panel.classList.toggle('is-active', activeCount > 0);
     badge.textContent = String(activeCount);
     descriptionDisplay.textContent = describeConditions(conditions);
 
-    const activeContent = document.querySelector('.content.active');
-    if (activeContent && TARGET_CONTENT_IDS.includes(activeContent.id)) {
-      const activeCards = Array.from(activeContent.querySelectorAll('.event-card'));
+    if (targetContent) {
+      const activeCards = Array.from(targetContent.querySelectorAll('.event-card'));
       const visible = activeCards.filter(card => !card.classList.contains('advanced-filter-hidden')).length;
       countDisplay.textContent = `${visible} / ${activeCards.length}件を表示`;
+      const contentCount = targetContent.querySelector(':scope > .count-label');
+      if (contentCount) contentCount.textContent = `${visible} 件`;
     } else {
-      countDisplay.textContent = total ? `全体 ${matched} / ${total}件が一致` : 'カード待機中';
+      countDisplay.textContent = 'イベントタブで検索結果を表示';
     }
     saveState();
   }
@@ -461,7 +467,7 @@
     pendingFrame = requestAnimationFrame(applyFilters);
   }
 
-  function resetFilters(keepQueryMode = false) {
+  function resetFilters(keepQueryMode = false, triggerSort = true) {
     queryInput.value = '';
     if (!keepQueryMode) {
       queryMode.value = 'all';
@@ -473,12 +479,13 @@
     stageTypeSelect.value = '';
     Object.values(rangeFields).forEach(field => { field.value = ''; });
     sortSelect.value = 'default';
-    syncLegacySort();
+    syncLegacySort(triggerSort);
     document.querySelectorAll('.advanced-filter-preset').forEach(button => button.classList.remove('is-selected'));
   }
 
   function applyPreset(name, button) {
-    resetFilters(true);
+    resetFilters(true, false);
+    setSelectedValues('status', []);
     const presets = {
       current: { status: ['開催中'] },
       within: { status: ['期間内'] },
@@ -499,8 +506,23 @@
 
   function restoreState() {
     resetFilters(false);
-    panel.classList.remove('is-collapsed');
-    document.getElementById('advanced-filter-collapse').textContent = '⌃';
+    let savedCollapsed = true;
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+      if (typeof saved.collapsed === 'boolean') savedCollapsed = saved.collapsed;
+    } catch {
+      savedCollapsed = true;
+    }
+    setCollapsed(window.matchMedia('(max-width: 640px)').matches || savedCollapsed);
+  }
+
+  function setCollapsed(collapsed) {
+    const button = document.getElementById('advanced-filter-collapse');
+    panel.classList.toggle('is-collapsed', collapsed);
+    button.textContent = collapsed ? '⌄' : '⌃';
+    button.setAttribute('aria-expanded', String(!collapsed));
+    button.title = collapsed ? '検索条件を展開する' : '検索条件を折りたたむ';
+    button.setAttribute('aria-label', button.title);
   }
 
   panel.addEventListener('input', event => {
@@ -531,8 +553,7 @@
     }
   });
   document.getElementById('advanced-filter-collapse').addEventListener('click', event => {
-    panel.classList.toggle('is-collapsed');
-    event.currentTarget.textContent = panel.classList.contains('is-collapsed') ? '⌄' : '⌃';
+    setCollapsed(!panel.classList.contains('is-collapsed'));
     saveState();
   });
   document.getElementById('advanced-filter-presets').addEventListener('click', event => {
@@ -563,8 +584,7 @@
     }
     if ((event.ctrlKey || event.metaKey) && event.key.toLocaleLowerCase() === 'k') {
       event.preventDefault();
-      panel.classList.remove('is-collapsed');
-      document.getElementById('advanced-filter-collapse').textContent = '⌃';
+      setCollapsed(false);
       queryInput.focus();
       queryInput.select();
     }
@@ -574,6 +594,7 @@
   window.addEventListener('kbc:search-bridge-ready', scheduleApply);
 
   const observer = new MutationObserver(() => {
+    discoveryDirty = true;
     if (extraTagSelect.dataset.restoreValue && extraTagSelect.options.length > 1) {
       extraTagSelect.value = extraTagSelect.dataset.restoreValue;
       delete extraTagSelect.dataset.restoreValue;

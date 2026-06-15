@@ -46,11 +46,11 @@ body.share-loading-active {
  touch-action: none;
 }
 .container { width: 900px; max-width: 95%; margin: 0 auto; padding: 20px 0; }
-.header { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+.header { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
 .header-left { display: flex; align-items: center; gap: 12px; }
 #logo { width: 54px; height: 54px; border-radius: 8px; transition: transform 0.3s; }
 .site-title { font-size: 22px; margin: 0; font-weight: 700; letter-spacing: 1px; }
-.nav { display: flex; gap: 20px; align-items: center; }
+.nav { display: flex; gap: 14px; align-items: center; }
 .nav a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.3s; }
 .nav a:hover { color: var(--accent); }
 .theme-switcher { display: flex; align-items: center; background: var(--card); border: 1px solid var(--border); border-radius: 30px; padding: 4px; gap: 2px; transition: background 0.3s, border-color 0.3s; }
@@ -326,20 +326,36 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
 /* =============================================
    タブ
    ============================================= */
-.tab { padding: 4px 8px !important; font-size: 0.78rem !important; }
+.tab {
+  padding: 6px 10px !important;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.78rem !important;
+}
+.tab:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: -2px;
+}
 
 /* =============================================
    カード文字サイズ設定（ここで一括変更可能）
    ============================================= */
-.event-card   { padding: 4px 8px !important; min-height: unset !important; }
-.card-period  { font-size: 0.62rem !important; }
-.card-name    { font-size: 0.62rem !important; }
-.card-tag     { font-size: 0.48rem !important; padding: 1px 4px !important; }
-.gacha-type-tag { font-size: 0.48rem !important; padding: 1px 4px !important; }
-.card-arrow   { font-size: 0.7rem !important; }
+.event-card   { padding: 6px 9px !important; min-height: 42px !important; }
+.event-card:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+.card-period  { font-size: 0.7rem !important; }
+.card-name    { font-size: 0.75rem !important; }
+.card-tag     { font-size: 0.58rem !important; padding: 1px 5px !important; }
+.gacha-type-tag { font-size: 0.58rem !important; padding: 1px 5px !important; }
+.card-arrow   { font-size: 0.78rem !important; }
 
 /* ステージタグ / itemタグ */
-.stage-tag    { font-size: 0.48rem !important; padding: 1px 3px !important;
+.stage-tag    { font-size: 0.58rem !important; padding: 1px 4px !important;
                 border-radius: 3px; vertical-align: middle; margin-left: 2px;
                 font-weight: bold; display: inline-block; }
 
@@ -352,6 +368,15 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
 }
 .overlay-header-row .overlay-title {
   flex: 1; min-width: 0; word-break: break-word;
+}
+.overlay-close {
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+}
+.overlay-close:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
 }
 #overlay-sub { z-index: 2100; }
 
@@ -812,6 +837,36 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
 }
 
 @media (max-width: 720px) {
+  .container {
+    max-width: calc(100% - 16px);
+    padding-top: 10px;
+  }
+  .header {
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 8px 0 10px;
+  }
+  .header-left {
+    gap: 7px;
+  }
+  #logo {
+    width: 42px;
+    height: 42px;
+  }
+  .site-title {
+    font-size: 19px;
+  }
+  .nav {
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .nav a,
+  .try-btn {
+    font-size: 12px;
+    white-space: nowrap;
+  }
   .list-layout {
     grid-template-columns: 1fr;
   }
