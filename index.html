@@ -283,6 +283,7 @@
           <button class="theme-btn" id="theme-btn-dark"     onclick="setTheme('dark')"     title="ダーク" aria-label="ダークテーマ">🌙</button>
           <button class="theme-btn" id="theme-btn-light"    onclick="setTheme('light')"    title="ライト" aria-label="ライトテーマ">☀️</button>
         </div>
+        <button class="nav-tool-btn" type="button" onclick="confirmScreenshot()" title="表示中タブのスクリーンショット" aria-label="表示中タブのスクリーンショット">📷</button>
         <a href="#" class="try-btn" onclick="openOtherSites(); return false;">他サイト</a>
         <a href="https://x.com/kenkou_rakv0_4">連絡先</a>
       </nav>
@@ -447,7 +448,6 @@
           <span class="advanced-filter-spacer"></span>
           <button class="advanced-filter-tool-btn" type="button" onclick="openFilter('sale')" id="filter-btn-sale" style="display:none;">sale分類</button>
           <button class="advanced-filter-tool-btn" type="button" onclick="openFilter('mission')" id="filter-btn-mission" style="display:none;">mission分類</button>
-          <button class="advanced-filter-tool-btn" type="button" onclick="confirmScreenshot()" title="スクリーンショット" aria-label="表示中タブのスクリーンショット">📷</button>
         </div>
 
         <div class="advanced-filter-summary">
@@ -492,6 +492,14 @@
             <select id="utc-select" onchange="onUtcChange(this.value)">
               <option value="local">ローカル時間</option>
             </select>
+          </div>
+          <div class="settings-row">
+            <span class="settings-label">予定イベント</span>
+            <label class="settings-toggle">
+              <input id="schedule-off-setting" type="checkbox" onchange="setScheduleOffPreference(this.checked)">
+              <span>常に表示しない</span>
+            </label>
+            <span class="settings-note">共有リンクにも schedule=off を付与します</span>
           </div>
         </div>
 
@@ -673,6 +681,23 @@
         <button class="ss-btn-yes" onclick="doScreenshot()">Yes</button>
         <button class="ss-btn-no"  onclick="cancelScreenshot()">No</button>
       </div>
+    </div>
+  </div>
+
+  <!-- iPhone / iPad向けスクリーンショット保存 -->
+  <div id="ss-preview-overlay" class="ss-preview-overlay" aria-hidden="true">
+    <div class="ss-preview-panel" role="dialog" aria-modal="true" aria-label="スクリーンショットの保存">
+      <div class="ss-preview-head">
+        <strong>スクリーンショットを保存</strong>
+        <button id="ss-preview-close" class="overlay-close" type="button" aria-label="閉じる">&times;</button>
+      </div>
+      <p>共有ボタンを押すか、画像を長押しして保存してください。</p>
+      <img id="ss-preview-image" alt="生成したスクリーンショット">
+      <div class="ss-preview-actions">
+        <button id="ss-preview-share" class="settings-btn" type="button">共有・保存</button>
+        <button id="ss-preview-close-bottom" class="settings-btn" type="button">閉じる</button>
+      </div>
+      <div id="ss-preview-status" class="list-status"></div>
     </div>
   </div>
 

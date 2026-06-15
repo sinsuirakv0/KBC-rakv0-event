@@ -437,9 +437,12 @@
     const targetContent = activeContent && TARGET_CONTENT_IDS.includes(activeContent.id)
       ? activeContent
       : null;
+    const targetConditions = targetContent?.id === 'list'
+      ? { ...conditions, statuses: [] }
+      : conditions;
     targetContent?.querySelectorAll('.event-card').forEach(card => {
       total += 1;
-      const matches = cardMatches(card, conditions);
+      const matches = cardMatches(card, targetConditions);
       if (matches) matched += 1;
       card.classList.toggle('advanced-filter-hidden', !matches);
       card.classList.toggle('advanced-filter-card-match', matches && activeCount > 0);
@@ -501,6 +504,16 @@
     const preset = presets[name] || {};
     Object.entries(preset).forEach(([group, values]) => setSelectedValues(group, values));
     document.querySelectorAll('.advanced-filter-preset').forEach(item => item.classList.toggle('is-selected', item === button));
+    scheduleApply();
+  }
+
+  function syncScheduleOffFilter(enabled) {
+    if (enabled) {
+      const statuses = selectedValues('status').filter(value => value !== '予定');
+      setSelectedValues('status', statuses);
+    } else if (selectedValues('status').length === 0) {
+      setSelectedValues('status', ['予定']);
+    }
     scheduleApply();
   }
 
@@ -611,6 +624,7 @@
   window.KBCAdvancedFilter = {
     apply: scheduleApply,
     reset: resetFilters,
+    setScheduleOff: syncScheduleOffFilter,
     inspect: card => cardData(card),
   };
 })();

@@ -53,6 +53,20 @@ body.share-loading-active {
 .nav { display: flex; gap: 14px; align-items: center; }
 .nav a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.3s; }
 .nav a:hover { color: var(--accent); }
+.nav-tool-btn {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ width: 30px;
+ height: 30px;
+ border: 1px solid var(--border);
+ border-radius: 6px;
+ background: var(--card);
+ color: var(--text);
+ cursor: pointer;
+ font-size: 0.82rem;
+}
+.nav-tool-btn:hover { border-color: var(--orange); }
 .theme-switcher { display: flex; align-items: center; background: var(--card); border: 1px solid var(--border); border-radius: 30px; padding: 4px; gap: 2px; transition: background 0.3s, border-color 0.3s; }
 .theme-btn { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; border: none; background: transparent; cursor: pointer; font-size: 15px; transition: background 0.2s, transform 0.2s; color: var(--muted); position: relative; }
 .theme-btn:hover { background: rgba(59, 130, 246, 0.15); transform: scale(1.1); }
@@ -867,6 +881,45 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
     font-size: 12px;
     white-space: nowrap;
   }
+  .event-card {
+    gap: 4px !important;
+    min-height: 32px !important;
+    padding: 3px 5px !important;
+    margin-bottom: 5px;
+    border-left-width: 3px;
+    border-radius: 7px;
+  }
+  .card-body {
+    min-width: 0;
+    overflow: hidden;
+  }
+  .card-period {
+    font-size: 0.56rem !important;
+    white-space: nowrap;
+  }
+  .card-name {
+    font-size: 0.65rem !important;
+    line-height: 1.25;
+  }
+  .card-tag,
+  .gacha-type-tag,
+  .stage-tag {
+    max-width: 58px;
+    overflow: hidden;
+    padding: 1px 3px !important;
+    font-size: 0.48rem !important;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+  }
+  #mission .event-card {
+    gap: 3px !important;
+  }
+  #mission .card-name br {
+    display: none;
+  }
+  #mission .stage-tag {
+    max-width: 46px;
+  }
   .list-layout {
     grid-template-columns: 1fr;
   }
@@ -905,6 +958,70 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
   font-size: 0.82rem;
   color: #aaa;
   min-width: 160px;
+}
+.settings-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+.settings-toggle input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--orange);
+}
+.settings-note {
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+.ss-preview-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 3600;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.78);
+  padding: 12px;
+}
+.ss-preview-overlay.show {
+  display: flex;
+}
+.ss-preview-panel {
+  width: min(94vw, 760px);
+  max-height: 94vh;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  padding: 12px;
+  color: var(--text);
+}
+.ss-preview-head,
+.ss-preview-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ss-preview-panel p {
+  margin: 8px 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+#ss-preview-image {
+  display: block;
+  width: 100%;
+  max-height: 68vh;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+.ss-preview-actions {
+  justify-content: flex-end;
+  margin-top: 10px;
 }
 
 /* =============================================
