@@ -3,6 +3,7 @@
   const STORAGE_KEY = 'kbc-advanced-filter-v1';
   const TARGET_CONTENT_IDS = ['gatya', 'sale', 'item', 'mission', 'all', 'list'];
   const panel = document.getElementById('advanced-filter');
+  const quickPanel = document.getElementById('quick-filter-bar');
   const queryInput = document.getElementById('advanced-filter-query');
   const queryMode = document.getElementById('advanced-filter-query-mode');
   const queryScope = document.getElementById('advanced-filter-scope');
@@ -61,13 +62,29 @@
   }
 
   function selectedValues(groupName) {
-    return Array.from(panel.querySelectorAll(`[data-filter-group="${groupName}"] input:checked`), input => input.value);
+    const inputs = document.querySelectorAll(
+      `[data-filter-group="${groupName}"] input:checked, [data-quick-filter-group="${groupName}"] input:checked`
+    );
+    return [...new Set(Array.from(inputs, input => input.value))];
   }
 
   function setSelectedValues(groupName, values) {
     const selected = new Set(values);
-    panel.querySelectorAll(`[data-filter-group="${groupName}"] input`).forEach(input => {
+    document.querySelectorAll(
+      `[data-filter-group="${groupName}"] input, [data-quick-filter-group="${groupName}"] input`
+    ).forEach(input => {
       input.checked = selected.has(input.value);
+    });
+  }
+
+  function syncMatchingFilterInputs(source) {
+    const group = source.closest('[data-filter-group], [data-quick-filter-group]');
+    const groupName = group?.dataset.filterGroup || group?.dataset.quickFilterGroup;
+    if (!groupName || source.type !== 'checkbox') return;
+    document.querySelectorAll(
+      `[data-filter-group="${groupName}"] input, [data-quick-filter-group="${groupName}"] input`
+    ).forEach(input => {
+      if (input.value === source.value) input.checked = source.checked;
     });
   }
 
@@ -519,32 +536,32 @@
 
   function restoreState() {
     resetFilters(false);
-    let savedCollapsed = true;
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-      if (typeof saved.collapsed === 'boolean') savedCollapsed = saved.collapsed;
-    } catch {
-      savedCollapsed = true;
-    }
-    setCollapsed(window.matchMedia('(max-width: 640px)').matches || savedCollapsed);
+    setCollapsed(true);
   }
 
   function setCollapsed(collapsed) {
     const button = document.getElementById('advanced-filter-collapse');
     panel.classList.toggle('is-collapsed', collapsed);
-    button.textContent = collapsed ? '⌄' : '⌃';
+    button.textContent = collapsed ? '展開' : '縮小';
     button.setAttribute('aria-expanded', String(!collapsed));
-    button.title = collapsed ? '検索条件を展開する' : '検索条件を折りたたむ';
+    button.title = collapsed ? '詳細検索を展開する' : '詳細検索を縮小する';
     button.setAttribute('aria-label', button.title);
   }
 
   panel.addEventListener('input', event => {
     if (event.target.matches('input, select')) {
+      syncMatchingFilterInputs(event.target);
       document.querySelectorAll('.advanced-filter-preset').forEach(button => button.classList.remove('is-selected'));
       scheduleApply();
     }
   });
   panel.addEventListener('change', scheduleApply);
+  quickPanel?.addEventListener('input', event => {
+    if (!event.target.matches('input')) return;
+    syncMatchingFilterInputs(event.target);
+    document.querySelectorAll('.advanced-filter-preset').forEach(button => button.classList.remove('is-selected'));
+    scheduleApply();
+  });
   document.getElementById('advanced-filter-reset').addEventListener('click', () => {
     resetFilters();
     scheduleApply();

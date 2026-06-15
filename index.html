@@ -283,7 +283,6 @@
           <button class="theme-btn" id="theme-btn-dark"     onclick="setTheme('dark')"     title="ダーク" aria-label="ダークテーマ">🌙</button>
           <button class="theme-btn" id="theme-btn-light"    onclick="setTheme('light')"    title="ライト" aria-label="ライトテーマ">☀️</button>
         </div>
-        <button class="nav-tool-btn" type="button" onclick="confirmScreenshot()" title="表示中タブのスクリーンショット" aria-label="表示中タブのスクリーンショット">📷</button>
         <a href="#" class="try-btn" onclick="openOtherSites(); return false;">他サイト</a>
         <a href="https://x.com/kenkou_rakv0_4">連絡先</a>
       </nav>
@@ -317,7 +316,7 @@
         </select>
         <button class="advanced-filter-icon-btn" id="advanced-filter-reset" type="button" title="検索条件をリセット" aria-label="検索条件をリセット">↺</button>
         <button class="advanced-filter-icon-btn" id="advanced-filter-help-open" type="button" title="詳細検索の使い方" aria-label="詳細検索の使い方">?</button>
-        <button class="advanced-filter-icon-btn" id="advanced-filter-collapse" type="button" title="検索条件を折りたたむ" aria-label="検索条件を折りたたむ" aria-expanded="true">⌃</button>
+        <button class="advanced-filter-icon-btn advanced-filter-collapse-btn" id="advanced-filter-collapse" type="button" title="詳細検索を展開する" aria-label="詳細検索を展開する" aria-expanded="false">展開</button>
         <span class="advanced-filter-badge" id="advanced-filter-badge">0</span>
       </div>
 
@@ -450,11 +449,28 @@
           <button class="advanced-filter-tool-btn" type="button" onclick="openFilter('mission')" id="filter-btn-mission" style="display:none;">mission分類</button>
         </div>
 
-        <div class="advanced-filter-summary">
-          <span id="advanced-filter-count">カード待機中</span>
-          <span id="advanced-filter-description">条件なし</span>
-          <span><span id="locale-display" class="now-display"></span> <span id="now-display" class="now-display"></span></span>
+      </div>
+    </section>
+
+    <section class="quick-filter-bar" id="quick-filter-bar" aria-label="クイック絞り込み">
+      <div class="quick-filter-options">
+        <div class="advanced-filter-group" data-quick-filter-group="status" aria-label="状態">
+          <label class="advanced-filter-chip"><input type="checkbox" value="開催中"><span>開催中</span></label>
+          <label class="advanced-filter-chip"><input type="checkbox" value="期間内"><span>期間内</span></label>
+          <label class="advanced-filter-chip"><input type="checkbox" value="予定" checked><span>予定</span></label>
+          <label class="advanced-filter-chip"><input type="checkbox" value="終了"><span>終了</span></label>
         </div>
+        <div class="advanced-filter-group quick-filter-duration" data-quick-filter-group="duration" aria-label="期間">
+          <label class="advanced-filter-chip"><input type="checkbox" value="permanent"><span>常設</span></label>
+          <label class="advanced-filter-chip"><input type="checkbox" value="limited"><span>期間限定</span></label>
+        </div>
+        <button class="quick-filter-screenshot" type="button" onclick="confirmScreenshot()" title="表示中タブのスクリーンショット" aria-label="表示中タブのスクリーンショット">📷</button>
+      </div>
+      <div class="quick-filter-info">
+        <span id="locale-display" class="now-display"></span>
+        <span id="now-display" class="now-display"></span>
+        <span class="quick-filter-state" id="advanced-filter-description">条件なし</span>
+        <span id="advanced-filter-count">カード待機中</span>
       </div>
     </section>
 
@@ -674,7 +690,7 @@
   </div>
 
   <!-- スクリーンショット確認オーバーレイ -->
-  <div id="ss-confirm-overlay">
+  <div id="ss-confirm-overlay" aria-hidden="true">
     <div id="ss-confirm-box">
       <div id="ss-confirm-msg"></div>
       <div class="ss-confirm-btns">

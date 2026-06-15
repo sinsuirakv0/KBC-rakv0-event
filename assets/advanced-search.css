@@ -81,6 +81,13 @@
   cursor: pointer;
   font-size: 1rem;
 }
+.advanced-filter-collapse-btn {
+  width: auto;
+  min-width: 48px;
+  padding: 0 8px;
+  font-size: 0.68rem;
+  font-weight: bold;
+}
 .advanced-filter-icon-btn:hover {
   border-color: var(--orange);
   background: rgba(243, 152, 0, 0.14);
@@ -232,10 +239,6 @@
   border-color: var(--orange);
   color: var(--orange-light);
 }
-.advanced-filter .now-display {
-  margin-left: 0;
-  font-size: 0.68rem;
-}
 .advanced-filter-actions {
   flex-wrap: wrap;
   gap: 6px;
@@ -243,19 +246,58 @@
 .advanced-filter-spacer {
   flex: 1;
 }
-.advanced-filter-summary {
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 5px 12px;
-  min-height: 23px;
-  border-top: 1px solid var(--border);
-  padding-top: 7px;
-  color: var(--muted);
-  font-size: 0.68rem;
-}
 #advanced-filter-count {
   color: var(--orange-light);
   font-weight: bold;
+}
+.quick-filter-bar {
+  display: grid;
+  gap: 6px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.12);
+  padding: 7px 16px 8px;
+  color: var(--muted);
+}
+.quick-filter-options,
+.quick-filter-info {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px 8px;
+}
+.quick-filter-duration {
+  padding-left: 8px;
+  border-left: 1px solid var(--border);
+}
+.quick-filter-screenshot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 25px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  cursor: pointer;
+}
+.quick-filter-screenshot:hover {
+  border-color: var(--orange);
+}
+.quick-filter-info {
+  font-size: 0.65rem;
+}
+.quick-filter-info .now-display {
+  margin-left: 0;
+  color: var(--muted);
+  font-size: inherit;
+}
+.quick-filter-state {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 #advanced-filter-description {
   overflow: hidden;
@@ -317,22 +359,25 @@
     width: 100%;
     flex-basis: 100%;
   }
-  .advanced-filter-summary {
-    align-items: flex-start;
-    flex-direction: column;
-  }
   .advanced-filter-body {
     max-height: 66vh;
     overflow-y: auto;
     padding-right: 2px;
   }
-  .advanced-filter-summary {
-    position: sticky;
-    bottom: 0;
-    background: var(--card);
-    padding-bottom: 4px;
-  }
   #advanced-filter-description {
     max-width: 100%;
+  }
+  .quick-filter-bar {
+    padding: 6px 8px;
+  }
+  .quick-filter-options {
+    gap: 4px;
+  }
+  .quick-filter-duration {
+    padding-left: 4px;
+  }
+  .quick-filter-state {
+    flex-basis: 100%;
+    order: 3;
   }
 }

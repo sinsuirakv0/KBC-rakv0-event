@@ -357,19 +357,19 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
 /* =============================================
    カード文字サイズ設定（ここで一括変更可能）
    ============================================= */
-.event-card   { padding: 6px 9px !important; min-height: 42px !important; }
+.event-card   { padding: 4px 7px !important; min-height: 34px !important; margin-bottom: 5px !important; gap: 6px !important; border-radius: 7px !important; }
 .event-card:focus-visible {
   outline: 2px solid var(--orange);
   outline-offset: 2px;
 }
-.card-period  { font-size: 0.7rem !important; }
-.card-name    { font-size: 0.75rem !important; }
-.card-tag     { font-size: 0.58rem !important; padding: 1px 5px !important; }
-.gacha-type-tag { font-size: 0.58rem !important; padding: 1px 5px !important; }
-.card-arrow   { font-size: 0.78rem !important; }
+.card-period  { font-size: 0.62rem !important; margin-bottom: 0 !important; }
+.card-name    { font-size: 0.7rem !important; line-height: 1.25 !important; }
+.card-tag     { font-size: 0.53rem !important; padding: 1px 4px !important; }
+.gacha-type-tag { font-size: 0.53rem !important; padding: 1px 4px !important; }
+.card-arrow   { font-size: 0.68rem !important; }
 
 /* ステージタグ / itemタグ */
-.stage-tag    { font-size: 0.58rem !important; padding: 1px 4px !important;
+.stage-tag    { font-size: 0.53rem !important; padding: 1px 3px !important;
                 border-radius: 3px; vertical-align: middle; margin-left: 2px;
                 font-weight: bold; display: inline-block; }
 
@@ -882,10 +882,10 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
     white-space: nowrap;
   }
   .event-card {
-    gap: 4px !important;
-    min-height: 32px !important;
-    padding: 3px 5px !important;
-    margin-bottom: 5px;
+    gap: 3px !important;
+    min-height: 27px !important;
+    padding: 2px 4px !important;
+    margin-bottom: 3px !important;
     border-left-width: 3px;
     border-radius: 7px;
   }
@@ -894,21 +894,21 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
     overflow: hidden;
   }
   .card-period {
-    font-size: 0.56rem !important;
+    font-size: 0.5rem !important;
     white-space: nowrap;
   }
   .card-name {
-    font-size: 0.65rem !important;
-    line-height: 1.25;
+    font-size: 0.59rem !important;
+    line-height: 1.18 !important;
   }
   .card-tag,
   .gacha-type-tag,
   .stage-tag {
     max-width: 58px;
     overflow: hidden;
-    padding: 1px 3px !important;
-    font-size: 0.48rem !important;
-    line-height: 1.25;
+    padding: 0 3px !important;
+    font-size: 0.43rem !important;
+    line-height: 1.2;
     text-overflow: ellipsis;
   }
   #mission .event-card {
