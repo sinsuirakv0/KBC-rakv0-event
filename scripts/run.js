@@ -22,7 +22,8 @@ const MIN_CHECK_INTERVAL_MS = 1_000;
 
 const args = process.argv.slice(2);
 const force = args.includes("--force");
-const cliTargets = args.filter(a => a !== "--force");
+const testDetect = args.includes("--test-detect") || process.env.EVENT_TEST_DETECT === "true";
+const cliTargets = args.filter(a => !["--force", "--test-detect"].includes(a));
 const envTargets = (process.env.FORCE_TARGETS || "")
   .split(/\s+/)
   .map(t => t.trim())
@@ -108,6 +109,35 @@ async function notifyUpdated(updated) {
   });
 }
 
+async function runDetectionTest(jwt, startedAt) {
+  const testId = process.env.EVENT_TEST_ID || process.env.GITHUB_RUN_ID || String(Date.now());
+  const hashes = await loadHashes();
+  const checked = await Promise.all(types.map(name => checkType(name, jwt, hashes)));
+  const ok = checked.filter(result => result.success);
+  const failed = checked.filter(result => !result.success);
+  if (failed.length > 0) {
+    console.warn(`Detection test had fetch failures: ${failed.map(result => `${result.name}=${result.error}`).join(", ")}`);
+  }
+  if (ok.length === 0) {
+    throw new Error("detection test has no successful TSV fetches");
+  }
+
+  const detectedAt = new Date().toISOString();
+  const testHashes = Object.fromEntries(ok.map(result => [result.name, result.hash]).filter(([, hash]) => hash));
+  await notifyEventBot({
+    types: ok.map(result => result.name),
+    detectedAt,
+    force,
+    phase: "detected",
+    hashes: testHashes,
+    source: "github-actions-test",
+    test: true,
+    testId,
+    startedAt,
+  });
+  console.log(`Detection test notification sent: testId=${testId} types=${ok.map(result => result.name).join(",")}`);
+}
+
 async function runRound(round, jwt, hashes, notifyFast) {
   console.log(`\n=== Round ${round}: ${types.join(", ")} ===`);
 
@@ -175,6 +205,12 @@ async function main() {
     const jwtResult = await getJWTWithCache();
     const jwtSource = jwtResult.cacheHit ? "cache" : "fresh";
     console.log(`JWT ready (${jwtSource}${jwtResult.createdAt ? `, createdAt=${jwtResult.createdAt}` : ""})`);
+
+    if (testDetect) {
+      await runDetectionTest(jwtResult.jwt, startedAt);
+      return;
+    }
+
     const hashes = await loadHashes();
 
     if (force) {

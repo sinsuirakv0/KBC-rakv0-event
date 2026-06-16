@@ -5,6 +5,7 @@
   "description": "にゃんこ大戦争イベントデータ取得・変換バックエンド",
   "scripts": {
     "start":       "node scripts/run.js",
+    "test:detect": "node scripts/run.js --test-detect",
     "force":       "node scripts/run.js --force",
     "force:gatya": "node scripts/run.js --force gatya",
     "force:sale":  "node scripts/run.js --force sale",

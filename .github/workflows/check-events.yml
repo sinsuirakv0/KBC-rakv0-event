@@ -7,6 +7,10 @@ on:
         description: "Force update targets (gatya sale item). Leave empty for normal check."
         required: false
         default: ""
+      test:
+        description: "Send a detection-speed test notification without saving TSV files."
+        required: false
+        default: "false"
 
 jobs:
   check:
@@ -31,8 +35,22 @@ jobs:
           path: .cache/ponos-jwt.json
           key: ponos-jwt-v1-${{ runner.os }}-${{ steps.jwt-cache-key.outputs.bucket }}
 
+      - name: Run detection speed test
+        if: ${{ github.event.inputs.force == '' && github.event.inputs.test == 'true' }}
+        run: node scripts/run.js --test-detect
+        env:
+          GH_TOKEN_EVENT: ${{ secrets.GH_TOKEN_EVENT }}
+          PRIVATE_REPO_OWNER: ${{ secrets.PRIVATE_REPO_OWNER }}
+          PRIVATE_REPO_NAME: ${{ secrets.PRIVATE_REPO_NAME }}
+          GITHUB_PRIVATE_TOKEN: ${{ secrets.GITHUB_PRIVATE_TOKEN }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          BOT_EVENT_UPDATE_URL: ${{ secrets.BOT_EVENT_UPDATE_URL }}
+          BOT_EVENT_UPDATE_SECRET: ${{ secrets.BOT_EVENT_UPDATE_SECRET }}
+          EVENT_SITE_URL: ${{ vars.EVENT_SITE_URL }}
+          PONOS_JWT_CACHE_FILE: .cache/ponos-jwt.json
+
       - name: Run normal check
-        if: ${{ github.event.inputs.force == '' }}
+        if: ${{ github.event.inputs.force == '' && github.event.inputs.test != 'true' }}
         run: node scripts/run.js
         env:
           GH_TOKEN_EVENT: ${{ secrets.GH_TOKEN_EVENT }}
