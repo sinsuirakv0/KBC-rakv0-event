@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/06/08 16:27:54",
+  "updatedAt": "26/06/16 11:58:19",
   "data": [
     {
       "header": {
@@ -1484,6 +1484,27 @@
         "repeatFlag": 1
       },
       "raw": "20260616\t1100\t20260708\t1100\t150400\t999999\t0\t0\t85000\t11046\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260616",
+        "startTime": "1100",
+        "endDate": "20260627",
+        "endTime": "0",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 5240,
+        "giftType": 853,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260616\t1100\t20260627\t0\t150500\t999999\t0\t0\t5240\t853\t0\t\t\t3\t0\t0\t0\t0\t0\t0"
     }
   ]
 }
