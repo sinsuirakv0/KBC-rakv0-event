@@ -4,24 +4,40 @@ on:
   workflow_dispatch:
     inputs:
       force:
-        description: "強制更新するファイル（例: gatya sale item / 空欄で全部）"
+        description: "Force update targets (gatya sale item). Leave empty for normal check."
         required: false
         default: ""
+
+concurrency:
+  group: check-events
+  cancel-in-progress: false
 
 jobs:
   check:
     runs-on: ubuntu-latest
 
     steps:
-      - name: リポジトリをチェックアウト
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Node.js のセットアップ
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24"
 
-      - name: 通常実行
+      - name: Prepare JWT cache key
+        id: jwt-cache-key
+        shell: bash
+        run: echo "bucket=$(($(date -u +%s) / 43200))" >> "$GITHUB_OUTPUT"
+
+      - name: Restore JWT cache
+        id: jwt-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache/ponos-jwt.json
+          key: ponos-jwt-v1-${{ runner.os }}-${{ steps.jwt-cache-key.outputs.bucket }}
+
+      - name: Run normal check
         if: ${{ github.event.inputs.force == '' }}
         run: node scripts/run.js
         env:
@@ -33,11 +49,13 @@ jobs:
           BOT_EVENT_UPDATE_URL: ${{ secrets.BOT_EVENT_UPDATE_URL }}
           BOT_EVENT_UPDATE_SECRET: ${{ secrets.BOT_EVENT_UPDATE_SECRET }}
           EVENT_SITE_URL: ${{ vars.EVENT_SITE_URL }}
+          PONOS_JWT_CACHE_FILE: .cache/ponos-jwt.json
 
-      - name: 強制更新
+      - name: Run force update
         if: ${{ github.event.inputs.force != '' }}
-        run: node scripts/run.js --force ${{ github.event.inputs.force }}
+        run: node scripts/run.js --force
         env:
+          FORCE_TARGETS: ${{ github.event.inputs.force }}
           GH_TOKEN_EVENT: ${{ secrets.GH_TOKEN_EVENT }}
           PRIVATE_REPO_OWNER: ${{ secrets.PRIVATE_REPO_OWNER }}
           PRIVATE_REPO_NAME: ${{ secrets.PRIVATE_REPO_NAME }}
@@ -46,3 +64,11 @@ jobs:
           BOT_EVENT_UPDATE_URL: ${{ secrets.BOT_EVENT_UPDATE_URL }}
           BOT_EVENT_UPDATE_SECRET: ${{ secrets.BOT_EVENT_UPDATE_SECRET }}
           EVENT_SITE_URL: ${{ vars.EVENT_SITE_URL }}
+          PONOS_JWT_CACHE_FILE: .cache/ponos-jwt.json
+
+      - name: Save JWT cache
+        if: ${{ always() && steps.jwt-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/ponos-jwt.json
+          key: ponos-jwt-v1-${{ runner.os }}-${{ steps.jwt-cache-key.outputs.bucket }}
