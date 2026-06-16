@@ -12,12 +12,13 @@
 
 import { getJWTWithCache } from "../lib/jwt.js";
 import { notifyDiscord, notifyEventBot } from "../lib/discord.js";
-import { fetchAndCheck } from "./fetch-tsv.js";
+import { fetchAndCheck, readPreviousHash } from "./fetch-tsv.js";
 import { updateFiles } from "./update-files.js";
 
 const ALL_TYPES = ["gatya", "sale", "item"];
-const NORMAL_ROUNDS = 3;
-const EXTRA_ROUNDS_AFTER_CHANGE = 1;
+const DEFAULT_CHECK_DURATION_MS = 85_000;
+const DEFAULT_CHECK_INTERVAL_MS = 2_000;
+const MIN_CHECK_INTERVAL_MS = 1_000;
 
 const args = process.argv.slice(2);
 const force = args.includes("--force");
@@ -32,87 +33,170 @@ const types = (force && targets.length > 0)
   ? targets.filter(t => ALL_TYPES.includes(t))
   : ALL_TYPES;
 
-async function processType(name, jwt) {
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function numberFromEnv(name, fallback) {
+  const value = Number(process.env[name]);
+  return Number.isFinite(value) && value >= 0 ? value : fallback;
+}
+
+async function loadHashes() {
+  const entries = await Promise.all(types.map(async name => [name, await readPreviousHash(name, { preferRemote: true })]));
+  return Object.fromEntries(entries);
+}
+
+async function checkType(name, jwt, hashes) {
   console.log(`\n--- ${name} ---`);
 
-  const fetchResult = await fetchAndCheck(name, jwt);
+  const fetchResult = await fetchAndCheck(name, jwt, hashes[name]);
   if (fetchResult.error) {
     console.error(`[${name}] skipped after fetch error: ${fetchResult.error}`);
     await notifyDiscord({ type: name, status: "failed", force, error: fetchResult.error });
-    return { name, success: false, skipped: true, error: fetchResult.error };
+    return { name, success: false, skipped: true, changed: false, error: fetchResult.error };
   }
 
   if (!fetchResult.changed && !force) {
     console.log(`[${name}] unchanged; skipping update`);
-    return { name, success: true, changed: false };
+    return { name, success: true, changed: false, ...fetchResult };
   }
 
-  await notifyDiscord({ type: name, status: "detected", force, hash: fetchResult.hash });
-  const result = await updateFiles(name, fetchResult.text, fetchResult.hash, force);
-  if (result.success) {
-    await notifyDiscord({ type: name, status: "updated", force, hash: fetchResult.hash });
-  } else {
-    await notifyDiscord({ type: name, status: "failed", force, hash: fetchResult.hash, error: result.error });
-  }
-
-  return { name, ...result, changed: true };
+  return { name, success: true, changed: true, ...fetchResult };
 }
 
-async function runRound(round, jwt, totalRounds) {
-  console.log(`\n=== Round ${round}/${totalRounds}: ${types.join(", ")} ===`);
-
-  const results = await Promise.all(types.map(name => processType(name, jwt)));
-  const failed = results.filter(r => !r.success && !r.skipped);
-  if (failed.length > 0) {
-    throw new Error(`update failed: ${failed.map(r => `${r.name}=${r.error}`).join(", ")}`);
+async function updateType(result, hashes) {
+  if (!force) {
+    try {
+      const remoteHash = await readPreviousHash(result.name, { preferRemote: true });
+      if (remoteHash === result.hash) {
+        console.log(`[${result.name}] remote hash already updated; skipping duplicate update`);
+        hashes[result.name] = result.hash;
+        return { name: result.name, success: true, changed: false, duplicate: true, hash: result.hash };
+      }
+    } catch (err) {
+      console.warn(`[${result.name}] remote hash recheck failed; continuing update: ${err.message}`);
+    }
   }
 
-  const updated = results.filter(r => r.success && r.changed);
-  if (updated.length > 0) {
-    console.log(`Round ${round}: changed ${updated.map(r => r.name).join(", ")}`);
+  await notifyDiscord({ type: result.name, status: "detected", force, hash: result.hash });
+
+  const updateResult = await updateFiles(result.name, result.text, result.hash, force);
+  if (updateResult.success) {
+    await notifyDiscord({ type: result.name, status: "updated", force, hash: result.hash });
   } else {
-    console.log(`Round ${round}: no changes`);
+    await notifyDiscord({ type: result.name, status: "failed", force, hash: result.hash, error: updateResult.error });
   }
 
-  return { results, updated };
+  return { name: result.name, ...updateResult, changed: true, hash: result.hash };
+}
+
+async function notifyUpdated(updated) {
+  if (updated.length === 0) return;
+
+  const rawUnixValues = updated.map(r => r.rawUnix).filter(Number.isFinite);
+  const historyUnix = rawUnixValues.length ? Math.max(...rawUnixValues) : null;
+  const updatedTypes = [...new Set(updated.map(r => r.name))];
+  const hashes = Object.fromEntries(updated.map(r => [r.name, r.hash]).filter(([, hash]) => hash));
+  await notifyEventBot({
+    types: updatedTypes,
+    detectedAt: new Date().toISOString(),
+    historyUnix,
+    force,
+    phase: "updated",
+    hashes,
+  });
+}
+
+async function runRound(round, jwt, hashes, notifyFast) {
+  console.log(`\n=== Round ${round}: ${types.join(", ")} ===`);
+
+  const checked = await Promise.all(types.map(name => checkType(name, jwt, hashes)));
+  const failed = checked.filter(r => !r.success && !r.skipped);
+  if (failed.length > 0) {
+    throw new Error(`check failed: ${failed.map(r => `${r.name}=${r.error}`).join(", ")}`);
+  }
+
+  const changed = checked.filter(r => r.success && r.changed);
+  if (changed.length === 0) {
+    console.log(`Round ${round}: no changes`);
+    return { results: checked, updated: [] };
+  }
+
+  console.log(`Round ${round}: changed ${changed.map(r => r.name).join(", ")}`);
+  await notifyFast(changed);
+
+  const updateResults = await Promise.all(changed.map(result => updateType(result, hashes)));
+  const updateFailed = updateResults.filter(r => !r.success);
+  if (updateFailed.length > 0) {
+    throw new Error(`update failed: ${updateFailed.map(r => `${r.name}=${r.error}`).join(", ")}`);
+  }
+
+  const updated = updateResults.filter(r => r.changed);
+  for (const result of updated) {
+    hashes[result.name] = result.hash;
+  }
+  await notifyUpdated(updated);
+
+  return { results: checked, updated };
 }
 
 async function main() {
   const startedAt = new Date().toISOString();
-  const baseRounds = force ? 1 : NORMAL_ROUNDS;
-  const allUpdated = [];
+  const notifiedHashes = new Map();
+  const checkDurationMs = numberFromEnv("EVENT_CHECK_DURATION_MS", DEFAULT_CHECK_DURATION_MS);
+  const checkIntervalMs = Math.max(
+    MIN_CHECK_INTERVAL_MS,
+    numberFromEnv("EVENT_CHECK_INTERVAL_MS", DEFAULT_CHECK_INTERVAL_MS)
+  );
 
   console.log(`=== Event check started ${startedAt}${force ? " [--force]" : ""} ===`);
   if (force) console.log(`Targets: ${types.join(", ")}`);
+
+  async function notifyFast(changed) {
+    const fresh = changed.filter(r => notifiedHashes.get(r.name) !== r.hash);
+    if (fresh.length === 0) return;
+
+    for (const result of fresh) notifiedHashes.set(result.name, result.hash);
+    const detectedAt = new Date().toISOString();
+    const hashes = Object.fromEntries(fresh.map(r => [r.name, r.hash]));
+
+    await notifyEventBot({
+      types: fresh.map(r => r.name),
+      detectedAt,
+      force,
+      phase: "detected",
+      hashes,
+    });
+  }
 
   try {
     console.log("Preparing JWT...");
     const jwtResult = await getJWTWithCache();
     const jwtSource = jwtResult.cacheHit ? "cache" : "fresh";
     console.log(`JWT ready (${jwtSource}${jwtResult.createdAt ? `, createdAt=${jwtResult.createdAt}` : ""})`);
+    const hashes = await loadHashes();
 
-    for (let round = 1; round <= baseRounds; round++) {
-      const { updated } = await runRound(round, jwtResult.jwt, baseRounds);
-      allUpdated.push(...updated);
-    }
+    if (force) {
+      await runRound(1, jwtResult.jwt, hashes, notifyFast);
+    } else {
+      const deadline = Date.now() + checkDurationMs;
+      let round = 0;
+      console.log(`Looping checks for ${checkDurationMs}ms at ${checkIntervalMs}ms intervals`);
 
-    if (!force && allUpdated.length > 0) {
-      console.log(`\nChange detected during the first ${NORMAL_ROUNDS} rounds; running one extra round.`);
-      const extraRound = NORMAL_ROUNDS + 1;
-      const { updated } = await runRound(extraRound, jwtResult.jwt, NORMAL_ROUNDS + EXTRA_ROUNDS_AFTER_CHANGE);
-      allUpdated.push(...updated);
-    }
+      do {
+        const roundStartedAt = Date.now();
+        round++;
+        await runRound(round, jwtResult.jwt, hashes, notifyFast);
 
-    if (allUpdated.length > 0) {
-      const rawUnixValues = allUpdated.map(r => r.rawUnix).filter(Number.isFinite);
-      const historyUnix = rawUnixValues.length ? Math.max(...rawUnixValues) : null;
-      const updatedTypes = [...new Set(allUpdated.map(r => r.name))];
-      await notifyEventBot({
-        types: updatedTypes,
-        detectedAt: startedAt,
-        historyUnix,
-        force,
-      });
+        const remainingMs = deadline - Date.now();
+        if (remainingMs <= 0) break;
+
+        const elapsedMs = Date.now() - roundStartedAt;
+        const waitMs = Math.min(checkIntervalMs, remainingMs);
+        console.log(`Round ${round} elapsed=${elapsedMs}ms; waiting ${waitMs}ms`);
+        await sleep(waitMs);
+      } while (Date.now() < deadline);
     }
   } catch (err) {
     console.error("Fatal error:", err.message);

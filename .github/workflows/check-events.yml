@@ -8,10 +8,6 @@ on:
         required: false
         default: ""
 
-concurrency:
-  group: check-events
-  cancel-in-progress: false
-
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -20,10 +16,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "24"
+      - name: Check Node.js
+        run: node --version
 
       - name: Prepare JWT cache key
         id: jwt-cache-key
@@ -50,6 +44,8 @@ jobs:
           BOT_EVENT_UPDATE_SECRET: ${{ secrets.BOT_EVENT_UPDATE_SECRET }}
           EVENT_SITE_URL: ${{ vars.EVENT_SITE_URL }}
           PONOS_JWT_CACHE_FILE: .cache/ponos-jwt.json
+          EVENT_CHECK_DURATION_MS: 85000
+          EVENT_CHECK_INTERVAL_MS: 2000
 
       - name: Run force update
         if: ${{ github.event.inputs.force != '' }}
@@ -68,6 +64,7 @@ jobs:
 
       - name: Save JWT cache
         if: ${{ always() && steps.jwt-cache.outputs.cache-hit != 'true' }}
+        continue-on-error: true
         uses: actions/cache/save@v4
         with:
           path: .cache/ponos-jwt.json
