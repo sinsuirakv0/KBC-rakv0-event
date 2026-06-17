@@ -515,7 +515,92 @@
           </div>
         </div>
 
-        <!-- カード2: タイムゾーン -->
+        <!-- カード2: 共有リンク作成 -->
+        <div class="settings-section share-builder-section" id="share-builder">
+          <h3>共有リンク作成</h3>
+          <div class="share-builder-help">
+            用途を選ぶと必要な項目だけ表示します。生成後に判定すると、形式や参照先TSVを確認できます。
+          </div>
+          <div class="share-builder-shortcuts">
+            <button class="settings-btn share-mini-btn" id="share-builder-current-tab" type="button">現在タブ</button>
+            <button class="settings-btn share-mini-btn" id="share-builder-latest-tsv" type="button">最新TSV</button>
+            <button class="settings-btn share-mini-btn" id="share-builder-latest-history" type="button">最新履歴all</button>
+            <button class="settings-btn share-mini-btn" id="share-builder-selected-list" type="button">選択中リスト</button>
+          </div>
+          <div class="share-builder-grid">
+            <label class="share-builder-field">
+              <span>リンク種別</span>
+              <select id="share-builder-mode">
+                <option value="tab">タブを開く</option>
+                <option value="detail">イベント詳細</option>
+                <option value="snapshot">過去TSV表示</option>
+                <option value="history">履歴差分</option>
+                <option value="list">リスト共有</option>
+              </select>
+            </label>
+            <label class="share-builder-field" data-share-field="tab">
+              <span>表示タブ</span>
+              <select id="share-builder-tab">
+                <option value="gatya">gatya</option>
+                <option value="sale">sale</option>
+                <option value="item">item</option>
+                <option value="mission">mission</option>
+                <option value="all">全て</option>
+                <option value="list">リスト</option>
+                <option value="history">履歴</option>
+                <option value="others">その他</option>
+              </select>
+            </label>
+            <label class="share-builder-field" data-share-field="detailType">
+              <span>詳細種別</span>
+              <select id="share-builder-detail-type">
+                <option value="gatya">gatya</option>
+                <option value="sale">sale</option>
+                <option value="mission">mission</option>
+                <option value="item">item</option>
+              </select>
+            </label>
+            <label class="share-builder-field" data-share-field="historyType">
+              <span>履歴種別</span>
+              <select id="share-builder-history-type">
+                <option value="all">all</option>
+                <option value="gatya">gatya</option>
+                <option value="sale">sale</option>
+                <option value="item">item</option>
+              </select>
+            </label>
+            <label class="share-builder-field" data-share-field="tsv">
+              <span>TSV / UNIX時刻</span>
+              <input id="share-builder-tsv" class="share-builder-input" placeholder="gatya_1780000000.tsv または 1780000000">
+            </label>
+            <label class="share-builder-field" data-share-field="row">
+              <span>row</span>
+              <input id="share-builder-row" class="share-builder-input" type="number" min="1" inputmode="numeric" placeholder="1">
+            </label>
+            <label class="share-builder-field" data-share-field="id">
+              <span>ID</span>
+              <input id="share-builder-id" class="share-builder-input" type="number" min="0" inputmode="numeric" placeholder="省略可">
+            </label>
+            <label class="share-builder-field share-builder-list-param" data-share-field="list">
+              <span>listパラメータ / リストURL</span>
+              <textarea id="share-builder-list-param" class="share-builder-output" rows="3" placeholder="v1.... または ?tab=list&list=..."></textarea>
+            </label>
+            <label class="share-builder-check">
+              <input id="share-builder-schedule-off" type="checkbox">
+              <span>schedule=off を付ける</span>
+            </label>
+          </div>
+          <div class="share-builder-actions">
+            <button class="settings-btn" id="share-builder-build" type="button">URL生成</button>
+            <button class="settings-btn" id="share-builder-validate" type="button">有効判定</button>
+            <button class="settings-btn" id="share-builder-copy" type="button">コピー</button>
+            <a class="settings-btn share-builder-open" id="share-builder-open" href="#" target="_blank" rel="noopener">開く</a>
+          </div>
+          <textarea id="share-builder-url" class="share-builder-output" rows="3" placeholder="生成したURLがここに表示されます"></textarea>
+          <div id="share-builder-status" class="share-builder-status">URL生成を待機中です。</div>
+        </div>
+
+        <!-- カード3: タイムゾーン -->
         <div class="settings-section">
           <h3>設定</h3>
           <div class="settings-row">
@@ -534,7 +619,7 @@
           </div>
         </div>
 
-        <!-- カード3: TSVダウンロード -->
+        <!-- カード4: TSVダウンロード -->
         <div class="settings-section">
           <h3>TSVダウンロード</h3>
           <div class="settings-row">
@@ -561,7 +646,7 @@
           </div>
         </div>
 
-        <!-- カード4: 海外スケジュール -->
+        <!-- カード5: 海外スケジュール -->
         <div class="settings-section">
           <h3>海外スケジュールに変更</h3>
           <div class="settings-row">
@@ -638,7 +723,7 @@
         </div>
 
 
-        <!-- カード5: TSV読み込み -->
+        <!-- カード6: TSV読み込み -->
         <div class="settings-section">
           <h3>📂 TSV読み込み</h3>
 
