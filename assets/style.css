@@ -976,6 +976,55 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
   color: var(--muted);
   font-size: 0.7rem;
 }
+.viewer-section {
+  border-left: 4px solid var(--orange);
+}
+.viewer-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--border, rgba(255,255,255,0.1));
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  padding: 12px 14px;
+}
+.viewer-main {
+  display: grid;
+  gap: 4px;
+}
+.viewer-label {
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+.viewer-count {
+  color: var(--text);
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.viewer-unit {
+  margin-left: 3px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.viewer-sub {
+  display: grid;
+  gap: 3px;
+  color: var(--muted);
+  font-size: 0.68rem;
+  text-align: right;
+}
+@media (max-width: 520px) {
+  .viewer-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .viewer-sub {
+    text-align: left;
+  }
+}
 .ss-preview-overlay {
   display: none;
   position: fixed;

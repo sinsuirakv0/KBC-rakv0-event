@@ -296,7 +296,7 @@
       <button type="button" class="tab" data-tab="all" role="tab" aria-selected="false">全て</button>
       <button type="button" class="tab" data-tab="list" role="tab" aria-selected="false">リスト</button>
       <button type="button" class="tab" data-tab="history" role="tab" aria-selected="false">履歴</button>
-      <button type="button" class="tab" data-tab="settings" role="tab" aria-selected="false" aria-label="設定">⚙</button>
+      <button type="button" class="tab" data-tab="others" role="tab" aria-selected="false">その他</button>
     </div>
 
     <section class="advanced-filter" id="advanced-filter" aria-label="高度検索">
@@ -499,10 +499,25 @@
       <div id="all"     class="content" role="tabpanel"><div class="loading">読み込み中...</div></div>
       <div id="list"    class="content" role="tabpanel"><div class="loading">リストを読み込み中...</div></div>
       <div id="history" class="content" role="tabpanel"><div class="loading">読み込み中...</div></div>
-      <div id="settings" class="content" role="tabpanel">
-        <!-- カード1: タイムゾーン -->
+      <div id="others" class="content" role="tabpanel">
+        <!-- カード1: その他 / 閲覧人数 -->
+        <div class="settings-section viewer-section">
+          <h3>その他</h3>
+          <div class="viewer-card">
+            <div class="viewer-main">
+              <span class="viewer-label">現在このサイトを閲覧中</span>
+              <span class="viewer-count"><span id="viewer-count-value">--</span><span class="viewer-unit">人</span></span>
+            </div>
+            <div class="viewer-sub">
+              <span id="viewer-count-status">取得準備中</span>
+              <span id="viewer-count-updated"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- カード2: タイムゾーン -->
         <div class="settings-section">
-          <h3>⚙ 設定</h3>
+          <h3>設定</h3>
           <div class="settings-row">
             <span class="settings-label">タイムゾーン変更</span>
             <select id="utc-select" onchange="onUtcChange(this.value)">
@@ -519,7 +534,7 @@
           </div>
         </div>
 
-        <!-- カード2: TSVダウンロード -->
+        <!-- カード3: TSVダウンロード -->
         <div class="settings-section">
           <h3>TSVダウンロード</h3>
           <div class="settings-row">
@@ -546,7 +561,7 @@
           </div>
         </div>
 
-        <!-- カード3: 海外スケジュール -->
+        <!-- カード4: 海外スケジュール -->
         <div class="settings-section">
           <h3>海外スケジュールに変更</h3>
           <div class="settings-row">
@@ -623,7 +638,7 @@
         </div>
 
 
-        <!-- カード4: TSV読み込み -->
+        <!-- カード5: TSV読み込み -->
         <div class="settings-section">
           <h3>📂 TSV読み込み</h3>
 
@@ -734,7 +749,6 @@
         <div>
           <div class="othersites-item-name">・にゃんスケ</div>
           <div class="othersites-links">
-            <!-- ↓ URLを実際のものに差し替えてください -->
             <a class="othersites-link x-link"
                href="https://x.com/BCevent_bot?s=20"
                target="_blank" rel="noopener">𝕏 (Twitter)</a>
