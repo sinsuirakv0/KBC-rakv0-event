@@ -425,11 +425,15 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
   font-size: 0.7rem;
   font-weight: 800;
 }
+.overlay-meta-section .overlay-value {
+  white-space: normal;
+}
 .overlay-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
   align-items: center;
+  line-height: 1.3;
   min-width: 0;
 }
 .overlay-tags .card-tag,
