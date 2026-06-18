@@ -1,11 +1,12 @@
 :root {
- --bg: #051026;
+ --logo-blue: #0b1c3f;
+ --bg: #0b1c3f;
  --card: #0a1931;
  --text: #ffffff;
  --muted: #94a3b8;
  --accent: #3b82f6;
  --border: rgba(255, 255, 255, 0.1);
- --body-gradient: linear-gradient(155deg, #102956 0%, #081c3c 45%, #051026 100%);
+ --body-gradient: linear-gradient(180deg, #0b1c3f 0%, #0b1c3f 150px, #081832 62%, #051026 100%);
  --links-a-color: #fff;
  --input-color: white;
 }
@@ -413,30 +414,6 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
   align-items: center;
   gap: 7px;
   margin: 0 0 12px;
-}
-.overlay-meta {
-  display: grid;
-  gap: 7px;
-  margin-bottom: 12px;
-}
-.overlay-meta-row {
-  display: grid;
-  grid-template-columns: 42px 1fr;
-  align-items: baseline;
-  gap: 10px;
-  min-width: 0;
-}
-.overlay-meta-label {
-  color: var(--muted);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-.overlay-meta-value {
-  color: var(--text);
-  font-size: 0.8rem;
-  word-break: break-word;
 }
 .overlay-stage-code {
   display: inline-block;
@@ -1042,10 +1019,6 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
   .overlay-action-row {
     gap: 5px;
     margin-bottom: 10px;
-  }
-  .overlay-meta-row {
-    grid-template-columns: 34px 1fr;
-    gap: 8px;
   }
   .overlay-tags .card-tag,
   .overlay-tags .gacha-type-tag,
