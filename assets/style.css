@@ -1016,6 +1016,104 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
   font-size: 0.68rem;
   text-align: right;
 }
+.viewer-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+.viewer-stat-card,
+.viewer-chart-card {
+  border: 1px solid var(--border, rgba(255,255,255,0.1));
+  border-radius: 8px;
+  background: rgba(255,255,255,0.035);
+}
+.viewer-stat-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "label label"
+    "value unit";
+  align-items: end;
+  gap: 3px 6px;
+  min-width: 0;
+  padding: 10px 12px;
+}
+.viewer-stat-label {
+  grid-area: label;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.viewer-stat-card strong {
+  grid-area: value;
+  color: var(--text);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+.viewer-stat-unit {
+  grid-area: unit;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.viewer-chart-card {
+  margin-top: 10px;
+  padding: 10px 12px 12px;
+}
+.viewer-chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.viewer-chart-note {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+.viewer-chart {
+  display: grid;
+  grid-template-columns: repeat(24, minmax(4px, 1fr));
+  align-items: end;
+  gap: 3px;
+  min-height: 94px;
+}
+.viewer-chart-bar {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  align-items: end;
+  gap: 4px;
+  min-width: 0;
+  height: 94px;
+}
+.viewer-chart-fill-wrap {
+  display: flex;
+  align-items: end;
+  height: 72px;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.05);
+  overflow: hidden;
+}
+.viewer-chart-fill {
+  display: block;
+  width: 100%;
+  min-height: 2px;
+  border-radius: 5px 5px 0 0;
+  background: linear-gradient(180deg, #f8b84e 0%, var(--orange) 100%);
+}
+.viewer-chart-label {
+  min-height: 1em;
+  color: var(--muted);
+  font-size: 0.56rem;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
 .share-builder-section {
   border-left: 4px solid rgba(243, 152, 0, 0.55);
 }
@@ -1112,6 +1210,15 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
   }
   .viewer-sub {
     text-align: left;
+  }
+  .viewer-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .viewer-chart {
+    gap: 2px;
+  }
+  .viewer-chart-card {
+    padding-inline: 10px;
   }
 }
 .ss-preview-overlay {
