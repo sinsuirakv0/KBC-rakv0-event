@@ -5,7 +5,7 @@
  --muted: #94a3b8;
  --accent: #3b82f6;
  --border: rgba(255, 255, 255, 0.1);
- --body-gradient: radial-gradient(circle at top right, #0d2550, #051026);
+ --body-gradient: linear-gradient(155deg, #102956 0%, #081c3c 45%, #051026 100%);
  --links-a-color: #fff;
  --input-color: white;
 }
@@ -16,7 +16,7 @@
  --muted: #64748b;
  --accent: #2563eb;
  --border: rgba(0, 0, 0, 0.1);
- --body-gradient: radial-gradient(circle at top right, #dbeafe, #f0f4f8);
+ --body-gradient: linear-gradient(155deg, #dbeafe 0%, #edf5ff 46%, #f0f4f8 100%);
  --links-a-color: #1a202c;
  --input-color: #1a202c;
 }
@@ -27,16 +27,24 @@
  --muted: #888888;
  --accent: #60a5fa;
  --border: rgba(255, 255, 255, 0.08);
- --body-gradient: radial-gradient(circle at top right, #1c1c1c, #0d0d0d);
+ --body-gradient: linear-gradient(155deg, #202020 0%, #151515 48%, #0d0d0d 100%);
  --links-a-color: #e5e5e5;
  --input-color: #e5e5e5;
 }
 * { box-sizing: border-box; }
+html {
+ min-height: 100%;
+ background: var(--bg);
+}
 body {
  margin: 0;
+ min-height: 100vh;
  font-family: 'Noto Sans JP', sans-serif;
  background-color: var(--bg);
  background-image: var(--body-gradient);
+ background-attachment: fixed;
+ background-repeat: no-repeat;
+ background-size: 100% 100%;
  color: var(--text);
  line-height: 1.6;
  transition: background-color 0.3s, color 0.3s;
@@ -301,7 +309,11 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
   --accent:       #f90;
 }
 [data-theme="light"] body {
-  background: var(--bg-primary, #f4f5f7);
+  background-color: var(--bg-primary, #f4f5f7);
+  background-image: var(--body-gradient);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
   color: var(--text-primary, #1a1a2e);
 }
 [data-theme="light"] .event-card {
@@ -382,6 +394,103 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
 }
 .overlay-header-row .overlay-title {
   flex: 1; min-width: 0; word-break: break-word;
+}
+.overlay-title-row {
+  align-items: flex-start;
+  margin-bottom: 0;
+}
+.overlay-title-row .overlay-title {
+  padding-right: 8px;
+  margin: 0;
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+.overlay-header-divider {
+  margin: 9px 0 8px !important;
+}
+.overlay-action-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 12px;
+}
+.overlay-meta {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+.overlay-meta-row {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+.overlay-meta-label {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.overlay-meta-value {
+  color: var(--text);
+  font-size: 0.8rem;
+  word-break: break-word;
+}
+.overlay-stage-code {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.2);
+  color: #bfdbfe;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+.overlay-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  min-width: 0;
+}
+.overlay-tags .card-tag,
+.overlay-tags .gacha-type-tag,
+.overlay-tags .stage-tag,
+.overlay-feature-tag {
+  margin-left: 0 !important;
+  font-size: 0.58rem !important;
+  line-height: 1.25;
+  padding: 2px 5px !important;
+  border-radius: 999px;
+}
+.overlay-feature-tag {
+  display: inline-block;
+  color: #dbeafe;
+  background: rgba(59, 130, 246, 0.18);
+  border: 1px solid rgba(147, 197, 253, 0.18);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.overlay-same-section {
+  margin-bottom: 14px;
+}
+.overlay-same-list {
+  display: grid;
+  gap: 4px;
+}
+.overlay-same-list .event-card {
+  margin-bottom: 0 !important;
+  min-height: 29px !important;
+  padding: 3px 5px !important;
+  box-shadow: none;
+}
+.overlay-same-list .card-period {
+  font-size: 0.52rem !important;
+}
+.overlay-same-list .card-name {
+  font-size: 0.62rem !important;
 }
 .overlay-close {
   border: 0;
@@ -929,6 +1038,24 @@ input[type="range"] { flex-grow: 1; accent-color: #f39800; }
   }
   .list-detail-actions {
     justify-content: flex-start;
+  }
+  .overlay-action-row {
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+  .overlay-meta-row {
+    grid-template-columns: 34px 1fr;
+    gap: 8px;
+  }
+  .overlay-tags .card-tag,
+  .overlay-tags .gacha-type-tag,
+  .overlay-tags .stage-tag,
+  .overlay-feature-tag {
+    max-width: none;
+    font-size: 0.5rem !important;
+  }
+  .overlay-same-list .event-card {
+    min-height: 26px !important;
   }
 }
 

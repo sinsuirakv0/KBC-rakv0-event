@@ -912,16 +912,16 @@
 
   <div id="overlay" class="overlay-backdrop">
     <div class="overlay-panel">
-      <div class="overlay-header-row">
+      <div class="overlay-header-row overlay-title-row">
         <div class="overlay-title" id="overlay-title"></div>
-        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
-          <button class="overlay-ss-btn" onclick="screenshotOverlay()" title="スクリーンショット" aria-label="詳細のスクリーンショット">📷</button>
-          <button class="overlay-ss-btn" id="list-add-btn" onclick="openAddToListOverlay()" title="リストに追加" aria-label="リストに追加">＋</button>
-          <button class="overlay-ss-btn" id="share-btn" onclick="copyShareUrl()" title="共有リンクをコピー" aria-label="共有リンクをコピー">🔗</button>
-          <button type="button" class="overlay-close" id="overlay-close" aria-label="詳細を閉じる">&times;</button>
-        </div>
+        <button type="button" class="overlay-close" id="overlay-close" aria-label="詳細を閉じる">&times;</button>
       </div>
-      <hr class="overlay-divider">
+      <hr class="overlay-divider overlay-header-divider">
+      <div class="overlay-action-row" aria-label="詳細操作">
+        <button class="overlay-ss-btn" onclick="screenshotOverlay()" title="スクリーンショット" aria-label="詳細のスクリーンショット">📷</button>
+        <button class="overlay-ss-btn" id="list-add-btn" onclick="openAddToListOverlay()" title="リストに追加" aria-label="リストに追加">＋</button>
+        <button class="overlay-ss-btn" id="share-btn" onclick="copyShareUrl()" title="共有リンクをコピー" aria-label="共有リンクをコピー">🔗</button>
+      </div>
       <div id="overlay-body"></div>
     </div>
   </div>
