@@ -46,6 +46,8 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           BOT_EVENT_UPDATE_URL: ${{ secrets.BOT_EVENT_UPDATE_URL }}
           BOT_EVENT_UPDATE_SECRET: ${{ secrets.BOT_EVENT_UPDATE_SECRET }}
+          LINE_BOT_EVENT_UPDATE_URL: ${{ secrets.LINE_BOT_EVENT_UPDATE_URL }}
+          LINE_BOT_EVENT_UPDATE_SECRET: ${{ secrets.LINE_BOT_EVENT_UPDATE_SECRET }}
           EVENT_SITE_URL: ${{ vars.EVENT_SITE_URL }}
           PONOS_JWT_CACHE_FILE: .cache/ponos-jwt.json
 
@@ -60,6 +62,8 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           BOT_EVENT_UPDATE_URL: ${{ secrets.BOT_EVENT_UPDATE_URL }}
           BOT_EVENT_UPDATE_SECRET: ${{ secrets.BOT_EVENT_UPDATE_SECRET }}
+          LINE_BOT_EVENT_UPDATE_URL: ${{ secrets.LINE_BOT_EVENT_UPDATE_URL }}
+          LINE_BOT_EVENT_UPDATE_SECRET: ${{ secrets.LINE_BOT_EVENT_UPDATE_SECRET }}
           EVENT_SITE_URL: ${{ vars.EVENT_SITE_URL }}
           PONOS_JWT_CACHE_FILE: .cache/ponos-jwt.json
           EVENT_CHECK_DURATION_MS: 85000
@@ -77,6 +81,8 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           BOT_EVENT_UPDATE_URL: ${{ secrets.BOT_EVENT_UPDATE_URL }}
           BOT_EVENT_UPDATE_SECRET: ${{ secrets.BOT_EVENT_UPDATE_SECRET }}
+          LINE_BOT_EVENT_UPDATE_URL: ${{ secrets.LINE_BOT_EVENT_UPDATE_URL }}
+          LINE_BOT_EVENT_UPDATE_SECRET: ${{ secrets.LINE_BOT_EVENT_UPDATE_SECRET }}
           EVENT_SITE_URL: ${{ vars.EVENT_SITE_URL }}
           PONOS_JWT_CACHE_FILE: .cache/ponos-jwt.json
 
