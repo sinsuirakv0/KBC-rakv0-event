@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/06/16 11:58:19",
+  "updatedAt": "26/06/22 15:52:42",
   "data": [
     {
       "header": {
@@ -1214,27 +1214,6 @@
     },
     {
       "header": {
-        "startDate": "20260516",
-        "startTime": "1100",
-        "endDate": "20260608",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 80101,
-        "giftType": 11045,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20260516\t1100\t20260608\t1100\t150300\t999999\t0\t0\t80101\t11045\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260525",
         "startTime": "000",
         "endDate": "20300101",
@@ -1253,132 +1232,6 @@
         "repeatFlag": 1
       },
       "raw": "20260525\t000\t20300101\t000\t150400\t999999\t0\t0\t51715\t35047\t0\tにゃんこスタンプ\t毎日ゲームをプレイすれば、１日１個ずつスタンプを押して行くにゃ！\t3\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260529",
-        "startTime": "1100",
-        "endDate": "20260615",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51716,
-        "giftType": 35046,
-        "giftAmount": 0,
-        "title": "劇場版「Fate/stay night [Heaven's Feel]」ログインスタンプ",
-        "message": "イベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めて便利なアイテムや限定キャラクターをゲット！（6/15まで）",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20260529\t1100\t20260615\t1100\t150400\t999999\t0\t0\t51716\t35046\t0\t劇場版「Fate/stay night [Heaven's Feel]」ログインスタンプ\tイベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めて便利なアイテムや限定キャラクターをゲット！（6/15まで）\t7\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260529",
-        "startTime": "1100",
-        "endDate": "20260615",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2502,
-        "giftType": 201,
-        "giftAmount": 10000,
-        "title": "初心者応援！！ログインボーナス☆",
-        "message": "日本編クリアを応援！育成に役立つアイテムを毎日プレゼント！<br>今がにゃんこ軍団の戦力をアップする大チャンス！(6/15まで)",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20260529\t1100\t20260615\t1100\t150400\t999999\t0\t0\t2502\t201\t10000\t初心者応援！！ログインボーナス☆\t日本編クリアを応援！育成に役立つアイテムを毎日プレゼント！<br>今がにゃんこ軍団の戦力をアップする大チャンス！(6/15まで)\t300\t2\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260529",
-        "startTime": "1100",
-        "endDate": "20260620",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 82000,
-        "giftType": 11048,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20260529\t1100\t20260620\t1100\t150400\t999999\t0\t0\t82000\t11048\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260529",
-        "startTime": "1100",
-        "endDate": "20260615",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51717,
-        "giftType": 852,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260529\t1100\t20260615\t1100\t150400\t999999\t0\t0\t51717\t852\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260601",
-        "startTime": "1100",
-        "endDate": "20260615",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51718,
-        "giftType": 833,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260601\t1100\t20260615\t1100\t150400\t999999\t0\t0\t51718\t833\t0\t\t\t300\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260601",
-        "startTime": "1100",
-        "endDate": "20260615",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51719,
-        "giftType": 834,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260601\t1100\t20260615\t1100\t150400\t999999\t0\t0\t51719\t834\t0\t\t\t300\t2\t0\t0\t0\t0\t0"
     },
     {
       "header": {
@@ -1505,6 +1358,174 @@
         "repeatFlag": 0
       },
       "raw": "20260616\t1100\t20260627\t0\t150500\t999999\t0\t0\t5240\t853\t0\t\t\t3\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260626",
+        "startTime": "1100",
+        "endDate": "20260706",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51726,
+        "giftType": 828,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 4
+      },
+      "raw": "20260626\t1100\t20260706\t1100\t150400\t999999\t0\t0\t51726\t828\t0\t\t\t7\t0\t4\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260626",
+        "startTime": "1100",
+        "endDate": "20260706",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51727,
+        "giftType": 835,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 2
+      },
+      "raw": "20260626\t1100\t20260706\t1100\t150400\t999999\t0\t0\t51727\t835\t0\t\t\t7\t0\t2\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260629",
+        "startTime": "1100",
+        "endDate": "20260706",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51728,
+        "giftType": 850,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260629\t1100\t20260706\t1100\t150400\t999999\t0\t0\t51728\t850\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260629",
+        "startTime": "1100",
+        "endDate": "20260713",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51729,
+        "giftType": 851,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260629\t1100\t20260713\t1100\t150400\t999999\t0\t0\t51729\t851\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260629",
+        "startTime": "1100",
+        "endDate": "20260713",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51730,
+        "giftType": 837,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260629\t1100\t20260713\t1100\t150400\t999999\t0\t0\t51730\t837\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260629",
+        "startTime": "1100",
+        "endDate": "20260713",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51731,
+        "giftType": 35018,
+        "giftAmount": 0,
+        "title": "にゃんこ強化週間！",
+        "message": "イベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>毎日ログインして最大でネコカン280個ゲット！(7/13まで)",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260629\t1100\t20260713\t1100\t150400\t999999\t0\t0\t51731\t35018\t0\tにゃんこ強化週間！\tイベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>毎日ログインして最大でネコカン280個ゲット！(7/13まで)\t7\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260701",
+        "startTime": "1100",
+        "endDate": "20260704",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51732,
+        "giftType": 833,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260701\t1100\t20260704\t1100\t150400\t999999\t0\t0\t51732\t833\t0\t\t\t300\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260701",
+        "startTime": "1100",
+        "endDate": "20260704",
+        "endTime": "1100",
+        "minVersion": "150400",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51733,
+        "giftType": 834,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260701\t1100\t20260704\t1100\t150400\t999999\t0\t0\t51733\t834\t0\t\t\t300\t2\t0\t0\t0\t0\t0"
     }
   ]
 }
