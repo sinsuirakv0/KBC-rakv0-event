@@ -128,7 +128,7 @@ async function runDetectionTest(jwt, startedAt) {
     types: ok.map(result => result.name),
     detectedAt,
     force,
-    phase: "detected",
+    phase: "updated",
     hashes: testHashes,
     source: "github-actions-test",
     test: true,
