@@ -92,15 +92,33 @@ async function updateType(result, hashes) {
   return { name: result.name, ...updateResult, changed: true, hash: result.hash };
 }
 
-async function notifyUpdated(updated) {
+async function notifyDetectedSummary(historyUnix) {
+  await notifyEventBot({
+    types: [],
+    detectedAt: new Date(historyUnix * 1000).toISOString(),
+    historyUnix,
+    force,
+    phase: "detected",
+    summaryOnly: true,
+  });
+}
+
+async function notifyDetectedDetails(detected, updated) {
+  if (detected.length === 0) return;
   if (updated.length === 0) return;
 
   const rawUnixValues = updated.map(r => r.rawUnix).filter(Number.isFinite);
   const historyUnix = rawUnixValues.length ? Math.max(...rawUnixValues) : null;
-  const updatedTypes = [...new Set(updated.map(r => r.name))];
-  const hashes = Object.fromEntries(updated.map(r => [r.name, r.hash]).filter(([, hash]) => hash));
+  const latestByType = new Map();
+
+  for (const result of detected) {
+    latestByType.set(result.name, result);
+  }
+
+  const details = [...latestByType.values()];
+  const hashes = Object.fromEntries(details.map(r => [r.name, r.hash]).filter(([, hash]) => hash));
   await notifyEventBot({
-    types: updatedTypes,
+    types: details.map(r => r.name),
     detectedAt: new Date().toISOString(),
     historyUnix,
     force,
@@ -150,7 +168,7 @@ async function runRound(round, jwt, hashes, notifyFast) {
   const changed = checked.filter(r => r.success && r.changed);
   if (changed.length === 0) {
     console.log(`Round ${round}: no changes`);
-    return { results: checked, updated: [] };
+    return { results: checked, detected: [], updated: [] };
   }
 
   console.log(`Round ${round}: changed ${changed.map(r => r.name).join(", ")}`);
@@ -166,14 +184,15 @@ async function runRound(round, jwt, hashes, notifyFast) {
   for (const result of updated) {
     hashes[result.name] = result.hash;
   }
-  await notifyUpdated(updated);
 
-  return { results: checked, updated };
+  return { results: checked, detected: changed, updated };
 }
 
 async function main() {
   const startedAt = new Date().toISOString();
-  const notifiedHashes = new Map();
+  let detectionSummaryUnix = null;
+  const detectedForDetails = new Map();
+  const updatedForDetails = [];
   const checkDurationMs = numberFromEnv("EVENT_CHECK_DURATION_MS", DEFAULT_CHECK_DURATION_MS);
   const checkIntervalMs = Math.max(
     MIN_CHECK_INTERVAL_MS,
@@ -184,20 +203,13 @@ async function main() {
   if (force) console.log(`Targets: ${types.join(", ")}`);
 
   async function notifyFast(changed) {
-    const fresh = changed.filter(r => notifiedHashes.get(r.name) !== r.hash);
-    if (fresh.length === 0) return;
+    for (const result of changed) {
+      detectedForDetails.set(result.name, result);
+    }
 
-    for (const result of fresh) notifiedHashes.set(result.name, result.hash);
-    const detectedAt = new Date().toISOString();
-    const hashes = Object.fromEntries(fresh.map(r => [r.name, r.hash]));
-
-    await notifyEventBot({
-      types: fresh.map(r => r.name),
-      detectedAt,
-      force,
-      phase: "detected",
-      hashes,
-    });
+    if (detectionSummaryUnix) return;
+    detectionSummaryUnix = Math.floor(Date.now() / 1000);
+    await notifyDetectedSummary(detectionSummaryUnix);
   }
 
   try {
@@ -214,7 +226,10 @@ async function main() {
     const hashes = await loadHashes();
 
     if (force) {
-      await runRound(1, jwtResult.jwt, hashes, notifyFast);
+      const { detected, updated } = await runRound(1, jwtResult.jwt, hashes, notifyFast);
+      for (const result of detected) detectedForDetails.set(result.name, result);
+      updatedForDetails.push(...updated);
+      await notifyDetectedDetails([...detectedForDetails.values()], updatedForDetails);
     } else {
       const deadline = Date.now() + checkDurationMs;
       let round = 0;
@@ -223,7 +238,9 @@ async function main() {
       do {
         const roundStartedAt = Date.now();
         round++;
-        await runRound(round, jwtResult.jwt, hashes, notifyFast);
+        const { detected, updated } = await runRound(round, jwtResult.jwt, hashes, notifyFast);
+        for (const result of detected) detectedForDetails.set(result.name, result);
+        updatedForDetails.push(...updated);
 
         const remainingMs = deadline - Date.now();
         if (remainingMs <= 0) break;
@@ -233,6 +250,8 @@ async function main() {
         console.log(`Round ${round} elapsed=${elapsedMs}ms; waiting ${waitMs}ms`);
         await sleep(waitMs);
       } while (Date.now() < deadline);
+
+      await notifyDetectedDetails([...detectedForDetails.values()], updatedForDetails);
     }
   } catch (err) {
     console.error("Fatal error:", err.message);
