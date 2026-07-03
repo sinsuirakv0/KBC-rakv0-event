@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/06/22 15:52:42",
+  "updatedAt": "26/07/03 11:14:27",
   "data": [
     {
       "header": {
@@ -1256,69 +1256,6 @@
     },
     {
       "header": {
-        "startDate": "20260619",
-        "startTime": "1100",
-        "endDate": "20260622",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51723,
-        "giftType": 827,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260619\t1100\t20260622\t1100\t150400\t999999\t0\t0\t51723\t827\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260615",
-        "startTime": "1100",
-        "endDate": "20260626",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51724,
-        "giftType": 828,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 4
-      },
-      "raw": "20260615\t1100\t20260626\t1100\t150400\t999999\t0\t0\t51724\t828\t0\t\t\t7\t0\t4\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260615",
-        "startTime": "1100",
-        "endDate": "20260626",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51725,
-        "giftType": 835,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 2
-      },
-      "raw": "20260615\t1100\t20260626\t1100\t150400\t999999\t0\t0\t51725\t835\t0\t\t\t7\t0\t2\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260616",
         "startTime": "1100",
         "endDate": "20260708",
@@ -1337,27 +1274,6 @@
         "repeatFlag": 1
       },
       "raw": "20260616\t1100\t20260708\t1100\t150400\t999999\t0\t0\t85000\t11046\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260616",
-        "startTime": "1100",
-        "endDate": "20260627",
-        "endTime": "0",
-        "minVersion": "150500",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 5240,
-        "giftType": 853,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260616\t1100\t20260627\t0\t150500\t999999\t0\t0\t5240\t853\t0\t\t\t3\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
@@ -1526,6 +1442,69 @@
         "repeatFlag": 0
       },
       "raw": "20260701\t1100\t20260704\t1100\t150400\t999999\t0\t0\t51733\t834\t0\t\t\t300\t2\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260706",
+        "startTime": "1100",
+        "endDate": "20260721",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51734,
+        "giftType": 35051,
+        "giftAmount": 0,
+        "title": "『パックマン』コラボイベント開催記念スタンプ",
+        "message": "イベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めて便利なアイテムをゲット！(7/21まで)",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260706\t1100\t20260721\t1100\t150500\t999999\t0\t0\t51734\t35051\t0\t『パックマン』コラボイベント開催記念スタンプ\tイベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めて便利なアイテムをゲット！(7/21まで)\t7\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260706",
+        "startTime": "1100",
+        "endDate": "20260721",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 5240,
+        "giftType": 853,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260706\t1100\t20260721\t1100\t150500\t999999\t0\t0\t5240\t853\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260716",
+        "startTime": "1100",
+        "endDate": "20260808",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 85001,
+        "giftType": 11047,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260716\t1100\t20260808\t1100\t150500\t999999\t0\t0\t85001\t11047\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
     }
   ]
 }
