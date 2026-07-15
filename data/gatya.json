@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/07/03 11:14:35",
+  "updatedAt": "26/07/15 15:22:14",
   "data": [
     {
       "header": {
@@ -543,66 +543,6 @@
     },
     {
       "header": {
-        "startDate": "20260615",
-        "startTime": "1100",
-        "endDate": "20260707",
-        "endTime": "000",
-        "minVersion": "150400",
-        "maxVersion": "999999",
-        "gachaType": 4,
-        "gachaCount": 2
-      },
-      "gachas": [
-        {
-          "id": 50,
-          "price": 0,
-          "flags": 0,
-          "rates": {
-            "normal": 800,
-            "rare": 5000,
-            "superRare": 3000,
-            "uberRare": 1000,
-            "legendRare": 200,
-            "featured": 0
-          },
-          "guaranteed": true,
-          "message": "【悪魔のジューンブライド】伝説の聖水で回せる限定ガチャ！★7月6日まで"
-        }
-      ],
-      "raw": "20260615\t1100\t20260707\t000\t150400\t999999\t0\t0\t4\t2\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t\t\t50\t0\t0\t0\t800\t0\t5000\t0\t3000\t0\t1000\t1\t200\t0\t【悪魔のジューンブライド】伝説の聖水で回せる限定ガチャ！★7月6日まで\tこのガチャをあと\t回ガチャれば限定キャラクターが必ず出現！\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260629",
-        "startTime": "1100",
-        "endDate": "20260706",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999",
-        "gachaType": 0,
-        "gachaCount": 2
-      },
-      "gachas": [
-        {
-          "id": 65,
-          "price": 0,
-          "flags": 2,
-          "rates": {
-            "normal": 500,
-            "rare": 6900,
-            "superRare": 2000,
-            "uberRare": 500,
-            "legendRare": 100,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "高確率でキャッツアイが手に入るイベント限定特別ガチャ！"
-        }
-      ],
-      "raw": "20260629\t1100\t20260706\t1100\t150400\t999999\t0\t0\t0\t2\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t65\t0\t0\t2\t500\t0\t6900\t0\t2000\t0\t500\t0\t100\t0\t高確率でキャッツアイが手に入るイベント限定特別ガチャ！\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260626",
         "startTime": "1100",
         "endDate": "20300101",
@@ -663,156 +603,6 @@
     },
     {
       "header": {
-        "startDate": "20260629",
-        "startTime": "1100",
-        "endDate": "20260706",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 2
-      },
-      "gachas": [
-        {
-          "id": 974,
-          "price": 150,
-          "flags": 32768,
-          "rates": {
-            "normal": 0,
-            "rare": 6800,
-            "superRare": 2500,
-            "uberRare": 700,
-            "legendRare": 0,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "一部のキャラが安く手に入るかも知れない特別なガチャ！★詳細はバナーをタップ!!"
-        }
-      ],
-      "raw": "20260629\t1100\t20260706\t1100\t150400\t999999\t0\t0\t1\t2\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t974\t150\t0\t32768\t0\t0\t6800\t0\t2500\t0\t700\t0\t0\t0\t一部のキャラが安く手に入るかも知れない特別なガチャ！★詳細はバナーをタップ!!\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260701",
-        "startTime": "1100",
-        "endDate": "20260704",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 1
-      },
-      "gachas": [
-        {
-          "id": 1061,
-          "price": 150,
-          "flags": 0,
-          "rates": {
-            "normal": 0,
-            "rare": 6470,
-            "superRare": 2600,
-            "uberRare": 900,
-            "legendRare": 30,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "限定キャラ「幼騎士ルーノ」登場！★超激レア出現率アップの「超ネコ祭」開催中!!"
-        }
-      ],
-      "raw": "20260701\t1100\t20260704\t1100\t150400\t999999\t0\t0\t1\t1\t1061\t150\t0\t0\t0\t0\t6470\t0\t2600\t0\t900\t0\t30\t0\t限定キャラ「幼騎士ルーノ」登場！★超激レア出現率アップの「超ネコ祭」開催中!!\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260701",
-        "startTime": "1100",
-        "endDate": "20260704",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 3
-      },
-      "gachas": [
-        {
-          "id": 942,
-          "price": 150,
-          "flags": 16384,
-          "rates": {
-            "normal": 0,
-            "rare": 6970,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 30,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "召喚能力を持つキャラクター「ネコダイナザウルス」登場！★詳細はバナーをタップ!!"
-        }
-      ],
-      "raw": "20260701\t1100\t20260704\t1100\t150400\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t942\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t召喚能力を持つキャラクター「ネコダイナザウルス」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260704",
-        "startTime": "1100",
-        "endDate": "20260706",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 1
-      },
-      "gachas": [
-        {
-          "id": 861,
-          "price": 150,
-          "flags": 0,
-          "rates": {
-            "normal": 0,
-            "rare": 6940,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 60,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "限定超激レア「ネコ王女」含む女性キャラ中心の特別ガチャ! 伝説レアのみ出現率2倍!!"
-        }
-      ],
-      "raw": "20260704\t1100\t20260706\t1100\t150400\t999999\t0\t0\t1\t1\t861\t150\t0\t0\t0\t0\t6940\t0\t2500\t0\t500\t0\t60\t0\t限定超激レア「ネコ王女」含む女性キャラ中心の特別ガチャ! 伝説レアのみ出現率2倍!!\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260704",
-        "startTime": "1100",
-        "endDate": "20260706",
-        "endTime": "1100",
-        "minVersion": "150400",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 3
-      },
-      "gachas": [
-        {
-          "id": 947,
-          "price": 150,
-          "flags": 16384,
-          "rates": {
-            "normal": 0,
-            "rare": 6970,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 30,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "召喚能力を持つキャラクター「特命機動アクセル」登場！★詳細はバナーをタップ!!"
-        }
-      ],
-      "raw": "20260704\t1100\t20260706\t1100\t150400\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t947\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t召喚能力を持つキャラクター「特命機動アクセル」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260706",
         "startTime": "1100",
         "endDate": "20260721",
@@ -870,306 +660,6 @@
         }
       ],
       "raw": "20260707\t000\t20260721\t1100\t150500\t999999\t0\t0\t4\t1\t52\t0\t0\t0\t1300\t0\t5000\t0\t3000\t0\t500\t1\t200\t0\t【パックマンコラボ】「パワークッキー」で回せる限定ガチャ★7月21日まで！\tこのガチャをあと\t回ガチャれば限定キャラクターが必ず出現！\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260706",
-        "startTime": "1100",
-        "endDate": "20260713",
-        "endTime": "1100",
-        "minVersion": "150500",
-        "maxVersion": "999999",
-        "gachaType": 0,
-        "gachaCount": 2
-      },
-      "gachas": [
-        {
-          "id": 3,
-          "price": 0,
-          "flags": 0,
-          "rates": {
-            "normal": 400,
-            "rare": 2000,
-            "superRare": 7000,
-            "uberRare": 600,
-            "legendRare": 0,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "高確率でマタタビが手に入るイベント限定特別ガチャ！"
-        }
-      ],
-      "raw": "20260706\t1100\t20260713\t1100\t150500\t999999\t0\t0\t0\t2\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t3\t0\t300\t0\t400\t0\t2000\t0\t7000\t0\t600\t0\t0\t0\t高確率でマタタビが手に入るイベント限定特別ガチャ！\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260706",
-        "startTime": "1100",
-        "endDate": "20260708",
-        "endTime": "1100",
-        "minVersion": "150500",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 1
-      },
-      "gachas": [
-        {
-          "id": 1015,
-          "price": 150,
-          "flags": 16384,
-          "rates": {
-            "normal": 0,
-            "rare": 6970,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 30,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "召喚能力を持つキャラクター「魔導師シドミ」登場！★詳細はバナーをタップ!!"
-        }
-      ],
-      "raw": "20260706\t1100\t20260708\t1100\t150500\t999999\t0\t0\t1\t1\t1015\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t召喚能力を持つキャラクター「魔導師シドミ」登場！★詳細はバナーをタップ!!\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260706",
-        "startTime": "1100",
-        "endDate": "20260708",
-        "endTime": "1100",
-        "minVersion": "150500",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 2
-      },
-      "gachas": [
-        {
-          "id": 1004,
-          "price": 150,
-          "flags": 16384,
-          "rates": {
-            "normal": 0,
-            "rare": 6970,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 30,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "進化後に召喚能力を持つ「樹の精霊コモリ」登場！★詳細はバナーをタップ!!"
-        }
-      ],
-      "raw": "20260706\t1100\t20260708\t1100\t150500\t999999\t0\t0\t1\t2\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1004\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t進化後に召喚能力を持つ「樹の精霊コモリ」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260706",
-        "startTime": "1100",
-        "endDate": "20260708",
-        "endTime": "1100",
-        "minVersion": "150500",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 3
-      },
-      "gachas": [
-        {
-          "id": 1043,
-          "price": 150,
-          "flags": 16384,
-          "rates": {
-            "normal": 0,
-            "rare": 6970,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 30,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "爆波攻撃を持つキャラクター「風魔小太郎」登場！★詳細はバナーをタップ!!"
-        }
-      ],
-      "raw": "20260706\t1100\t20260708\t1100\t150500\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1043\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t爆波攻撃を持つキャラクター「風魔小太郎」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260708",
-        "startTime": "1100",
-        "endDate": "20260710",
-        "endTime": "1100",
-        "minVersion": "150500",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 1
-      },
-      "gachas": [
-        {
-          "id": 986,
-          "price": 150,
-          "flags": 16384,
-          "rates": {
-            "normal": 0,
-            "rare": 6970,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 30,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "進化後に召喚能力を持つキャラクター「マモルガ」登場！★詳細はバナーをタップ!!"
-        }
-      ],
-      "raw": "20260708\t1100\t20260710\t1100\t150500\t999999\t0\t0\t1\t1\t986\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t進化後に召喚能力を持つキャラクター「マモルガ」登場！★詳細はバナーをタップ!!\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260708",
-        "startTime": "1100",
-        "endDate": "20260710",
-        "endTime": "1100",
-        "minVersion": "150500",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 2
-      },
-      "gachas": [
-        {
-          "id": 1021,
-          "price": 150,
-          "flags": 16384,
-          "rates": {
-            "normal": 0,
-            "rare": 6970,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 30,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "浮いてる敵にめっぽう強いキャラ「獅子番長ラクレス」登場！★詳細はバナーをタップ!!"
-        }
-      ],
-      "raw": "20260708\t1100\t20260710\t1100\t150500\t999999\t0\t0\t1\t2\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1021\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t浮いてる敵にめっぽう強いキャラ「獅子番長ラクレス」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260708",
-        "startTime": "1100",
-        "endDate": "20260710",
-        "endTime": "1100",
-        "minVersion": "150500",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 3
-      },
-      "gachas": [
-        {
-          "id": 991,
-          "price": 150,
-          "flags": 16384,
-          "rates": {
-            "normal": 0,
-            "rare": 6970,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 30,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "波動攻撃と召喚能力を持つ「韋駄天スカンダ」登場！★詳細はバナーをタップ!!"
-        }
-      ],
-      "raw": "20260708\t1100\t20260710\t1100\t150500\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t991\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t波動攻撃と召喚能力を持つ「韋駄天スカンダ」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260710",
-        "startTime": "1100",
-        "endDate": "20260713",
-        "endTime": "1100",
-        "minVersion": "150500",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 1
-      },
-      "gachas": [
-        {
-          "id": 696,
-          "price": 150,
-          "flags": 4,
-          "rates": {
-            "normal": 0,
-            "rare": 7000,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 0,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "赤い敵対策はお任せ！限定キャラも登場する特別版！★おまけアップイベント開催中!!"
-        }
-      ],
-      "raw": "20260710\t1100\t20260713\t1100\t150500\t999999\t0\t0\t1\t1\t696\t150\t0\t4\t0\t0\t7000\t0\t2500\t0\t500\t0\t0\t0\t赤い敵対策はお任せ！限定キャラも登場する特別版！★おまけアップイベント開催中!!\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260710",
-        "startTime": "1100",
-        "endDate": "20260713",
-        "endTime": "1100",
-        "minVersion": "150500",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 2
-      },
-      "gachas": [
-        {
-          "id": 452,
-          "price": 150,
-          "flags": 4,
-          "rates": {
-            "normal": 0,
-            "rare": 7000,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 0,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "浮いてる敵に対して強力効果の「エアバスターズ」！★おまけアップイベント開催中!!"
-        }
-      ],
-      "raw": "20260710\t1100\t20260713\t1100\t150500\t999999\t0\t0\t1\t2\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t452\t150\t0\t4\t0\t0\t7000\t0\t2500\t0\t500\t0\t0\t0\t浮いてる敵に対して強力効果の「エアバスターズ」！★おまけアップイベント開催中!!\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260710",
-        "startTime": "1100",
-        "endDate": "20260713",
-        "endTime": "1100",
-        "minVersion": "150500",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 3
-      },
-      "gachas": [
-        {
-          "id": 906,
-          "price": 150,
-          "flags": 4,
-          "rates": {
-            "normal": 0,
-            "rare": 7000,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 0,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "メタルな敵に効果絶大！限定キャラも登場の特別版！★おまけアップイベント開催中!!"
-        }
-      ],
-      "raw": "20260710\t1100\t20260713\t1100\t150500\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t906\t150\t0\t4\t0\t0\t7000\t0\t2500\t0\t500\t0\t0\t0\tメタルな敵に効果絶大！限定キャラも登場の特別版！★おまけアップイベント開催中!!\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
@@ -1320,6 +810,156 @@
         }
       ],
       "raw": "20260715\t1100\t20260717\t1100\t150500\t999999\t0\t0\t1\t2\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t772\t150\t0\t4\t0\t0\t7000\t0\t2500\t0\t500\t0\t0\t0\t超生命体に強いキャラクターが揃う特別なガチャ！★おまけアップイベント開催中!!\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260717",
+        "startTime": "1100",
+        "endDate": "20260721",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 1
+      },
+      "gachas": [
+        {
+          "id": 1062,
+          "price": 150,
+          "flags": 0,
+          "rates": {
+            "normal": 0,
+            "rare": 6470,
+            "superRare": 2600,
+            "uberRare": 900,
+            "legendRare": 30,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "限定超激レアキャラクター「孤月の騎士ルーノス」登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20260717\t1100\t20260721\t1100\t150500\t999999\t0\t0\t1\t1\t1062\t150\t0\t0\t0\t0\t6470\t0\t2600\t0\t900\t0\t30\t0\t限定超激レアキャラクター「孤月の騎士ルーノス」登場！★詳細はバナーをタップ!!\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260717",
+        "startTime": "1100",
+        "endDate": "20260719",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 2
+      },
+      "gachas": [
+        {
+          "id": 942,
+          "price": 150,
+          "flags": 16384,
+          "rates": {
+            "normal": 0,
+            "rare": 6970,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 30,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "召喚能力を持つキャラクター「ネコダイナザウルス」登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20260717\t1100\t20260719\t1100\t150500\t999999\t0\t0\t1\t2\t-1\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t\t942\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t召喚能力を持つキャラクター「ネコダイナザウルス」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260717",
+        "startTime": "1100",
+        "endDate": "20260719",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 3
+      },
+      "gachas": [
+        {
+          "id": 947,
+          "price": 150,
+          "flags": 16384,
+          "rates": {
+            "normal": 0,
+            "rare": 6970,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 30,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "召喚能力を持つキャラクター「特命機動アクセル」登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20260717\t1100\t20260719\t1100\t150500\t999999\t0\t0\t1\t3\t-1\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t\t-1\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t\t947\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t召喚能力を持つキャラクター「特命機動アクセル」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260719",
+        "startTime": "1100",
+        "endDate": "20260721",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 2
+      },
+      "gachas": [
+        {
+          "id": 1015,
+          "price": 150,
+          "flags": 16384,
+          "rates": {
+            "normal": 0,
+            "rare": 6970,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 30,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "召喚能力を持つキャラクター「魔導師シドミ」登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20260719\t1100\t20260721\t1100\t150500\t999999\t0\t0\t1\t2\t-1\t150\t0\t0\t0\t0\t7500\t0\t2000\t0\t500\t0\t0\t0\t\t1015\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t召喚能力を持つキャラクター「魔導師シドミ」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260719",
+        "startTime": "1100",
+        "endDate": "20260721",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 3
+      },
+      "gachas": [
+        {
+          "id": 1004,
+          "price": 150,
+          "flags": 16384,
+          "rates": {
+            "normal": 0,
+            "rare": 6970,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 30,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "進化後に召喚能力を持つ「樹の精霊コモリ」登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20260719\t1100\t20260721\t1100\t150500\t999999\t0\t0\t1\t3\t-1\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t\t-1\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t\t1004\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t進化後に召喚能力を持つ「樹の精霊コモリ」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
     }
   ]
 }
