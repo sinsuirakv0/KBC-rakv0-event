@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/07/15 15:22:17",
+  "updatedAt": "26/07/17 16:27:34",
   "data": [
     {
       "header": {
@@ -1121,7 +1121,7 @@
     },
     {
       "header": {
-        "startDate": "20260429",
+        "startDate": "20260723",
         "startTime": "0",
         "endDate": "20300101",
         "endTime": "0",
@@ -1147,7 +1147,7 @@
         "url": "",
         "repeatFlag": 1
       },
-      "raw": "20260429\t0\t20300101\t0\t150200\t999999\t0\t1\t0\t0\t8\t0\t2479\t220\t1\t水曜にゃんこDAY☆\t毎週水曜限定の特別ボーナス！<br>リーダーシップを1枚プレゼント！\t1\t0\t1\t0\t0\t0\t0"
+      "raw": "20260723\t0\t20300101\t0\t150200\t999999\t0\t1\t0\t0\t8\t0\t2479\t220\t1\t水曜にゃんこDAY☆\t毎週水曜限定の特別ボーナス！<br>リーダーシップを1枚プレゼント！\t1\t0\t1\t0\t0\t0\t0"
     },
     {
       "header": {
@@ -1174,8 +1174,8 @@
       "header": {
         "startDate": "20260501",
         "startTime": "1100",
-        "endDate": "20300101",
-        "endTime": "000",
+        "endDate": "20260721",
+        "endTime": "1100",
         "minVersion": "150300",
         "maxVersion": "999999"
       },
@@ -1189,14 +1189,14 @@
         "url": "",
         "repeatFlag": 0
       },
-      "raw": "20260501\t1100\t20300101\t000\t150300\t999999\t0\t0\t2494\t301\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
+      "raw": "20260501\t1100\t20260721\t1100\t150300\t999999\t0\t0\t2494\t301\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
         "startDate": "20260501",
         "startTime": "1100",
-        "endDate": "20300101",
-        "endTime": "000",
+        "endDate": "20260721",
+        "endTime": "1100",
         "minVersion": "150300",
         "maxVersion": "999999"
       },
@@ -1210,7 +1210,7 @@
         "url": "",
         "repeatFlag": 0
       },
-      "raw": "20260501\t1100\t20300101\t000\t150300\t999999\t0\t0\t2495\t302\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
+      "raw": "20260501\t1100\t20260721\t1100\t150300\t999999\t0\t0\t2495\t302\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
@@ -1337,6 +1337,195 @@
         "repeatFlag": 0
       },
       "raw": "20260720\t0\t20260721\t0\t150500\t999999\t0\t0\t2503\t203\t1\t海の日記念☆\t祝日感謝！海の日を記念して レアチケット1枚をプレゼント！\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260721",
+        "startTime": "1100",
+        "endDate": "20260811",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51736,
+        "giftType": 35048,
+        "giftAmount": 0,
+        "title": "「ねこのなつやすみ パラダイス編」記念スタンプ☆",
+        "message": "リゾート開発を支える特別ボーナス！<br>伝説の札束をたくさん手に入れて、リッチな生活を楽しもう！（8/11まで）",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260721\t1100\t20260811\t1100\t150500\t999999\t0\t0\t51736\t35048\t0\t「ねこのなつやすみ パラダイス編」記念スタンプ☆\tリゾート開発を支える特別ボーナス！<br>伝説の札束をたくさん手に入れて、リッチな生活を楽しもう！（8/11まで）\t7\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260721",
+        "startTime": "1100",
+        "endDate": "20260811",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2504,
+        "giftType": 201,
+        "giftAmount": 10000,
+        "title": "初心者応援！！ログインボーナス☆",
+        "message": "日本編クリアを応援！育成に役立つアイテムを毎日プレゼント！<br>今がにゃんこ軍団の戦力をアップする大チャンス！(8/11まで)",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260721\t1100\t20260811\t1100\t150500\t999999\t0\t0\t2504\t201\t10000\t初心者応援！！ログインボーナス☆\t日本編クリアを応援！育成に役立つアイテムを毎日プレゼント！<br>今がにゃんこ軍団の戦力をアップする大チャンス！(8/11まで)\t300\t2\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260722",
+        "startTime": "000",
+        "endDate": "20260723",
+        "endTime": "000",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2505,
+        "giftType": 204,
+        "giftAmount": 1,
+        "title": "超水曜にゃんこDAY☆",
+        "message": "22日の水曜日、奇跡の日限定の特別ボーナス！<br>プラチナチケットを1枚プレゼント！",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260722\t000\t20260723\t000\t150500\t999999\t0\t0\t2505\t204\t1\t超水曜にゃんこDAY☆\t22日の水曜日、奇跡の日限定の特別ボーナス！<br>プラチナチケットを1枚プレゼント！\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260721",
+        "startTime": "1100",
+        "endDate": "20260811",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51737,
+        "giftType": 830,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260721\t1100\t20260811\t1100\t150500\t999999\t0\t0\t51737\t830\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260721",
+        "startTime": "1100",
+        "endDate": "20260811",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51738,
+        "giftType": 837,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260721\t1100\t20260811\t1100\t150500\t999999\t0\t0\t51738\t837\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260721",
+        "startTime": "1100",
+        "endDate": "20260811",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51739,
+        "giftType": 803,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260721\t1100\t20260811\t1100\t150500\t999999\t0\t0\t51739\t803\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260721",
+        "startTime": "1100",
+        "endDate": "20260907",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 90013,
+        "giftType": 33000,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260721\t1100\t20260907\t1100\t150500\t999999\t0\t0\t90013\t33000\t0\t\t\t1300\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260721",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2506,
+        "giftType": 301,
+        "giftAmount": 0,
+        "title": "←全画面告知の表示と同時に付与する",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260721\t1100\t20300101\t000\t150300\t999999\t0\t0\t2506\t301\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260721",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "150300",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2507,
+        "giftType": 302,
+        "giftAmount": 0,
+        "title": "←全画面告知の表示と同時に付与する",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260721\t1100\t20300101\t000\t150300\t999999\t0\t0\t2507\t302\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
     }
   ]
 }
