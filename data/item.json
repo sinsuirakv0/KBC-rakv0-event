@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/07/17 16:27:35",
+  "updatedAt": "26/07/24 14:13:58",
   "data": [
     {
       "header": {
@@ -1172,48 +1172,6 @@
     },
     {
       "header": {
-        "startDate": "20260501",
-        "startTime": "1100",
-        "endDate": "20260721",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2494,
-        "giftType": 301,
-        "giftAmount": 0,
-        "title": "←全画面告知の表示と同時に付与する",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260501\t1100\t20260721\t1100\t150300\t999999\t0\t0\t2494\t301\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260501",
-        "startTime": "1100",
-        "endDate": "20260721",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2495,
-        "giftType": 302,
-        "giftAmount": 0,
-        "title": "←全画面告知の表示と同時に付与する",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260501\t1100\t20260721\t1100\t150300\t999999\t0\t0\t2495\t302\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260525",
         "startTime": "000",
         "endDate": "20300101",
@@ -1235,48 +1193,6 @@
     },
     {
       "header": {
-        "startDate": "20260706",
-        "startTime": "1100",
-        "endDate": "20260721",
-        "endTime": "1100",
-        "minVersion": "150500",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51734,
-        "giftType": 35051,
-        "giftAmount": 0,
-        "title": "『パックマン』コラボイベント開催記念スタンプ",
-        "message": "イベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めて便利なアイテムをゲット！(7/21まで)",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20260706\t1100\t20260721\t1100\t150500\t999999\t0\t0\t51734\t35051\t0\t『パックマン』コラボイベント開催記念スタンプ\tイベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めて便利なアイテムをゲット！(7/21まで)\t7\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260706",
-        "startTime": "1100",
-        "endDate": "20260721",
-        "endTime": "1100",
-        "minVersion": "150500",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 5240,
-        "giftType": 853,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260706\t1100\t20260721\t1100\t150500\t999999\t0\t0\t5240\t853\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260716",
         "startTime": "1100",
         "endDate": "20260808",
@@ -1295,48 +1211,6 @@
         "repeatFlag": 1
       },
       "raw": "20260716\t1100\t20260808\t1100\t150500\t999999\t0\t0\t85001\t11047\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260717",
-        "startTime": "1100",
-        "endDate": "20260721",
-        "endTime": "1100",
-        "minVersion": "150500",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51375,
-        "giftType": 827,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260717\t1100\t20260721\t1100\t150500\t999999\t0\t0\t51375\t827\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260720",
-        "startTime": "0",
-        "endDate": "20260721",
-        "endTime": "0",
-        "minVersion": "150500",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2503,
-        "giftType": 203,
-        "giftAmount": 1,
-        "title": "海の日記念☆",
-        "message": "祝日感謝！海の日を記念して レアチケット1枚をプレゼント！",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260720\t0\t20260721\t0\t150500\t999999\t0\t0\t2503\t203\t1\t海の日記念☆\t祝日感謝！海の日を記念して レアチケット1枚をプレゼント！\t7\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
@@ -1379,27 +1253,6 @@
         "repeatFlag": 1
       },
       "raw": "20260721\t1100\t20260811\t1100\t150500\t999999\t0\t0\t2504\t201\t10000\t初心者応援！！ログインボーナス☆\t日本編クリアを応援！育成に役立つアイテムを毎日プレゼント！<br>今がにゃんこ軍団の戦力をアップする大チャンス！(8/11まで)\t300\t2\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260722",
-        "startTime": "000",
-        "endDate": "20260723",
-        "endTime": "000",
-        "minVersion": "150500",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 2505,
-        "giftType": 204,
-        "giftAmount": 1,
-        "title": "超水曜にゃんこDAY☆",
-        "message": "22日の水曜日、奇跡の日限定の特別ボーナス！<br>プラチナチケットを1枚プレゼント！",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260722\t000\t20260723\t000\t150500\t999999\t0\t0\t2505\t204\t1\t超水曜にゃんこDAY☆\t22日の水曜日、奇跡の日限定の特別ボーナス！<br>プラチナチケットを1枚プレゼント！\t7\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
@@ -1526,6 +1379,90 @@
         "repeatFlag": 0
       },
       "raw": "20260721\t1100\t20300101\t000\t150300\t999999\t0\t0\t2507\t302\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260731",
+        "startTime": "1100",
+        "endDate": "20260806",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51742,
+        "giftType": 833,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260731\t1100\t20260806\t1100\t150500\t999999\t0\t0\t51742\t833\t0\t\t\t300\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260731",
+        "startTime": "1100",
+        "endDate": "20260806",
+        "endTime": "1100",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51743,
+        "giftType": 834,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260731\t1100\t20260806\t1100\t150500\t999999\t0\t0\t51743\t834\t0\t\t\t300\t2\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260801",
+        "startTime": "000",
+        "endDate": "20260802",
+        "endTime": "000",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51744,
+        "giftType": 828,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 4
+      },
+      "raw": "20260801\t000\t20260802\t000\t150500\t999999\t0\t0\t51744\t828\t0\t\t\t7\t0\t4\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260801",
+        "startTime": "000",
+        "endDate": "20260802",
+        "endTime": "000",
+        "minVersion": "150500",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51745,
+        "giftType": 835,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 2
+      },
+      "raw": "20260801\t000\t20260802\t000\t150500\t999999\t0\t0\t51745\t835\t0\t\t\t7\t0\t2\t0\t0\t0\t0"
     }
   ]
 }
