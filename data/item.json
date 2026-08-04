@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/07/24 14:13:58",
+  "updatedAt": "26/08/04 16:20:50",
   "data": [
     {
       "header": {
@@ -1424,45 +1424,45 @@
     },
     {
       "header": {
-        "startDate": "20260801",
-        "startTime": "000",
-        "endDate": "20260802",
-        "endTime": "000",
+        "startDate": "20260806",
+        "startTime": "1100",
+        "endDate": "20260811",
+        "endTime": "1100",
         "minVersion": "150500",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 51744,
-        "giftType": 828,
+        "eventId": 51746,
+        "giftType": 827,
         "giftAmount": 0,
         "title": "",
         "message": "",
         "url": "",
-        "repeatFlag": 4
+        "repeatFlag": 0
       },
-      "raw": "20260801\t000\t20260802\t000\t150500\t999999\t0\t0\t51744\t828\t0\t\t\t7\t0\t4\t0\t0\t0\t0"
+      "raw": "20260806\t1100\t20260811\t1100\t150500\t999999\t0\t0\t51746\t827\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
-        "startDate": "20260801",
+        "startDate": "20260811",
         "startTime": "000",
-        "endDate": "20260802",
+        "endDate": "20260812",
         "endTime": "000",
         "minVersion": "150500",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 51745,
-        "giftType": 835,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
+        "eventId": 2508,
+        "giftType": 203,
+        "giftAmount": 1,
+        "title": "山の日記念☆",
+        "message": "祝日感謝！山の日を記念して<br>レアチケット1枚をプレゼント！",
         "url": "",
-        "repeatFlag": 2
+        "repeatFlag": 0
       },
-      "raw": "20260801\t000\t20260802\t000\t150500\t999999\t0\t0\t51745\t835\t0\t\t\t7\t0\t2\t0\t0\t0\t0"
+      "raw": "20260811\t000\t20260812\t000\t150500\t999999\t0\t0\t2508\t203\t1\t山の日記念☆\t祝日感謝！山の日を記念して<br>レアチケット1枚をプレゼント！\t7\t0\t0\t0\t0\t0\t0"
     }
   ]
 }
