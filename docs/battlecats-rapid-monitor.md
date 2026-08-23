@@ -48,6 +48,8 @@ workflowは `actions/create-github-app-token` を固定commit SHAで実行し、
 
 GitHub Appを利用できない場合だけ、fallbackとしてfine-grained PATを `BATTLECATS_PRIVATE_DISPATCH_TOKEN` に登録できます。対象repositoryは同じ2つだけに限定し、Repository permissionsは `KBC-rakv0-assets: Contents read` と `battlecats-apk: Actions write` に必要な範囲だけを設定します。GitHub AppとPATを同時に設定した場合はGitHub Appを優先します。
 
+緊急移行中は、Appと `BATTLECATS_PRIVATE_DISPATCH_TOKEN` のどちらも設定されていない場合に限り、Actions secret `GH_TOKEN_EVENT` を最後のfallbackとして使います。優先順はApp、専用PAT、`GH_TOKEN_EVENT`です。この既存tokenがprivate `KBC-rakv0-assets` のContents readとprivate `battlecats-apk` のActions writeを持つかは、変更をmainへ反映した後の手動runで確認します。秘密値自体はworkflow outputやログへ出しません。専用AppまたはPATの準備後は緊急fallbackへの依存を解消してください。
+
 ## Vercel APIの設定
 
 Vercel projectのEnvironment Variablesへ次を登録し、Productionへ再deployします。
@@ -85,6 +87,7 @@ endpointはGitHub workflow dispatchだけを行って短くHTTP 200を返しま�
 - `MONITOR_APP_ID`
 - `MONITOR_APP_PRIVATE_KEY`
 - `BATTLECATS_PRIVATE_DISPATCH_TOKEN`（GitHub Appを使えない場合だけ）
+- `GH_TOKEN_EVENT`（Appと専用PATがない緊急移行時だけ。private assets read / publisher Actions writeは手動runで要確認）
 
 Vercel project:
 

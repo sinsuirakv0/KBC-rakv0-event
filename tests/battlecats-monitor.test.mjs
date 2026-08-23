@@ -15,6 +15,28 @@ import {
 const matchingFixture = await readFile(new URL("./fixtures/google-play-matching.html", import.meta.url), "utf8");
 const mismatchFixture = await readFile(new URL("./fixtures/google-play-mismatch.html", import.meta.url), "utf8");
 
+test("workflowはApp、専用PAT、GH_TOKEN_EVENTの順だけでprivate認証を選ぶ", async () => {
+  const workflow = await readFile(
+    new URL("../.github/workflows/monitor-battlecats-google-play.yml", import.meta.url),
+    "utf8",
+  );
+  const selectionStart = workflow.indexOf("- name: Select private authentication");
+  const appTokenStart = workflow.indexOf("- name: Create repository-scoped GitHub App token");
+  const selection = workflow.slice(selectionStart, appTokenStart);
+  const app = selection.indexOf('if [[ -n "$MONITOR_APP_ID" || -n "$MONITOR_APP_PRIVATE_KEY" ]]');
+  const dedicatedPat = selection.indexOf('elif [[ -n "$FALLBACK_TOKEN" ]]');
+  const emergency = selection.indexOf('elif [[ -n "$EMERGENCY_TOKEN" ]]');
+  const failure = selection.indexOf("Private GitHub authentication is not configured.");
+
+  assert.ok(selectionStart >= 0 && appTokenStart > selectionStart);
+  assert.match(selection, /EMERGENCY_TOKEN: \$\{\{ secrets\.GH_TOKEN_EVENT \}\}/);
+  assert.ok(app >= 0 && app < dedicatedPat && dedicatedPat < emergency && emergency < failure);
+  assert.ok(workflow.includes(
+    "BATTLECATS_PRIVATE_TOKEN: ${{ steps.app-token.outputs.token || secrets.BATTLECATS_PRIVATE_DISPATCH_TOKEN || secrets.GH_TOKEN_EVENT }}",
+  ));
+  assert.doesNotMatch(selection, /(?:echo|printf).*\$(?:FALLBACK_TOKEN|EMERGENCY_TOKEN)/);
+});
+
 test("新機能とstructured metadataが一致した場合だけ候補を返す", () => {
   assert.deepEqual(parseGooglePlayHtml(matchingFixture), {
     releaseNotesVersion: "15.5.1",
