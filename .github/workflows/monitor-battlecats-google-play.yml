@@ -65,8 +65,8 @@ jobs:
       - name: Monitor Google Play and dispatch publisher
         env:
           BATTLECATS_PRIVATE_TOKEN: ${{ steps.app-token.outputs.token || secrets.BATTLECATS_PRIVATE_DISPATCH_TOKEN || secrets.GH_TOKEN_EVENT }}
-          BATTLECATS_MONITOR_DURATION_MS: '85000'
-          BATTLECATS_MONITOR_INTERVAL_MS: '2000'
+          BATTLECATS_MONITOR_DURATION_MS: '60000'
+          BATTLECATS_MONITOR_INTERVAL_MS: '5000'
           BATTLECATS_HTTP_TIMEOUT_MS: '8000'
           BATTLECATS_MONITOR_JITTER_MS: '250'
           BATTLECATS_PUBLISH_WORKFLOW: download-battlecats.yml

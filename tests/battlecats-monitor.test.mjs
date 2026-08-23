@@ -37,6 +37,17 @@ test("workflowはApp、専用PAT、GH_TOKEN_EVENTの順だけでprivate認証を
   assert.doesNotMatch(selection, /(?:echo|printf).*\$(?:FALLBACK_TOKEN|EMERGENCY_TOKEN)/);
 });
 
+test("workflowのRapid Monitorは60秒間を5秒間隔で監視する", async () => {
+  const workflow = await readFile(
+    new URL("../.github/workflows/monitor-battlecats-google-play.yml", import.meta.url),
+    "utf8",
+  );
+  assert.match(workflow, /BATTLECATS_MONITOR_DURATION_MS: '60000'/);
+  assert.match(workflow, /BATTLECATS_MONITOR_INTERVAL_MS: '5000'/);
+  assert.doesNotMatch(workflow, /BATTLECATS_MONITOR_DURATION_MS: '85000'/);
+  assert.doesNotMatch(workflow, /BATTLECATS_MONITOR_INTERVAL_MS: '2000'/);
+});
+
 test("新機能とstructured metadataが一致した場合だけ候補を返す", () => {
   assert.deepEqual(parseGooglePlayHtml(matchingFixture), {
     releaseNotesVersion: "15.5.1",
@@ -73,6 +84,12 @@ test("jp/version.jsonのpackageとversionを検証する", () => {
 });
 
 test("監視時間を安全範囲に固定する", () => {
+  assert.deepEqual(getMonitorTiming({}), {
+    durationMs: 60_000,
+    intervalMs: 5_000,
+    timeoutMs: 8_000,
+    jitterMs: 250,
+  });
   assert.deepEqual(getMonitorTiming({
     BATTLECATS_MONITOR_DURATION_MS: "999999",
     BATTLECATS_MONITOR_INTERVAL_MS: "1",

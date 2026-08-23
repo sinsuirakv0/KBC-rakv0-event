@@ -1,4 +1,9 @@
-﻿import { dispatchGitHubWorkflow, verifyBearerAuthorization } from "../lib/battlecats-monitor.js";
+﻿import {
+  activeWorkflowRuns,
+  dispatchGitHubWorkflow,
+  listWorkflowRuns,
+  verifyBearerAuthorization,
+} from "../lib/battlecats-monitor.js";
 
 const GITHUB_OWNER = "sinsuirakv0";
 const GITHUB_REPO = "KBC-rakv0-event";
@@ -31,6 +36,15 @@ export default async function handler(req, res) {
   }
 
   try {
+    const runs = await listWorkflowRuns({
+      owner: GITHUB_OWNER,
+      repo: GITHUB_REPO,
+      workflow: WORKFLOW_FILE,
+      token: githubToken,
+    });
+    if (activeWorkflowRuns(runs).length > 0) {
+      return res.status(200).json({ status: "already-active" });
+    }
     await dispatchGitHubWorkflow({
       owner: GITHUB_OWNER,
       repo: GITHUB_REPO,

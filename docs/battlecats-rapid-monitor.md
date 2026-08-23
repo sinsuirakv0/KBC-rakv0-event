@@ -2,18 +2,18 @@
 
 ## 全体像
 
-この監視は、cron-job.orgからVercel APIを毎分呼び出し、public repositoryのGitHub Actionsを起動します。APIはActionsを起動したらすぐHTTP 200を返します。Google Playへの2秒間隔・85秒間の確認はGitHub Actions側で行うため、cron-job.orgの30秒timeoutには影響されません。
+この監視は、cron-job.orgからVercel APIを毎分呼び出し、public repositoryのGitHub Actionsを起動します。APIはActionsを起動したらすぐHTTP 200を返します。Google Playへの5秒間隔・60秒間の確認はGitHub Actions側で行うため、cron-job.orgの30秒timeoutには影響されません。
 
 ```text
 cron-job.org（毎分）
   -> POST /api/trigger-battlecats-monitor（Bearer認証、短時間で応答）
   -> KBC-rakv0-event / monitor-battlecats-google-play.yml
-  -> Google Playを2秒間隔・85秒監視
+  -> Google Playを5秒間隔・60秒監視
   -> 2つのversion signalが一致し、現在より新しい場合だけ
   -> battlecats-apk / download-battlecats.yml（expected_version付き）
 ```
 
-public monitor workflowには同時実行を1本に制限するconcurrencyがあります。さらに、dispatch直前にprivate assetsの現在versionとprivate publisherのactive runを再確認します。既存runの対象が判別できない場合もdispatchしないfail closed方式です。最終的なversionName・versionCode・署名・hashの検証はprivate publisher側で行います。
+Vercel APIは `GH_TOKEN_EVENT` で同じRapid Monitor workflowのrunをdispatch前に確認し、activeなrunがあれば新規dispatchを行わずHTTP 200 `{"status":"already-active"}` を返します。GitHub照会に失敗した場合はdispatchしないfail closedです。public monitor workflowにも同時実行を1本に制限するconcurrencyがあり、API確認と競合した場合の二重防御になります。さらに、publisher dispatch直前にprivate assetsの現在versionとprivate publisherのactive runを再確認します。既存runの対象が判別できない場合もdispatchしません。最終的なversionName・versionCode・署名・hashの検証はprivate publisher側で行います。
 
 ## Google Playの検知条件
 
@@ -78,7 +78,7 @@ $bytes = New-Object byte[] 48
 - Header value: `Bearer <BATTLECATS_MONITOR_TRIGGER_SECRETと同じ値>`
 - Request timeout: 30 seconds以内
 
-endpointはGitHub workflow dispatchだけを行って短くHTTP 200を返します。response本文は `{"status":"dispatched"}` です。401はBearer secret不一致、500はVercel設定不足、502はGitHub dispatch失敗を示します。
+endpointはactive run照会と必要時のGitHub workflow dispatchだけを行って短くHTTP 200を返します。response本文は新規起動時が `{"status":"dispatched"}`、既存run稼働中が `{"status":"already-active"}` です。401はBearer secret不一致、500はVercel設定不足、502はGitHub照会またはdispatch失敗を示します。
 
 ## Actions secrets一覧
 
