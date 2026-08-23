@@ -1,0 +1,70 @@
+name: Rapid monitor Battle Cats Google Play
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: battlecats-google-play-rapid-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Checkout monitor
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+
+      - name: Select private authentication
+        id: private-auth
+        shell: bash
+        env:
+          MONITOR_APP_ID: ${{ secrets.MONITOR_APP_ID }}
+          MONITOR_APP_PRIVATE_KEY: ${{ secrets.MONITOR_APP_PRIVATE_KEY }}
+          FALLBACK_TOKEN: ${{ secrets.BATTLECATS_PRIVATE_DISPATCH_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [[ -n "$MONITOR_APP_ID" || -n "$MONITOR_APP_PRIVATE_KEY" ]]; then
+            test -n "$MONITOR_APP_ID"
+            test -n "$MONITOR_APP_PRIVATE_KEY"
+            printf 'use_app=true\n' >> "$GITHUB_OUTPUT"
+          elif [[ -n "$FALLBACK_TOKEN" ]]; then
+            printf 'use_app=false\n' >> "$GITHUB_OUTPUT"
+          else
+            printf 'Private GitHub authentication is not configured.\n' >&2
+            exit 1
+          fi
+
+      - name: Create repository-scoped GitHub App token
+        id: app-token
+        if: steps.private-auth.outputs.use_app == 'true'
+        uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349
+        with:
+          app-id: ${{ secrets.MONITOR_APP_ID }}
+          private-key: ${{ secrets.MONITOR_APP_PRIVATE_KEY }}
+          owner: sinsuirakv0
+          repositories: |
+            KBC-rakv0-assets
+            battlecats-apk
+          permission-contents: read
+          permission-actions: write
+
+      - name: Monitor Google Play and dispatch publisher
+        env:
+          BATTLECATS_PRIVATE_TOKEN: ${{ steps.app-token.outputs.token || secrets.BATTLECATS_PRIVATE_DISPATCH_TOKEN }}
+          BATTLECATS_MONITOR_DURATION_MS: '85000'
+          BATTLECATS_MONITOR_INTERVAL_MS: '2000'
+          BATTLECATS_HTTP_TIMEOUT_MS: '8000'
+          BATTLECATS_MONITOR_JITTER_MS: '250'
+          BATTLECATS_PUBLISH_WORKFLOW: download-battlecats.yml
+        run: node scripts/monitor-battlecats.js
