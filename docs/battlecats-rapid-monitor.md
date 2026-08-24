@@ -32,6 +32,8 @@ monitor workflowは既存Actions secrets `LINE_BOT_EVENT_UPDATE_URL` と `LINE_B
 
 publisher dispatch後は `monitor-battlecats-site.yml` が別runで動きます。private `KBC-rakv0-assets` の `jp/version.json` がcandidate versionになり、`jp/explorer/catalog.json` にcandidate Local snapshotと直前versionのsnapshotがあり、両方の `jp/explorer/manifests/Local/<snapshot-id>.json` が有効なJSONとして読めるまで通知しません。直前versionはcatalogの並びではなくversionCodeの最大値で選びます。待機は最大80分、workflow timeoutは90分です。準備完了後、同じ `versionName`・`detectedAt`・`eventId`と、`dataset=Local`、新version、直前version、`view=diff`を指定した `siteUrl` を含む `phase=site` payloadを送信します。site後送の失敗やtimeoutはpublisherの成否に影響しません。
 
+`Verify LINE Battle Cats update endpoint` workflowは通知を送らず、LINE botのhealthが正常であることと、secretなしの `/battlecats-update` が401を返すことだけを確認します。本番更新前の疎通確認に使用します。
+
 ## Google Playの検知条件
 
 対象URLは次の固定値です。
