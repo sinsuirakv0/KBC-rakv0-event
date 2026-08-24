@@ -1,12 +1,15 @@
 ﻿import {
   BATTLECATS_PACKAGE,
+  buildUpdateEventId,
   compareVersions,
   dispatchWorkflow,
+  dispatchGitHubWorkflow,
   evaluateDispatch,
   extractCurrentVersion,
   getMonitorTiming,
   getRepositoryJson,
   listWorkflowRuns,
+  notifyLineUpdate,
   parseGooglePlayHtml,
 } from "../lib/battlecats-monitor.js";
 import { fileURLToPath } from "node:url";
@@ -63,10 +66,25 @@ async function readPublishedVersion(config) {
   return extractCurrentVersion(payload);
 }
 
-async function checkDedupeAndDispatch(config, candidateVersion) {
+export async function dispatchFollowupWithRetry(options, dispatch = dispatchGitHubWorkflow, sleepImpl = sleep) {
+  const maxAttempts = 3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      await dispatch(options);
+      return true;
+    } catch {
+      if (attempt < maxAttempts) await sleepImpl(250);
+    }
+  }
+  return false;
+}
+
+export async function checkDedupeAndDispatch(config, candidateVersion, dependencies = {}) {
   // dispatch直前にprivate側の状態を再取得し、並行更新や既存runをfail closedで扱う。
-  const currentVersion = await readPublishedVersion(config);
-  const runs = await listWorkflowRuns({
+  const readVersion = dependencies.readPublishedVersion ?? (() => readPublishedVersion(config));
+  const listRuns = dependencies.listWorkflowRuns ?? listWorkflowRuns;
+  const currentVersion = await readVersion();
+  const runs = await listRuns({
     owner: config.owner,
     repo: config.publishRepo,
     workflow: config.publishWorkflow,
@@ -78,7 +96,26 @@ async function checkDedupeAndDispatch(config, candidateVersion) {
     return false;
   }
 
-  await dispatchWorkflow({
+  const detectedAt = new Date().toISOString();
+  const eventId = buildUpdateEventId(candidateVersion);
+  const notify = dependencies.notifyLineUpdate ?? notifyLineUpdate;
+  // private側のdedupe確認を通過した瞬間に通知し、重いpublisher処理より先に届ける。
+  try {
+    await notify({
+      url: config.lineBotUpdateUrl,
+      secret: config.lineBotUpdateSecret,
+      phase: "detected",
+      versionName: candidateVersion,
+      detectedAt,
+      eventId,
+    });
+  } catch {
+    // 通知障害でpublisherを止めない。秘密値やendpointはログに出さない。
+    console.warn("LINE bot update notification failed unexpectedly");
+  }
+
+  const dispatch = dependencies.dispatchWorkflow ?? dispatchWorkflow;
+  await dispatch({
     owner: config.owner,
     repo: config.publishRepo,
     workflow: config.publishWorkflow,
@@ -86,6 +123,29 @@ async function checkDedupeAndDispatch(config, candidateVersion) {
     token: config.token,
   });
   console.log(`Publish workflow dispatched: expected_version=${candidateVersion}`);
+
+  if (config.followupToken) {
+    const followupStarted = await dispatchFollowupWithRetry({
+      owner: config.owner,
+      repo: config.ownerRepo,
+      workflow: config.siteWorkflow,
+      ref: "main",
+      inputs: {
+        expected_version: candidateVersion,
+        detected_at: detectedAt,
+        event_id: eventId,
+      },
+      token: config.followupToken,
+    }, dependencies.dispatchFollowup ?? dispatchGitHubWorkflow, dependencies.sleep ?? sleep);
+    if (followupStarted) {
+      console.log(`Site follow-up workflow dispatched: expected_version=${candidateVersion}`);
+    } else {
+      // publisher dispatch済みのため、follow-up起動障害でpublisherを失敗扱いにしない。
+      console.warn("Site follow-up workflow dispatch failed");
+    }
+  } else {
+    console.warn("Site follow-up workflow dispatch skipped: token is not configured");
+  }
   return true;
 }
 
@@ -97,6 +157,11 @@ export async function runMonitor() {
     assetsRepo: process.env.BATTLECATS_ASSETS_REPO?.trim() || "KBC-rakv0-assets",
     publishRepo: process.env.BATTLECATS_PUBLISH_REPO?.trim() || "battlecats-apk",
     publishWorkflow: process.env.BATTLECATS_PUBLISH_WORKFLOW?.trim() || "download-battlecats.yml",
+    ownerRepo: process.env.GITHUB_REPOSITORY?.split("/")[1]?.trim() || "KBC-rakv0-event",
+    siteWorkflow: process.env.BATTLECATS_SITE_WORKFLOW?.trim() || "monitor-battlecats-site.yml",
+    followupToken: process.env.BATTLECATS_FOLLOWUP_TOKEN?.trim() || "",
+    lineBotUpdateUrl: process.env.LINE_BOT_UPDATE_URL?.trim() || "",
+    lineBotUpdateSecret: process.env.LINE_BOT_UPDATE_SECRET?.trim() || "",
   };
   let currentVersion = await readPublishedVersion(config);
   const deadline = Date.now() + timing.durationMs;

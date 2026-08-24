@@ -1,20 +1,32 @@
-name: Rapid monitor Battle Cats Google Play
+name: Follow up Battle Cats asset site
 
 on:
   workflow_dispatch:
+    inputs:
+      expected_version:
+        description: "Version detected by the rapid monitor"
+        required: true
+        type: string
+      detected_at:
+        description: "Original Google Play detection timestamp"
+        required: true
+        type: string
+      event_id:
+        description: "Stable update event ID"
+        required: true
+        type: string
 
 permissions:
   contents: read
-  actions: write
 
 concurrency:
-  group: battlecats-google-play-rapid-monitor
-  cancel-in-progress: false
+  group: battlecats-site-follow-up-${{ inputs.event_id }}
+  cancel-in-progress: true
 
 jobs:
-  monitor:
+  wait-and-notify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 3
+    timeout-minutes: 90
     steps:
       - name: Checkout monitor
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -57,22 +69,15 @@ jobs:
           app-id: ${{ secrets.MONITOR_APP_ID }}
           private-key: ${{ secrets.MONITOR_APP_PRIVATE_KEY }}
           owner: sinsuirakv0
-          repositories: |
-            KBC-rakv0-assets
-            battlecats-apk
+          repositories: KBC-rakv0-assets
           permission-contents: read
-          permission-actions: write
 
-      - name: Monitor Google Play and dispatch publisher
+      - name: Wait for manifests and notify LINE
         env:
           BATTLECATS_PRIVATE_TOKEN: ${{ steps.app-token.outputs.token || secrets.BATTLECATS_PRIVATE_DISPATCH_TOKEN || secrets.GH_TOKEN_EVENT }}
-          BATTLECATS_FOLLOWUP_TOKEN: ${{ github.token }}
-          BATTLECATS_MONITOR_DURATION_MS: '60000'
-          BATTLECATS_MONITOR_INTERVAL_MS: '5000'
-          BATTLECATS_HTTP_TIMEOUT_MS: '8000'
-          BATTLECATS_MONITOR_JITTER_MS: '250'
-          BATTLECATS_PUBLISH_WORKFLOW: download-battlecats.yml
-          BATTLECATS_SITE_WORKFLOW: monitor-battlecats-site.yml
+          BATTLECATS_SITE_EXPECTED_VERSION: ${{ inputs.expected_version }}
+          BATTLECATS_SITE_DETECTED_AT: ${{ inputs.detected_at }}
+          BATTLECATS_SITE_EVENT_ID: ${{ inputs.event_id }}
           LINE_BOT_UPDATE_URL: ${{ secrets.LINE_BOT_EVENT_UPDATE_URL }}
           LINE_BOT_UPDATE_SECRET: ${{ secrets.LINE_BOT_EVENT_UPDATE_SECRET }}
-        run: node scripts/monitor-battlecats.js
+        run: node scripts/monitor-battlecats-site.js

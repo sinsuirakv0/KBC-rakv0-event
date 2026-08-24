@@ -10,10 +10,27 @@ cron-job.org（毎分）
   -> KBC-rakv0-event / monitor-battlecats-google-play.yml
   -> Google Playを5秒間隔・60秒監視
   -> 2つのversion signalが一致し、現在より新しい場合だけ
+  -> private assetsとpublisher active runを再確認
+  -> LINE botへphase=detectedを即時送信
   -> battlecats-apk / download-battlecats.yml（expected_version付き）
+  -> monitor-battlecats-site.ymlを別workflowとして起動
+  -> jp/version.json、jp/explorer/catalog.json、前後Local manifestをpoll
+  -> 比較可能になった後だけLINE botへphase=siteと比較URLを送信
 ```
 
-Vercel APIは `GH_TOKEN_EVENT` で同じRapid Monitor workflowのrunをdispatch前に確認し、activeなrunがあれば新規dispatchを行わずHTTP 200 `{"status":"already-active"}` を返します。GitHub照会に失敗した場合はdispatchしないfail closedです。public monitor workflowにも同時実行を1本に制限するconcurrencyがあり、API確認と競合した場合の二重防御になります。さらに、publisher dispatch直前にprivate assetsの現在versionとprivate publisherのactive runを再確認します。既存runの対象が判別できない場合もdispatchしません。最終的なversionName・versionCode・署名・hashの検証はprivate publisher側で行います。
+Vercel APIは `GH_TOKEN_EVENT` で同じRapid Monitor workflowのrunをdispatch前に確認し、activeなrunがあれば新規dispatchを行わずHTTP 200 `{"status":"already-active"}` を返します。GitHub照会に失敗した場合はdispatchしないfail closedです。public monitor workflowにも同時実行を1本に制限するconcurrencyがあり、API確認と競合した場合の二重防御になります。さらに、publisher dispatch直前にprivate assetsの現在versionとprivate publisherのactive runを再確認します。既存runの対象が判別できない場合もdispatchしません。このdedupe判定を通過した直後、publisher dispatchより先にLINE botへ検知通知を送ります。通知は短いtimeoutとretryを使い、LINE障害でもpublisher dispatchは継続します。最終的なversionName・versionCode・署名・hashの検証はprivate publisher側で行います。
+
+## LINE bot通知とsite後送
+
+monitor workflowは既存Actions secrets `LINE_BOT_EVENT_UPDATE_URL` と `LINE_BOT_EVENT_UPDATE_SECRET` を、それぞれ実行時環境変数 `LINE_BOT_UPDATE_URL` と `LINE_BOT_UPDATE_SECRET` に渡します。新しいActions secretは追加しません。URLのpathnameは既存値に関係なく `/battlecats-update` へ置換し、secretは `x-event-update-secret` headerだけで送信します。
+
+検知時のpayloadは次の固定契約です。
+
+```json
+{"phase":"detected","versionName":"15.5.2","region":"JP","detectedAt":"2026-08-24T04:00:00.000Z","eventId":"battlecats-jp-google-play-15.5.2"}
+```
+
+publisher dispatch後は `monitor-battlecats-site.yml` が別runで動きます。private `KBC-rakv0-assets` の `jp/version.json` がcandidate versionになり、`jp/explorer/catalog.json` にcandidate Local snapshotと直前versionのsnapshotがあり、両方の `jp/explorer/manifests/Local/<snapshot-id>.json` が有効なJSONとして読めるまで通知しません。直前versionはcatalogの並びではなくversionCodeの最大値で選びます。待機は最大80分、workflow timeoutは90分です。準備完了後、同じ `versionName`・`detectedAt`・`eventId`と、`dataset=Local`、新version、直前version、`view=diff`を指定した `siteUrl` を含む `phase=site` payloadを送信します。site後送の失敗やtimeoutはpublisherの成否に影響しません。
 
 ## Google Playの検知条件
 

@@ -8,9 +8,12 @@ import {
   extractCurrentVersion,
   getMonitorTiming,
   getRepositoryJson,
+  normalizeLineBotUpdateUrl,
+  notifyLineUpdate,
   parseGooglePlayHtml,
   verifyBearerAuthorization,
 } from "../lib/battlecats-monitor.js";
+import { checkDedupeAndDispatch } from "../scripts/monitor-battlecats.js";
 
 const matchingFixture = await readFile(new URL("./fixtures/google-play-matching.html", import.meta.url), "utf8");
 const mismatchFixture = await readFile(new URL("./fixtures/google-play-mismatch.html", import.meta.url), "utf8");
@@ -46,6 +49,187 @@ test("workflowのRapid Monitorは60秒間を5秒間隔で監視する", async ()
   assert.match(workflow, /BATTLECATS_MONITOR_INTERVAL_MS: '5000'/);
   assert.doesNotMatch(workflow, /BATTLECATS_MONITOR_DURATION_MS: '85000'/);
   assert.doesNotMatch(workflow, /BATTLECATS_MONITOR_INTERVAL_MS: '2000'/);
+});
+
+test("workflowは既存LINE_BOT_EVENT_UPDATE secretsを通知環境変数へ渡す", async () => {
+  const workflow = await readFile(
+    new URL("../.github/workflows/monitor-battlecats-google-play.yml", import.meta.url),
+    "utf8",
+  );
+  assert.match(workflow, /LINE_BOT_UPDATE_URL: \$\{\{ secrets\.LINE_BOT_EVENT_UPDATE_URL \}\}/);
+  assert.match(workflow, /LINE_BOT_UPDATE_SECRET: \$\{\{ secrets\.LINE_BOT_EVENT_UPDATE_SECRET \}\}/);
+  assert.match(workflow, /BATTLECATS_FOLLOWUP_TOKEN: \$\{\{ github\.token \}\}/);
+  assert.match(workflow, /permissions:[\s\S]*actions: write/);
+  const followupWorkflow = await readFile(
+    new URL("../.github/workflows/monitor-battlecats-site.yml", import.meta.url),
+    "utf8",
+  );
+  assert.match(followupWorkflow, /timeout-minutes: 90/);
+  assert.match(followupWorkflow, /cancel-in-progress: true/);
+  assert.match(followupWorkflow, /LINE_BOT_UPDATE_URL: \$\{\{ secrets\.LINE_BOT_EVENT_UPDATE_URL \}\}/);
+  assert.match(followupWorkflow, /LINE_BOT_UPDATE_SECRET: \$\{\{ secrets\.LINE_BOT_EVENT_UPDATE_SECRET \}\}/);
+});
+
+test("LINE通知URLのpathnameは既存値に関係なくbattlecats-updateへ置換する", () => {
+  assert.equal(
+    normalizeLineBotUpdateUrl("https://bot.example.test/event-update?source=monitor"),
+    "https://bot.example.test/battlecats-update?source=monitor",
+  );
+  assert.equal(normalizeLineBotUpdateUrl("https://bot.example.test/"), "https://bot.example.test/battlecats-update");
+});
+
+test("LINE detected通知のpayloadとheaderを固定契約で送る", async () => {
+  let request;
+  const sent = await notifyLineUpdate({
+    url: "https://bot.example.test/event-update",
+    secret: "line-secret",
+    versionName: "15.5.2",
+    detectedAt: "2026-08-24T04:00:00.000Z",
+    eventId: "battlecats-jp-google-play-15.5.2",
+    fetchImpl: async (url, options) => {
+      request = { url, options };
+      return { ok: true, status: 200 };
+    },
+  });
+  assert.equal(sent, true);
+  assert.equal(request.url, "https://bot.example.test/battlecats-update");
+  assert.equal(request.options.headers["x-event-update-secret"], "line-secret");
+  assert.deepEqual(JSON.parse(request.options.body), {
+    phase: "detected",
+    versionName: "15.5.2",
+    region: "JP",
+    detectedAt: "2026-08-24T04:00:00.000Z",
+    eventId: "battlecats-jp-google-play-15.5.2",
+  });
+});
+
+test("LINE site通知はdetectedと同じ識別情報に比較URLだけを加える", async () => {
+  let payload;
+  const sent = await notifyLineUpdate({
+    url: "https://bot.example.test/event-update",
+    secret: "line-secret",
+    phase: "site",
+    versionName: "15.5.2",
+    detectedAt: "2026-08-24T04:00:00.000Z",
+    eventId: "battlecats-jp-google-play-15.5.2",
+    siteUrl: "https://site.example.test/pages/asset-explorer/?dataset=Local&version=15502&compare=15501&view=diff&layout=list",
+    fetchImpl: async (_url, options) => {
+      payload = JSON.parse(options.body);
+      return { ok: true, status: 200 };
+    },
+  });
+  assert.equal(sent, true);
+  assert.deepEqual(payload, {
+    phase: "site",
+    versionName: "15.5.2",
+    region: "JP",
+    detectedAt: "2026-08-24T04:00:00.000Z",
+    eventId: "battlecats-jp-google-play-15.5.2",
+    siteUrl: "https://site.example.test/pages/asset-explorer/?dataset=Local&version=15502&compare=15501&view=diff&layout=list",
+  });
+});
+
+test("dedupe判定後はLINE detected通知をpublisher dispatchより先に行う", async () => {
+  const events = [];
+  const dispatched = await checkDedupeAndDispatch({
+    owner: "owner",
+    publishRepo: "publisher",
+    publishWorkflow: "download-battlecats.yml",
+    token: "token",
+    lineBotUpdateUrl: "https://bot.example.test",
+    lineBotUpdateSecret: "line-secret",
+    followupToken: "",
+  }, "15.5.2", {
+    readPublishedVersion: async () => "15.5.1",
+    listWorkflowRuns: async () => [],
+    notifyLineUpdate: async payload => events.push({ kind: "notify", payload }),
+    dispatchWorkflow: async () => events.push({ kind: "dispatch" }),
+  });
+  assert.equal(dispatched, true);
+  assert.equal(events[0].kind, "notify");
+  assert.equal(events[1].kind, "dispatch");
+  assert.deepEqual(events[0].payload, {
+    url: "https://bot.example.test",
+    secret: "line-secret",
+    phase: "detected",
+    versionName: "15.5.2",
+    detectedAt: events[0].payload.detectedAt,
+    eventId: "battlecats-jp-google-play-15.5.2",
+  });
+});
+
+test("LINE通知がfalseでもpublisher dispatchを止めず、follow-up dispatchは短くretryする", async () => {
+  const events = [];
+  let followupAttempts = 0;
+  let followupOptions;
+  let detectedPayload;
+  const dispatched = await checkDedupeAndDispatch({
+    owner: "owner",
+    ownerRepo: "event",
+    publishRepo: "publisher",
+    publishWorkflow: "download-battlecats.yml",
+    siteWorkflow: "monitor-battlecats-site.yml",
+    token: "token",
+    lineBotUpdateUrl: "https://bot.example.test",
+    lineBotUpdateSecret: "line-secret",
+    followupToken: "followup-token",
+  }, "15.5.2", {
+    readPublishedVersion: async () => "15.5.1",
+    listWorkflowRuns: async () => [],
+    notifyLineUpdate: async payload => { detectedPayload = payload; events.push("notify-failed"); return false; },
+    dispatchWorkflow: async () => events.push("publisher"),
+    dispatchFollowup: async options => {
+      followupOptions = options;
+      followupAttempts++;
+      if (followupAttempts === 1) throw new Error("temporary");
+      events.push("followup");
+    },
+    sleep: async () => {},
+  });
+  assert.equal(dispatched, true);
+  assert.deepEqual(events, ["notify-failed", "publisher", "followup"]);
+  assert.equal(followupAttempts, 2);
+  assert.equal(followupOptions.inputs.expected_version, "15.5.2");
+  assert.equal(followupOptions.inputs.detected_at, detectedPayload.detectedAt);
+  assert.equal(followupOptions.inputs.event_id, detectedPayload.eventId);
+});
+
+test("LINE通知実装の予期しない例外でもpublisher dispatchを止めない", async () => {
+  let dispatchCount = 0;
+  const dispatched = await checkDedupeAndDispatch({
+    owner: "owner",
+    publishRepo: "publisher",
+    publishWorkflow: "download-battlecats.yml",
+    token: "token",
+    followupToken: "",
+  }, "15.5.2", {
+    readPublishedVersion: async () => "15.5.1",
+    listWorkflowRuns: async () => [],
+    notifyLineUpdate: async () => { throw new Error("temporary"); },
+    dispatchWorkflow: async () => { dispatchCount++; },
+  });
+  assert.equal(dispatched, true);
+  assert.equal(dispatchCount, 1);
+});
+
+test("同じcandidateのpublisher active runがあれば通知もdispatchもしない", async () => {
+  let notifyCount = 0;
+  let dispatchCount = 0;
+  const dispatched = await checkDedupeAndDispatch({
+    owner: "owner",
+    publishRepo: "publisher",
+    publishWorkflow: "download-battlecats.yml",
+    token: "token",
+    followupToken: "",
+  }, "15.5.2", {
+    readPublishedVersion: async () => "15.5.1",
+    listWorkflowRuns: async () => [{ status: "in_progress", display_title: "15.5.2" }],
+    notifyLineUpdate: async () => { notifyCount++; },
+    dispatchWorkflow: async () => { dispatchCount++; },
+  });
+  assert.equal(dispatched, false);
+  assert.equal(notifyCount, 0);
+  assert.equal(dispatchCount, 0);
 });
 
 test("新機能とstructured metadataが一致した場合だけ候補を返す", () => {
