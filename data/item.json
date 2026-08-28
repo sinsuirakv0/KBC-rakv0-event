@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/08/25 16:11:02",
+  "updatedAt": "26/08/28 14:14:25",
   "data": [
     {
       "header": {
@@ -1279,8 +1279,8 @@
       "header": {
         "startDate": "20260811",
         "startTime": "1100",
-        "endDate": "20300101",
-        "endTime": "000",
+        "endDate": "20260901",
+        "endTime": "1100",
         "minVersion": "150501",
         "maxVersion": "999999"
       },
@@ -1294,14 +1294,14 @@
         "url": "",
         "repeatFlag": 0
       },
-      "raw": "20260811\t1100\t20300101\t000\t150501\t999999\t0\t0\t2509\t301\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
+      "raw": "20260811\t1100\t20260901\t1100\t150501\t999999\t0\t0\t2509\t301\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
         "startDate": "20260811",
         "startTime": "1100",
-        "endDate": "20300101",
-        "endTime": "000",
+        "endDate": "20260901",
+        "endTime": "1100",
         "minVersion": "150501",
         "maxVersion": "999999"
       },
@@ -1315,7 +1315,7 @@
         "url": "",
         "repeatFlag": 0
       },
-      "raw": "20260811\t1100\t20300101\t000\t150501\t999999\t0\t0\t2510\t302\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
+      "raw": "20260811\t1100\t20260901\t1100\t150501\t999999\t0\t0\t2510\t302\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
@@ -1454,6 +1454,132 @@
         "repeatFlag": 2
       },
       "raw": "20260901\t000\t20260902\t000\t150501\t999999\t0\t0\t51755\t835\t0\t\t\t7\t0\t2\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260901",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2511,
+        "giftType": 301,
+        "giftAmount": 0,
+        "title": "←全画面告知の表示と同時に付与する",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260901\t1100\t20300101\t000\t150600\t999999\t0\t0\t2511\t301\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260901",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2512,
+        "giftType": 302,
+        "giftAmount": 0,
+        "title": "←全画面告知の表示と同時に付与する",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260901\t1100\t20300101\t000\t150600\t999999\t0\t0\t2512\t302\t0\t←全画面告知の表示と同時に付与する\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260901",
+        "startTime": "1100",
+        "endDate": "20260915",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51756,
+        "giftType": 954,
+        "giftAmount": 0,
+        "title": "「熱血！にゃんこ大運動会」イベント開催記念",
+        "message": "「熱血硬派くにおくん」「りゅういち」参戦！<br>毎日ログインで1日1回便利なアイテムをゲット！(9/15まで)",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260901\t1100\t20260915\t1100\t150600\t999999\t0\t0\t51756\t954\t0\t「熱血！にゃんこ大運動会」イベント開催記念\t「熱血硬派くにおくん」「りゅういち」参戦！<br>毎日ログインで1日1回便利なアイテムをゲット！(9/15まで)\t7\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260901",
+        "startTime": "1100",
+        "endDate": "20260915",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51757,
+        "giftType": 852,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260901\t1100\t20260915\t1100\t150600\t999999\t0\t0\t51757\t852\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260901",
+        "startTime": "1100",
+        "endDate": "20260915",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51758,
+        "giftType": 833,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260901\t1100\t20260915\t1100\t150600\t999999\t0\t0\t51758\t833\t0\t\t\t300\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260901",
+        "startTime": "1100",
+        "endDate": "20260915",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51759,
+        "giftType": 834,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260901\t1100\t20260915\t1100\t150600\t999999\t0\t0\t51759\t834\t0\t\t\t300\t2\t0\t0\t0\t0\t0"
     }
   ]
 }
