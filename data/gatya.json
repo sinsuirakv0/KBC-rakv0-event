@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/08/25 16:11:06",
+  "updatedAt": "26/08/28 14:14:34",
   "data": [
     {
       "header": {
@@ -783,36 +783,6 @@
     },
     {
       "header": {
-        "startDate": "20260823",
-        "startTime": "1100",
-        "endDate": "20260825",
-        "endTime": "1100",
-        "minVersion": "150501",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 3
-      },
-      "gachas": [
-        {
-          "id": 1021,
-          "price": 150,
-          "flags": 16384,
-          "rates": {
-            "normal": 0,
-            "rare": 6970,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 30,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "浮いてる敵にめっぽう強いキャラ「獅子番長ラクレス」登場！★詳細はバナーをタップ!!"
-        }
-      ],
-      "raw": "20260823\t1100\t20260825\t1100\t150501\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1021\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t浮いてる敵にめっぽう強いキャラ「獅子番長ラクレス」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260825",
         "startTime": "1100",
         "endDate": "20260901",
@@ -870,36 +840,6 @@
         }
       ],
       "raw": "20260825\t1100\t20260901\t1100\t150501\t999999\t0\t0\t1\t2\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1000\t150\t0\t20600\t0\t0\t7000\t0\t2500\t0\t500\t0\t0\t0\t「厨房マンボウ」に本能追加！★詳細はバナーをタップ!!\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260825",
-        "startTime": "1100",
-        "endDate": "20260827",
-        "endTime": "1100",
-        "minVersion": "150501",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 3
-      },
-      "gachas": [
-        {
-          "id": 991,
-          "price": 150,
-          "flags": 20600,
-          "rates": {
-            "normal": 0,
-            "rare": 6970,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 30,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "波動攻撃と召喚能力を持つ「韋駄天スカンダ」登場！★詳細はバナーをタップ!!"
-        }
-      ],
-      "raw": "20260825\t1100\t20260827\t1100\t150501\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t991\t150\t0\t20600\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t波動攻撃と召喚能力を持つ「韋駄天スカンダ」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
@@ -1080,6 +1020,306 @@
         }
       ],
       "raw": "20260829\t1100\t20260901\t1100\t150501\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1015\t150\t0\t4216\t0\t0\t6970\t0\t2500\t0\t500\t1\t30\t0\t召喚能力を持つキャラクター「魔導師シドミ」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260901",
+        "startTime": "1100",
+        "endDate": "20260915",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 1
+      },
+      "gachas": [
+        {
+          "id": 1079,
+          "price": 150,
+          "flags": 0,
+          "rates": {
+            "normal": 0,
+            "rare": 7000,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 0,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "熱血キャラクターが揃う「熱血!大運動会」ガチャ登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20260901\t1100\t20260915\t1100\t150600\t999999\t0\t0\t1\t1\t1079\t150\t0\t0\t0\t0\t7000\t0\t2500\t0\t500\t0\t0\t0\t熱血キャラクターが揃う「熱血!大運動会」ガチャ登場！★詳細はバナーをタップ!!\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260901",
+        "startTime": "1100",
+        "endDate": "20260915",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 2
+      },
+      "gachas": [
+        {
+          "id": 1080,
+          "price": 150,
+          "flags": 0,
+          "rates": {
+            "normal": 0,
+            "rare": 7000,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 0,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "「りゅういち」参戦！「熱血!大運動会」ガチャ登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20260901\t1100\t20260915\t1100\t150600\t999999\t0\t0\t1\t2\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1080\t150\t0\t0\t0\t0\t7000\t0\t2500\t0\t500\t0\t0\t0\t「りゅういち」参戦！「熱血!大運動会」ガチャ登場！★詳細はバナーをタップ!!\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260901",
+        "startTime": "1100",
+        "endDate": "20260903",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 3
+      },
+      "gachas": [
+        {
+          "id": 979,
+          "price": 150,
+          "flags": 16384,
+          "rates": {
+            "normal": 0,
+            "rare": 6970,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 30,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "爆波攻撃と召喚能力を持つ「曲射砲台ランチャーズ」登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20260901\t1100\t20260903\t1100\t150600\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t979\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t爆波攻撃と召喚能力を持つ「曲射砲台ランチャーズ」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260903",
+        "startTime": "1100",
+        "endDate": "20260905",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 3
+      },
+      "gachas": [
+        {
+          "id": 1059,
+          "price": 150,
+          "flags": 16384,
+          "rates": {
+            "normal": 0,
+            "rare": 6970,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 30,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "赤と悪魔に超ダメージを与える「嵐竜機ヴォルネード」登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20260903\t1100\t20260905\t1100\t150600\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1059\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t赤と悪魔に超ダメージを与える「嵐竜機ヴォルネード」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260905",
+        "startTime": "1100",
+        "endDate": "20260908",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 1
+      },
+      "gachas": [
+        {
+          "id": 1069,
+          "price": 150,
+          "flags": 0,
+          "rates": {
+            "normal": 0,
+            "rare": 6470,
+            "superRare": 2600,
+            "uberRare": 900,
+            "legendRare": 30,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "限定キャラ「幼騎士ルーノ」登場！★超激レア出現率アップの「超ネコ祭」開催中!!"
+        }
+      ],
+      "raw": "20260905\t1100\t20260908\t1100\t150600\t999999\t0\t0\t1\t1\t1069\t150\t0\t0\t0\t0\t6470\t0\t2600\t0\t900\t0\t30\t0\t限定キャラ「幼騎士ルーノ」登場！★超激レア出現率アップの「超ネコ祭」開催中!!\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260905",
+        "startTime": "1100",
+        "endDate": "20260915",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 2
+      },
+      "gachas": [
+        {
+          "id": 1079,
+          "price": 150,
+          "flags": 0,
+          "rates": {
+            "normal": 0,
+            "rare": 7000,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 0,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "熱血キャラクターが揃う「熱血!大運動会」ガチャ登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20260905\t1100\t20260915\t1100\t150600\t999999\t0\t0\t1\t2\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1079\t150\t0\t0\t0\t0\t7000\t0\t2500\t0\t500\t0\t0\t0\t熱血キャラクターが揃う「熱血!大運動会」ガチャ登場！★詳細はバナーをタップ!!\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260905",
+        "startTime": "1100",
+        "endDate": "20260915",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 3
+      },
+      "gachas": [
+        {
+          "id": 1080,
+          "price": 150,
+          "flags": 0,
+          "rates": {
+            "normal": 0,
+            "rare": 7000,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 0,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "「りゅういち」参戦！「熱血!大運動会」ガチャ登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20260905\t1100\t20260915\t1100\t150600\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1080\t150\t0\t0\t0\t0\t7000\t0\t2500\t0\t500\t0\t0\t0\t「りゅういち」参戦！「熱血!大運動会」ガチャ登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260908",
+        "startTime": "1100",
+        "endDate": "20260915",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 1
+      },
+      "gachas": [
+        {
+          "id": 1079,
+          "price": 150,
+          "flags": 0,
+          "rates": {
+            "normal": 0,
+            "rare": 7000,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 0,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "熱血キャラクターが揃う「熱血!大運動会」ガチャ登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20260908\t1100\t20260915\t1100\t150600\t999999\t0\t0\t1\t1\t1079\t150\t0\t0\t0\t0\t7000\t0\t2500\t0\t500\t0\t0\t0\t熱血キャラクターが揃う「熱血!大運動会」ガチャ登場！★詳細はバナーをタップ!!\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260908",
+        "startTime": "1100",
+        "endDate": "20260915",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 2
+      },
+      "gachas": [
+        {
+          "id": 1080,
+          "price": 150,
+          "flags": 0,
+          "rates": {
+            "normal": 0,
+            "rare": 7000,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 0,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "「りゅういち」参戦！「熱血!大運動会」ガチャ登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20260908\t1100\t20260915\t1100\t150600\t999999\t0\t0\t1\t2\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1080\t150\t0\t0\t0\t0\t7000\t0\t2500\t0\t500\t0\t0\t0\t「りゅういち」参戦！「熱血!大運動会」ガチャ登場！★詳細はバナーをタップ!!\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260908",
+        "startTime": "1100",
+        "endDate": "20260910",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 3
+      },
+      "gachas": [
+        {
+          "id": 946,
+          "price": 150,
+          "flags": 16384,
+          "rates": {
+            "normal": 0,
+            "rare": 6970,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 30,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "進化後に召喚能力を持つキャラクター「花咲かじいさん」登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20260908\t1100\t20260910\t1100\t150600\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t946\t150\t0\t16384\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t進化後に召喚能力を持つキャラクター「花咲かじいさん」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
     }
   ]
 }
