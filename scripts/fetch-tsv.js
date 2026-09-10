@@ -11,12 +11,13 @@ function hashText(text) {
 
 export async function fetchTsv(name, jwt) {
   console.log(`[${name}] fetching TSV...`);
-  const res = await fetch(`${BASE_URL}/${name}.tsv?jwt=${jwt}`);
+  const res = await fetch(`${BASE_URL}/${name}.tsv?jwt=${encodeURIComponent(jwt)}`, { signal: AbortSignal.timeout(15000) });
   if (!res.ok) {
     throw new Error(`TSV fetch failed: HTTP ${res.status}`);
   }
 
   const text = await res.text();
+  if (!text.trim()) throw new Error("Empty TSV response");
   return { text, hash: hashText(text) };
 }
 

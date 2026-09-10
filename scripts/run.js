@@ -14,6 +14,8 @@ import { getJWTWithCache } from "../lib/jwt.js";
 import { notifyDiscord, notifyEventBot } from "../lib/discord.js";
 import { fetchAndCheck, readPreviousHash } from "./fetch-tsv.js";
 import { updateFiles } from "./update-files.js";
+import { createSkdNotifier, sendSkdEvent } from "../lib/skd-notifications.js";
+import { pathToFileURL } from "node:url";
 
 const ALL_TYPES = ["gatya", "sale", "item"];
 const DEFAULT_CHECK_DURATION_MS = 85_000;
@@ -48,7 +50,7 @@ async function loadHashes() {
   return Object.fromEntries(entries);
 }
 
-async function checkType(name, jwt, hashes) {
+async function checkType(name, jwt, hashes, recover = false) {
   console.log(`\n--- ${name} ---`);
 
   const fetchResult = await fetchAndCheck(name, jwt, hashes[name]);
@@ -58,28 +60,15 @@ async function checkType(name, jwt, hashes) {
     return { name, success: false, skipped: true, changed: false, error: fetchResult.error };
   }
 
-  if (!fetchResult.changed && !force) {
+  if (!fetchResult.changed && !force && !recover) {
     console.log(`[${name}] unchanged; skipping update`);
     return { name, success: true, changed: false, ...fetchResult };
   }
 
-  return { name, success: true, changed: true, ...fetchResult };
+  return { name, success: true, ...fetchResult, changed: true };
 }
 
-async function updateType(result, hashes) {
-  if (!force) {
-    try {
-      const remoteHash = await readPreviousHash(result.name, { preferRemote: true });
-      if (remoteHash === result.hash) {
-        console.log(`[${result.name}] remote hash already updated; skipping duplicate update`);
-        hashes[result.name] = result.hash;
-        return { name: result.name, success: true, changed: false, duplicate: true, hash: result.hash };
-      }
-    } catch (err) {
-      console.warn(`[${result.name}] remote hash recheck failed; continuing update: ${err.message}`);
-    }
-  }
-
+async function updateType(result) {
   await notifyDiscord({ type: result.name, status: "detected", force, hash: result.hash });
 
   const updateResult = await updateFiles(result.name, result.text, result.hash, force);
@@ -142,6 +131,7 @@ async function runDetectionTest(jwt, startedAt) {
 
   const detectedAt = new Date().toISOString();
   const testHashes = Object.fromEntries(ok.map(result => [result.name, result.hash]).filter(([, hash]) => hash));
+  await sendSkdEvent({ version: 1, eventId: `skd-test:${testId}`, category: "skd", phase: "types", detectedAt, types: ok.map(result => result.name) });
   await notifyEventBot({
     types: ok.map(result => result.name),
     detectedAt,
@@ -156,10 +146,23 @@ async function runDetectionTest(jwt, startedAt) {
   console.log(`Detection test notification sent: testId=${testId} types=${ok.map(result => result.name).join(",")}`);
 }
 
-async function runRound(round, jwt, hashes, notifyFast) {
+export async function checkAndNotify(names, check, hashes, notify, readHash = readPreviousHash, forceUpdate = false, recovery = new Set()) {
+  return Promise.all(names.map(async name => {
+    const result = await check(name);
+    if (!result.success || !result.changed) return result;
+    if (!forceUpdate && !recovery.has(name)) {
+      const remoteHash = await readHash(name, { preferRemote: true });
+      if (remoteHash === result.hash) { hashes[name] = result.hash; return { ...result, changed: false }; }
+    }
+    if (!await notify(result) && !forceUpdate) return { ...result, changed: false };
+    return result;
+  }));
+}
+
+async function runRound(round, jwt, hashes, notifyFast, notifier, recovery) {
   console.log(`\n=== Round ${round}: ${types.join(", ")} ===`);
 
-  const checked = await Promise.all(types.map(name => checkType(name, jwt, hashes)));
+  const checked = await checkAndNotify(types, name => checkType(name, jwt, hashes, recovery.has(name)), hashes, result => notifier.detect(result), readPreviousHash, force, recovery);
   const failed = checked.filter(r => !r.success && !r.skipped);
   if (failed.length > 0) {
     throw new Error(`check failed: ${failed.map(r => `${r.name}=${r.error}`).join(", ")}`);
@@ -174,7 +177,11 @@ async function runRound(round, jwt, hashes, notifyFast) {
   console.log(`Round ${round}: changed ${changed.map(r => r.name).join(", ")}`);
   await notifyFast(changed);
 
-  const updateResults = await Promise.all(changed.map(result => updateType(result, hashes)));
+  const updateResults = await Promise.all(changed.map(async result => {
+    const updated = await updateType(result);
+    if (updated.success) { await notifier.saved(updated); recovery.delete(result.name); }
+    return updated;
+  }));
   const updateFailed = updateResults.filter(r => !r.success);
   if (updateFailed.length > 0) {
     throw new Error(`update failed: ${updateFailed.map(r => `${r.name}=${r.error}`).join(", ")}`);
@@ -190,6 +197,8 @@ async function runRound(round, jwt, hashes, notifyFast) {
 
 async function main() {
   const startedAt = new Date().toISOString();
+  const notifier = createSkdNotifier();
+  const recovery = new Set();
   let detectionSummaryUnix = null;
   const detectedForDetails = new Map();
   const updatedForDetails = [];
@@ -213,6 +222,13 @@ async function main() {
   }
 
   try {
+    if (!testDetect) {
+      await notifier.finish();
+      const pending = await notifier.pending();
+      for (const type of Object.keys(pending?.hashes ?? {})) {
+        if (pending.files[type]?.hash !== pending.hashes[type]) recovery.add(type);
+      }
+    }
     console.log("Preparing JWT...");
     const jwtResult = await getJWTWithCache();
     const jwtSource = jwtResult.cacheHit ? "cache" : "fresh";
@@ -226,7 +242,7 @@ async function main() {
     const hashes = await loadHashes();
 
     if (force) {
-      const { detected, updated } = await runRound(1, jwtResult.jwt, hashes, notifyFast);
+      const { detected, updated } = await runRound(1, jwtResult.jwt, hashes, notifyFast, notifier, recovery);
       for (const result of detected) detectedForDetails.set(result.name, result);
       updatedForDetails.push(...updated);
       await notifyDetectedDetails([...detectedForDetails.values()], updatedForDetails);
@@ -238,7 +254,7 @@ async function main() {
       do {
         const roundStartedAt = Date.now();
         round++;
-        const { detected, updated } = await runRound(round, jwtResult.jwt, hashes, notifyFast);
+        const { detected, updated } = await runRound(round, jwtResult.jwt, hashes, notifyFast, notifier, recovery);
         for (const result of detected) detectedForDetails.set(result.name, result);
         updatedForDetails.push(...updated);
 
@@ -253,12 +269,14 @@ async function main() {
 
       await notifyDetectedDetails([...detectedForDetails.values()], updatedForDetails);
     }
+    await notifier.finish();
   } catch (err) {
     console.error("Fatal error:", err.message);
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   console.log("\n=== Event check complete ===");
 }
 
-main();
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();

@@ -4,14 +4,15 @@
   "type": "module",
   "description": "にゃんこ大戦争イベントデータ取得・変換バックエンド",
   "scripts": {
-    "start":       "node scripts/run.js",
+    "start": "node scripts/run.js",
     "test:detect": "node scripts/run.js --test-detect",
-    "force":       "node scripts/run.js --force",
+    "force": "node scripts/run.js --force",
     "force:gatya": "node scripts/run.js --force gatya",
-    "force:sale":  "node scripts/run.js --force sale",
-    "force:item":  "node scripts/run.js --force item",
+    "force:sale": "node scripts/run.js --force sale",
+    "force:item": "node scripts/run.js --force item",
     "monitor:battlecats": "node scripts/monitor-battlecats.js",
-    "test:battlecats-monitor": "node --test tests/battlecats-monitor.test.mjs tests/battlecats-monitor-api.test.mjs tests/battlecats-site.test.mjs"
+    "test:battlecats-monitor": "node --test tests/battlecats-monitor.test.mjs tests/battlecats-monitor-api.test.mjs tests/battlecats-site.test.mjs",
+    "test:skd": "node --test tests/skd-notifications.test.mjs"
   },
   "engines": {
     "node": ">=22"
