@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/09/08 14:16:24",
+  "updatedAt": "26/09/14 15:48:24",
   "data": [
     {
       "header": {
@@ -1193,48 +1193,6 @@
     },
     {
       "header": {
-        "startDate": "20260811",
-        "startTime": "1100",
-        "endDate": "20260908",
-        "endTime": "1100",
-        "minVersion": "150501",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 82001,
-        "giftType": 11007,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20260811\t1100\t20260908\t1100\t150501\t999999\t0\t0\t82001\t11007\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260816",
-        "startTime": "1100",
-        "endDate": "20260908",
-        "endTime": "1100",
-        "minVersion": "150501",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 85002,
-        "giftType": 11030,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20260816\t1100\t20260908\t1100\t150501\t999999\t0\t0\t85002\t11030\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260901",
         "startTime": "1100",
         "endDate": "20300101",
@@ -1358,6 +1316,132 @@
         "repeatFlag": 0
       },
       "raw": "20260901\t1100\t20260915\t1100\t150600\t999999\t0\t0\t51759\t834\t0\t\t\t300\t2\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260915",
+        "startTime": "1100",
+        "endDate": "20261009",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51760,
+        "giftType": 35058,
+        "giftAmount": 0,
+        "title": "1億2000万ダウンロード記念ログインスタンプ☆",
+        "message": "イベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>最大でレアチケ5枚、にゃんチケ5枚の合計10枚をゲット！(10/9まで)",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260915\t1100\t20261009\t1100\t150600\t999999\t0\t0\t51760\t35058\t0\t1億2000万ダウンロード記念ログインスタンプ☆\tイベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>最大でレアチケ5枚、にゃんチケ5枚の合計10枚をゲット！(10/9まで)\t7\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260915",
+        "startTime": "1100",
+        "endDate": "20260921",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51761,
+        "giftType": 827,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260915\t1100\t20260921\t1100\t150600\t999999\t0\t0\t51761\t827\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260915",
+        "startTime": "1100",
+        "endDate": "20261009",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51762,
+        "giftType": 830,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260915\t1100\t20261009\t1100\t150600\t999999\t0\t0\t51762\t830\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260915",
+        "startTime": "1100",
+        "endDate": "20261016",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 84000,
+        "giftType": 11026,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260915\t1100\t20261016\t1100\t150600\t999999\t0\t0\t84000\t11026\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260916",
+        "startTime": "1100",
+        "endDate": "20261008",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 85003,
+        "giftType": 11033,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260916\t1100\t20261008\t1100\t150600\t999999\t0\t0\t85003\t11033\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260921",
+        "startTime": "000",
+        "endDate": "20260922",
+        "endTime": "000",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51763,
+        "giftType": 203,
+        "giftAmount": 1,
+        "title": "敬老の日記念☆",
+        "message": "祝日感謝！敬老の日を記念して<br>レアチケット1枚をプレゼント！",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260921\t000\t20260922\t000\t150600\t999999\t0\t0\t51763\t203\t1\t敬老の日記念☆\t祝日感謝！敬老の日を記念して<br>レアチケット1枚をプレゼント！\t7\t0\t0\t0\t0\t0\t0"
     }
   ]
 }
