@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/09/14 15:48:24",
+  "updatedAt": "26/09/18 13:26:26",
   "data": [
     {
       "header": {
@@ -1235,90 +1235,6 @@
     },
     {
       "header": {
-        "startDate": "20260901",
-        "startTime": "1100",
-        "endDate": "20260915",
-        "endTime": "1100",
-        "minVersion": "150600",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51756,
-        "giftType": 954,
-        "giftAmount": 0,
-        "title": "「熱血！にゃんこ大運動会」イベント開催記念",
-        "message": "「熱血硬派くにおくん」「りゅういち」参戦！<br>毎日ログインで1日1回便利なアイテムをゲット！(9/15まで)",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20260901\t1100\t20260915\t1100\t150600\t999999\t0\t0\t51756\t954\t0\t「熱血！にゃんこ大運動会」イベント開催記念\t「熱血硬派くにおくん」「りゅういち」参戦！<br>毎日ログインで1日1回便利なアイテムをゲット！(9/15まで)\t7\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260901",
-        "startTime": "1100",
-        "endDate": "20260915",
-        "endTime": "1100",
-        "minVersion": "150600",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51757,
-        "giftType": 852,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260901\t1100\t20260915\t1100\t150600\t999999\t0\t0\t51757\t852\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260901",
-        "startTime": "1100",
-        "endDate": "20260915",
-        "endTime": "1100",
-        "minVersion": "150600",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51758,
-        "giftType": 833,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260901\t1100\t20260915\t1100\t150600\t999999\t0\t0\t51758\t833\t0\t\t\t300\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20260901",
-        "startTime": "1100",
-        "endDate": "20260915",
-        "endTime": "1100",
-        "minVersion": "150600",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51759,
-        "giftType": 834,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20260901\t1100\t20260915\t1100\t150600\t999999\t0\t0\t51759\t834\t0\t\t\t300\t2\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260915",
         "startTime": "1100",
         "endDate": "20261009",
@@ -1442,6 +1358,195 @@
         "repeatFlag": 0
       },
       "raw": "20260921\t000\t20260922\t000\t150600\t999999\t0\t0\t51763\t203\t1\t敬老の日記念☆\t祝日感謝！敬老の日を記念して<br>レアチケット1枚をプレゼント！\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260921",
+        "startTime": "1100",
+        "endDate": "20261001",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51764,
+        "giftType": 833,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260921\t1100\t20261001\t1100\t150600\t999999\t0\t0\t51764\t833\t0\t\t\t300\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260921",
+        "startTime": "1100",
+        "endDate": "20261001",
+        "endTime": "1100",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51765,
+        "giftType": 834,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260921\t1100\t20261001\t1100\t150600\t999999\t0\t0\t51765\t834\t0\t\t\t300\t2\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260923",
+        "startTime": "000",
+        "endDate": "20260924",
+        "endTime": "000",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2513,
+        "giftType": 203,
+        "giftAmount": 1,
+        "title": "秋分の日記念☆",
+        "message": "祝日感謝！秋分の日を記念して<br>レアチケット1枚をプレゼント！",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20260923\t000\t20260924\t000\t150600\t999999\t0\t0\t2513\t203\t1\t秋分の日記念☆\t祝日感謝！秋分の日を記念して<br>レアチケット1枚をプレゼント！\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260924",
+        "startTime": "1100",
+        "endDate": "20261011",
+        "endTime": "0",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51766,
+        "giftType": 35052,
+        "giftAmount": 0,
+        "title": "「こねこ音楽祭」ログインボーナス（Lv.1）",
+        "message": "こねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260924\t1100\t20261011\t0\t150600\t999999\t0\t0\t51766\t35052\t0\t「こねこ音楽祭」ログインボーナス（Lv.1）\tこねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）\t7\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260924",
+        "startTime": "1100",
+        "endDate": "20261011",
+        "endTime": "0",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51767,
+        "giftType": 35053,
+        "giftAmount": 0,
+        "title": "「こねこ音楽祭」ログインボーナス（Lv.2）",
+        "message": "こねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260924\t1100\t20261011\t0\t150600\t999999\t0\t0\t51767\t35053\t0\t「こねこ音楽祭」ログインボーナス（Lv.2）\tこねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）\t7\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260924",
+        "startTime": "1100",
+        "endDate": "20261011",
+        "endTime": "0",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51768,
+        "giftType": 35054,
+        "giftAmount": 0,
+        "title": "「こねこ音楽祭」ログインボーナス（Lv.3）",
+        "message": "こねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260924\t1100\t20261011\t0\t150600\t999999\t0\t0\t51768\t35054\t0\t「こねこ音楽祭」ログインボーナス（Lv.3）\tこねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）\t7\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20260930",
+        "startTime": "0",
+        "endDate": "20261011",
+        "endTime": "0",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51769,
+        "giftType": 35055,
+        "giftAmount": 0,
+        "title": "「こねこ音楽祭」ログインボーナス（Lv.4）",
+        "message": "こねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）",
+        "url": "",
+        "repeatFlag": 1
+      },
+      "raw": "20260930\t0\t20261011\t0\t150600\t999999\t0\t0\t51769\t35055\t0\t「こねこ音楽祭」ログインボーナス（Lv.4）\tこねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）\t7\t0\t1\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20261001",
+        "startTime": "000",
+        "endDate": "20261002",
+        "endTime": "000",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51770,
+        "giftType": 828,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 4
+      },
+      "raw": "20261001\t000\t20261002\t000\t150600\t999999\t0\t0\t51770\t828\t0\t\t\t7\t0\t4\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20261001",
+        "startTime": "000",
+        "endDate": "20261002",
+        "endTime": "000",
+        "minVersion": "150600",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51771,
+        "giftType": 835,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 2
+      },
+      "raw": "20261001\t000\t20261002\t000\t150600\t999999\t0\t0\t51771\t835\t0\t\t\t7\t0\t2\t0\t0\t0\t0"
     }
   ]
 }
