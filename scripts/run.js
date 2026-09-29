@@ -18,8 +18,10 @@ import { createSkdNotifier, sendSkdEvent } from "../lib/skd-notifications.js";
 import { pathToFileURL } from "node:url";
 
 const ALL_TYPES = ["gatya", "sale", "item"];
+const SCHEDULE_TYPES = new Set(ALL_TYPES);
 const DEFAULT_CHECK_DURATION_MS = 85_000;
 const DEFAULT_CHECK_INTERVAL_MS = 2_000;
+const DEFAULT_READY_QUIET_MS = 10_000;
 const MIN_CHECK_INTERVAL_MS = 1_000;
 
 const args = process.argv.slice(2);
@@ -196,6 +198,7 @@ async function runRound(round, jwt, hashes, notifyFast, notifier, recovery) {
 }
 
 async function main() {
+  const runStartedAt = Date.now();
   const startedAt = new Date().toISOString();
   const notifier = createSkdNotifier();
   const recovery = new Set();
@@ -203,12 +206,14 @@ async function main() {
   const detectedForDetails = new Map();
   const updatedForDetails = [];
   const checkDurationMs = numberFromEnv("EVENT_CHECK_DURATION_MS", DEFAULT_CHECK_DURATION_MS);
+  const readyQuietMs = numberFromEnv("EVENT_READY_QUIET_MS", DEFAULT_READY_QUIET_MS);
   const checkIntervalMs = Math.max(
     MIN_CHECK_INTERVAL_MS,
     numberFromEnv("EVENT_CHECK_INTERVAL_MS", DEFAULT_CHECK_INTERVAL_MS)
   );
 
   console.log(`=== Event check started ${startedAt}${force ? " [--force]" : ""} ===`);
+  console.log(`[timing] check-start duration_ms=${checkDurationMs} interval_ms=${checkIntervalMs} ready_quiet_ms=${readyQuietMs}`);
   if (force) console.log(`Targets: ${types.join(", ")}`);
 
   async function notifyFast(changed) {
@@ -245,10 +250,11 @@ async function main() {
       const { detected, updated } = await runRound(1, jwtResult.jwt, hashes, notifyFast, notifier, recovery);
       for (const result of detected) detectedForDetails.set(result.name, result);
       updatedForDetails.push(...updated);
-      await notifyDetectedDetails([...detectedForDetails.values()], updatedForDetails);
     } else {
       const deadline = Date.now() + checkDurationMs;
       let round = 0;
+      let lastScheduleUpdateAt = null;
+      let completionReason = "deadline";
       console.log(`Looping checks for ${checkDurationMs}ms at ${checkIntervalMs}ms intervals`);
 
       do {
@@ -257,6 +263,16 @@ async function main() {
         const { detected, updated } = await runRound(round, jwtResult.jwt, hashes, notifyFast, notifier, recovery);
         for (const result of detected) detectedForDetails.set(result.name, result);
         updatedForDetails.push(...updated);
+        const scheduleUpdates = updated.filter(result => SCHEDULE_TYPES.has(result.name));
+        if (scheduleUpdates.length > 0) {
+          lastScheduleUpdateAt = Date.now();
+          console.log(`[timing] schedule-saved round=${round} elapsed_ms=${lastScheduleUpdateAt - runStartedAt} types=${scheduleUpdates.map(result => result.name).join(",")}`);
+        }
+
+        if (lastScheduleUpdateAt !== null && Date.now() - lastScheduleUpdateAt >= readyQuietMs) {
+          completionReason = "quiet";
+          break;
+        }
 
         const remainingMs = deadline - Date.now();
         if (remainingMs <= 0) break;
@@ -267,9 +283,12 @@ async function main() {
         await sleep(waitMs);
       } while (Date.now() < deadline);
 
-      await notifyDetectedDetails([...detectedForDetails.values()], updatedForDetails);
+      console.log(`[timing] ready-window-complete reason=${completionReason} elapsed_ms=${Date.now() - runStartedAt} types=${[...detectedForDetails.keys()].join(",") || "none"}`);
     }
+    const readyStartedAt = Date.now();
     await notifier.finish();
+    console.log(`[timing] ready-finish-complete duration_ms=${Date.now() - readyStartedAt} total_ms=${Date.now() - runStartedAt}`);
+    await notifyDetectedDetails([...detectedForDetails.values()], updatedForDetails);
   } catch (err) {
     console.error("Fatal error:", err.message);
     process.exitCode = 1;

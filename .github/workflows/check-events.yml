@@ -74,6 +74,7 @@ jobs:
           PONOS_JWT_CACHE_FILE: .cache/ponos-jwt.json
           EVENT_CHECK_DURATION_MS: 85000
           EVENT_CHECK_INTERVAL_MS: 2000
+          EVENT_READY_QUIET_MS: 10000
 
       - name: Run force update
         if: ${{ github.event.inputs.force != '' }}
