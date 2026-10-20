@@ -60,7 +60,7 @@ async function readPublishedVersion(config) {
   const payload = await getRepositoryJson({
     owner: config.owner,
     repo: config.assetsRepo,
-    path: "jp/version.json",
+    path: "metadata/jp/current.json",
     token: config.token,
   });
   return extractCurrentVersion(payload);

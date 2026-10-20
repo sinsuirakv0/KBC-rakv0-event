@@ -262,8 +262,8 @@ test("versionを数値segmentごとに比較する", () => {
   assert.throws(() => compareVersions("15.5", "15.5.1"));
 });
 
-test("jp/version.jsonのpackageとversionを検証する", () => {
-  assert.equal(extractCurrentVersion({ packageName: "jp.co.ponos.battlecats", versionName: "15.5.1" }), "15.5.1");
+test("検証済みJPのcurrentだけを採用する", () => {
+  assert.equal(extractCurrentVersion({ schemaVersion:1,status:"verified",sourceRegion:"jp",versionName: "15.5.1" }), "15.5.1");
   assert.throws(() => extractCurrentVersion({ packageName: "other.app", versionName: "15.5.1" }));
 });
 
@@ -307,16 +307,16 @@ test("currentより増加したversionでactive runがない場合だけdispatch
   }), { shouldDispatch: false, reason: "another-publish-run-active" });
 });
 
-test("GitHub Contents APIのbase64 JSONを読む", async () => {
+test("GitHub Contents APIのraw JSONを読む", async () => {
   const payload = { versionName: "15.5.1" };
   const result = await getRepositoryJson({
     owner: "owner",
     repo: "assets",
-    path: "jp/version.json",
+    path: "metadata/jp/current.json",
     token: "token",
     fetchImpl: async () => ({
       ok: true,
-      json: async () => ({ encoding: "base64", content: Buffer.from(JSON.stringify(payload)).toString("base64") }),
+      text: async () => JSON.stringify(payload),
     }),
   });
   assert.deepEqual(result, payload);

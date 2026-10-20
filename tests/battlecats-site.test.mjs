@@ -1,95 +1,35 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
-  buildAssetExplorerUrl,
-  findReadyComparison,
-  selectComparisonSnapshots,
-} from "../scripts/monitor-battlecats-site.js";
+import {buildAssetExplorerUrl,findReadyComparison,selectComparisonSnapshots} from "../scripts/monitor-battlecats-site.js";
 
-function snapshot(id, versionName, versionCode) {
-  return {
-    dataset: "Local",
-    id,
-    label: versionName,
-    versionName,
-    versionCode,
-    compactVersion: String(versionCode),
-    manifestPath: `jp/explorer/manifests/Local/${id}.json`,
-    rawRoot: `jp/Local/${versionCode}`,
-    available: true,
-    fileCount: 1,
-    totalSize: 10,
-  };
+function snapshot(datasetId,versionName,versionCode) {
+  return {datasetId,buildId:`${datasetId}-build`,versionName,versionCode,inventoryPath:`metadata/jp/versions/${datasetId}.inventory.json`,fileCount:1,totalSize:10};
 }
+const entries=[snapshot("15400","15.4.0",15400),snapshot("15300","15.3.0",15300),snapshot("15501","15.5.1",15501)];
+const catalog={schemaVersion:1,sourceRegion:"jp",snapshots:entries};
+const revision="a".repeat(40);
 
-const catalog = {
-  schemaVersion: 1,
-  datasets: {
-    Local: {
-      // catalog順とversionCode順を意図的に変える。
-      snapshots: [
-        snapshot("15400", "15.4.0", 15400),
-        snapshot("15300", "15.3.0", 15300),
-        snapshot("15501", "15.5.1", 15501),
-      ],
-    },
-  },
-};
-
-test("直前Local snapshotはcatalog順ではなくversionCode順で選ぶ", () => {
-  const selected = selectComparisonSnapshots(catalog, "15.5.1");
-  assert.equal(selected.current.id, "15501");
-  assert.equal(selected.previous.id, "15400");
+test("comparison selects the previous saved version by versionCode",()=>{
+  const selected=selectComparisonSnapshots(catalog,"15.5.1");
+  assert.equal(selected.current.id,"15501");
+  assert.equal(selected.previous.id,"15400");
+  selected.current.revision=revision;
+  const url=new URL(buildAssetExplorerUrl(undefined,selected.current,selected.previous));
+  assert.equal(url.hostname,"kbc-rakv0.pages.dev");
+  assert.equal(url.searchParams.get("revision"),revision);
+  assert.equal(url.searchParams.get("compare"),"15400");
 });
 
-test("siteUrlは新旧snapshotとdiff viewを含む", () => {
-  const selected = selectComparisonSnapshots(catalog, "15.5.1");
-  const url = new URL(buildAssetExplorerUrl("https://kbc.example.test/pages/asset-explorer/", selected.current, selected.previous));
-  assert.equal(url.searchParams.get("dataset"), "Local");
-  assert.equal(url.searchParams.get("version"), "15501");
-  assert.equal(url.searchParams.get("compare"), "15400");
-  assert.equal(url.searchParams.get("view"), "diff");
-  assert.equal(url.searchParams.get("layout"), "list");
-});
-
-test("version.json、catalog、前後manifestが揃うまでreadyにしない", async () => {
-  const selected = selectComparisonSnapshots(catalog, "15.5.1");
-  const manifests = {
-    [selected.current.manifestPath]: { schemaVersion: 1, dataset: "Local", snapshot: "15501", fileCount: 1, totalSize: 10, files: { "a.bin": { size: 10 } } },
-    [selected.previous.manifestPath]: { schemaVersion: 1, dataset: "Local", snapshot: "15400", fileCount: 1, totalSize: 10, files: { "b.bin": { size: 10 } } },
+test("readiness requires matching inventories and a working public consumer",async()=>{
+  const selected=selectComparisonSnapshots(catalog,"15.5.1");
+  const payloads={
+    "metadata/jp/current.json":{schemaVersion:1,status:"verified",sourceRegion:"jp",datasetId:"15501",buildId:"15501-build",versionName:"15.5.1"},
+    "metadata/jp/catalog.json":catalog,
   };
-  const payloads = {
-    "jp/version.json": { packageName: "jp.co.ponos.battlecats", versionName: "15.5.1" },
-    "jp/explorer/catalog.json": catalog,
-    ...manifests,
-  };
-  const result = await findReadyComparison({
-    owner: "owner",
-    assetsRepo: "assets",
-    token: "token",
-    expectedVersion: "15.5.1",
-    getJson: async ({ path }) => payloads[path],
-  });
-  assert.equal(result.current.id, "15501");
-  assert.equal(result.previous.id, "15400");
+  for(const entry of [selected.current,selected.previous]) payloads[entry.inventoryPath]={schemaVersion:1,sourceRegion:"jp",datasetId:entry.datasetId,versionName:entry.versionName,versionCode:entry.versionCode,files:[{relativePath:"DataLocal/file.csv",size:10,sha256:"a".repeat(64)}]};
+  const options={owner:"owner",assetsRepo:"assets",token:"token",expectedVersion:"15.5.1",getRevision:async()=>revision,getJson:async({path,ref})=>{assert.equal(ref,revision);return payloads[path];},checkSite:async()=>true};
+  assert.equal((await findReadyComparison(options)).current.id,"15501");
+  assert.equal(await findReadyComparison({...options,checkSite:async()=>false}),null);
+  payloads[selected.current.inventoryPath].versionCode++;
+  assert.equal(await findReadyComparison(options),null);
 });
-
-test("manifestのsnapshot identityまたはcatalog totalsが不一致ならreadyにしない", async () => {
-  const selected = selectComparisonSnapshots(catalog, "15.5.1");
-  const payloads = {
-    "jp/version.json": { packageName: "jp.co.ponos.battlecats", versionName: "15.5.1" },
-    "jp/explorer/catalog.json": catalog,
-    [selected.current.manifestPath]: { schemaVersion: 1, dataset: "Local", snapshot: "wrong", fileCount: 1, totalSize: 10, files: { "a.bin": { size: 10 } } },
-    [selected.previous.manifestPath]: { schemaVersion: 1, dataset: "Local", snapshot: "15400", fileCount: 99, totalSize: 999, files: { "b.bin": { size: 10 } } },
-  };
-  const result = await findReadyComparison({
-    owner: "owner",
-    assetsRepo: "assets",
-    token: "token",
-    expectedVersion: "15.5.1",
-    getJson: async ({ path }) => payloads[path],
-  });
-  assert.equal(result, null);
-});
-
-console.log("Battle Cats site follow-up tests passed.");
