@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/09/29 13:15:17",
+  "updatedAt": "26/10/19 16:23:00",
   "data": [
     {
       "header": {
@@ -1151,27 +1151,6 @@
     },
     {
       "header": {
-        "startDate": "20260417",
-        "startTime": "1100",
-        "endDate": "20261015",
-        "endTime": "1100",
-        "minVersion": "150300",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51703,
-        "giftType": 981,
-        "giftAmount": 0,
-        "title": "13と1/2周年記念ログインスタンプ☆",
-        "message": "イベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めてレアチケ＆にゃんチケ最大10枚ずつゲット！(10/15まで)",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20260417\t1100\t20261015\t1100\t150300\t999999\t0\t0\t51703\t981\t0\t13と1/2周年記念ログインスタンプ☆\tイベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めてレアチケ＆にゃんチケ最大10枚ずつゲット！(10/15まで)\t7\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20260525",
         "startTime": "000",
         "endDate": "20300101",
@@ -1235,100 +1214,121 @@
     },
     {
       "header": {
-        "startDate": "20260915",
+        "startDate": "20261009",
         "startTime": "1100",
-        "endDate": "20261009",
+        "endDate": "20261026",
         "endTime": "1100",
-        "minVersion": "150600",
+        "minVersion": "150700",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 51760,
-        "giftType": 35058,
+        "eventId": 51776,
+        "giftType": 35059,
         "giftAmount": 0,
-        "title": "1億2000万ダウンロード記念ログインスタンプ☆",
-        "message": "イベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>最大でレアチケ5枚、にゃんチケ5枚の合計10枚をゲット！(10/9まで)",
+        "title": "「るろうに剣心」コラボイベント開催記念スタンプ",
+        "message": "イベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めて便利なアイテムや限定キャラクターをゲット！(10/26まで)",
         "url": "",
         "repeatFlag": 1
       },
-      "raw": "20260915\t1100\t20261009\t1100\t150600\t999999\t0\t0\t51760\t35058\t0\t1億2000万ダウンロード記念ログインスタンプ☆\tイベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>最大でレアチケ5枚、にゃんチケ5枚の合計10枚をゲット！(10/9まで)\t7\t0\t1\t0\t0\t0\t0"
+      "raw": "20261009\t1100\t20261026\t1100\t150700\t999999\t0\t0\t51776\t35059\t0\t「るろうに剣心」コラボイベント開催記念スタンプ\tイベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めて便利なアイテムや限定キャラクターをゲット！(10/26まで)\t7\t0\t1\t0\t0\t0\t0"
     },
     {
       "header": {
-        "startDate": "20260915",
+        "startDate": "20261009",
         "startTime": "1100",
-        "endDate": "20261009",
+        "endDate": "20261026",
         "endTime": "1100",
-        "minVersion": "150600",
+        "minVersion": "150700",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 51762,
-        "giftType": 830,
+        "eventId": 51777,
+        "giftType": 852,
         "giftAmount": 0,
         "title": "",
         "message": "",
         "url": "",
         "repeatFlag": 0
       },
-      "raw": "20260915\t1100\t20261009\t1100\t150600\t999999\t0\t0\t51762\t830\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+      "raw": "20261009\t1100\t20261026\t1100\t150700\t999999\t0\t0\t51777\t852\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
-        "startDate": "20260915",
+        "startDate": "20261009",
         "startTime": "1100",
-        "endDate": "20261016",
+        "endDate": "20261102",
         "endTime": "1100",
-        "minVersion": "150600",
+        "minVersion": "150700",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 84000,
-        "giftType": 11026,
+        "eventId": 82002,
+        "giftType": 11049,
         "giftAmount": 0,
         "title": "",
         "message": "",
         "url": "",
         "repeatFlag": 1
       },
-      "raw": "20260915\t1100\t20261016\t1100\t150600\t999999\t0\t0\t84000\t11026\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
+      "raw": "20261009\t1100\t20261102\t1100\t150700\t999999\t0\t0\t82002\t11049\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
     },
     {
       "header": {
-        "startDate": "20260916",
+        "startDate": "20261016",
         "startTime": "1100",
-        "endDate": "20261008",
+        "endDate": "20261021",
         "endTime": "1100",
-        "minVersion": "150600",
+        "minVersion": "150700",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 85003,
-        "giftType": 11033,
+        "eventId": 51778,
+        "giftType": 827,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20261016\t1100\t20261021\t1100\t150700\t999999\t0\t0\t51778\t827\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20261016",
+        "startTime": "1100",
+        "endDate": "20261108",
+        "endTime": "1100",
+        "minVersion": "150700",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 85004,
+        "giftType": 11035,
         "giftAmount": 0,
         "title": "",
         "message": "",
         "url": "",
         "repeatFlag": 1
       },
-      "raw": "20260916\t1100\t20261008\t1100\t150600\t999999\t0\t0\t85003\t11033\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
+      "raw": "20261016\t1100\t20261108\t1100\t150700\t999999\t0\t0\t85004\t11035\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
     },
     {
       "header": {
-        "startDate": "20260921",
+        "startDate": "20261021",
         "startTime": "1100",
-        "endDate": "20261001",
+        "endDate": "20261026",
         "endTime": "1100",
-        "minVersion": "150600",
+        "minVersion": "150700",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 51764,
+        "eventId": 51779,
         "giftType": 833,
         "giftAmount": 0,
         "title": "",
@@ -1336,20 +1336,20 @@
         "url": "",
         "repeatFlag": 0
       },
-      "raw": "20260921\t1100\t20261001\t1100\t150600\t999999\t0\t0\t51764\t833\t0\t\t\t300\t0\t0\t0\t0\t0\t0"
+      "raw": "20261021\t1100\t20261026\t1100\t150700\t999999\t0\t0\t51779\t833\t0\t\t\t300\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
-        "startDate": "20260921",
+        "startDate": "20261021",
         "startTime": "1100",
-        "endDate": "20261001",
+        "endDate": "20261026",
         "endTime": "1100",
-        "minVersion": "150600",
+        "minVersion": "150700",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 51765,
+        "eventId": 51780,
         "giftType": 834,
         "giftAmount": 0,
         "title": "",
@@ -1357,104 +1357,104 @@
         "url": "",
         "repeatFlag": 0
       },
-      "raw": "20260921\t1100\t20261001\t1100\t150600\t999999\t0\t0\t51765\t834\t0\t\t\t300\t2\t0\t0\t0\t0\t0"
+      "raw": "20261021\t1100\t20261026\t1100\t150700\t999999\t0\t0\t51780\t834\t0\t\t\t300\t2\t0\t0\t0\t0\t0"
     },
     {
       "header": {
-        "startDate": "20260924",
+        "startDate": "20261023",
         "startTime": "1100",
-        "endDate": "20261011",
-        "endTime": "0",
-        "minVersion": "150600",
+        "endDate": "20261112",
+        "endTime": "1100",
+        "minVersion": "150700",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 51766,
-        "giftType": 35052,
-        "giftAmount": 0,
-        "title": "「こねこ音楽祭」ログインボーナス（Lv.1）",
-        "message": "こねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）",
+        "eventId": 2515,
+        "giftType": 201,
+        "giftAmount": 10000,
+        "title": "初心者応援！！ログインボーナス☆",
+        "message": "日本編クリアを応援！育成に役立つアイテムを毎日プレゼント！<br>今がにゃんこ軍団の戦力をアップする大チャンス！(11/12まで)",
         "url": "",
         "repeatFlag": 1
       },
-      "raw": "20260924\t1100\t20261011\t0\t150600\t999999\t0\t0\t51766\t35052\t0\t「こねこ音楽祭」ログインボーナス（Lv.1）\tこねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）\t7\t0\t1\t0\t0\t0\t0"
+      "raw": "20261023\t1100\t20261112\t1100\t150700\t999999\t0\t0\t2515\t201\t10000\t初心者応援！！ログインボーナス☆\t日本編クリアを応援！育成に役立つアイテムを毎日プレゼント！<br>今がにゃんこ軍団の戦力をアップする大チャンス！(11/12まで)\t300\t2\t1\t0\t0\t0\t0"
     },
     {
       "header": {
-        "startDate": "20260924",
+        "startDate": "20261026",
         "startTime": "1100",
-        "endDate": "20261011",
-        "endTime": "0",
-        "minVersion": "150600",
+        "endDate": "20261112",
+        "endTime": "1100",
+        "minVersion": "150700",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 51767,
-        "giftType": 35053,
+        "eventId": 51781,
+        "giftType": 35020,
         "giftAmount": 0,
-        "title": "「こねこ音楽祭」ログインボーナス（Lv.2）",
-        "message": "こねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）",
+        "title": "ハロウィンパーティー参加記念☆",
+        "message": "トリックオアトリート！<br>1日1個手に入るのは、お菓子かそれとも…！？(11/12まで)",
         "url": "",
         "repeatFlag": 1
       },
-      "raw": "20260924\t1100\t20261011\t0\t150600\t999999\t0\t0\t51767\t35053\t0\t「こねこ音楽祭」ログインボーナス（Lv.2）\tこねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）\t7\t0\t1\t0\t0\t0\t0"
+      "raw": "20261026\t1100\t20261112\t1100\t150700\t999999\t0\t0\t51781\t35020\t0\tハロウィンパーティー参加記念☆\tトリックオアトリート！<br>1日1個手に入るのは、お菓子かそれとも…！？(11/12まで)\t7\t0\t1\t0\t0\t0\t0"
     },
     {
       "header": {
-        "startDate": "20260924",
+        "startDate": "20261026",
         "startTime": "1100",
-        "endDate": "20261011",
-        "endTime": "0",
-        "minVersion": "150600",
+        "endDate": "20261104",
+        "endTime": "1100",
+        "minVersion": "150700",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 51768,
-        "giftType": 35054,
+        "eventId": 5200,
+        "giftType": 805,
         "giftAmount": 0,
-        "title": "「こねこ音楽祭」ログインボーナス（Lv.3）",
-        "message": "こねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）",
+        "title": "",
+        "message": "",
         "url": "",
-        "repeatFlag": 1
+        "repeatFlag": 0
       },
-      "raw": "20260924\t1100\t20261011\t0\t150600\t999999\t0\t0\t51768\t35054\t0\t「こねこ音楽祭」ログインボーナス（Lv.3）\tこねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）\t7\t0\t1\t0\t0\t0\t0"
+      "raw": "20261026\t1100\t20261104\t1100\t150700\t999999\t0\t0\t5200\t805\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
-        "startDate": "20260930",
-        "startTime": "0",
-        "endDate": "20261011",
-        "endTime": "0",
-        "minVersion": "150600",
+        "startDate": "20261026",
+        "startTime": "1100",
+        "endDate": "20261104",
+        "endTime": "1100",
+        "minVersion": "150700",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 51769,
-        "giftType": 35055,
+        "eventId": 5220,
+        "giftType": 820,
         "giftAmount": 0,
-        "title": "「こねこ音楽祭」ログインボーナス（Lv.4）",
-        "message": "こねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）",
+        "title": "",
+        "message": "",
         "url": "",
-        "repeatFlag": 1
+        "repeatFlag": 0
       },
-      "raw": "20260930\t0\t20261011\t0\t150600\t999999\t0\t0\t51769\t35055\t0\t「こねこ音楽祭」ログインボーナス（Lv.4）\tこねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）\t7\t0\t1\t0\t0\t0\t0"
+      "raw": "20261026\t1100\t20261104\t1100\t150700\t999999\t0\t0\t5220\t820\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
     },
     {
       "header": {
-        "startDate": "20261001",
+        "startDate": "20261101",
         "startTime": "000",
-        "endDate": "20261002",
+        "endDate": "20261102",
         "endTime": "000",
-        "minVersion": "150600",
+        "minVersion": "150700",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 51770,
+        "eventId": 51782,
         "giftType": 828,
         "giftAmount": 0,
         "title": "",
@@ -1462,20 +1462,20 @@
         "url": "",
         "repeatFlag": 4
       },
-      "raw": "20261001\t000\t20261002\t000\t150600\t999999\t0\t0\t51770\t828\t0\t\t\t7\t0\t4\t0\t0\t0\t0"
+      "raw": "20261101\t000\t20261102\t000\t150700\t999999\t0\t0\t51782\t828\t0\t\t\t7\t0\t4\t0\t0\t0\t0"
     },
     {
       "header": {
-        "startDate": "20261001",
+        "startDate": "20261101",
         "startTime": "000",
-        "endDate": "20261002",
+        "endDate": "20261102",
         "endTime": "000",
-        "minVersion": "150600",
+        "minVersion": "150700",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "gift": {
-        "eventId": 51771,
+        "eventId": 51783,
         "giftType": 835,
         "giftAmount": 0,
         "title": "",
@@ -1483,91 +1483,7 @@
         "url": "",
         "repeatFlag": 2
       },
-      "raw": "20261001\t000\t20261002\t000\t150600\t999999\t0\t0\t51771\t835\t0\t\t\t7\t0\t2\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20261001",
-        "startTime": "1100",
-        "endDate": "20261009",
-        "endTime": "1100",
-        "minVersion": "150600",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51772,
-        "giftType": 833,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20261001\t1100\t20261009\t1100\t150600\t999999\t0\t0\t51772\t833\t0\t\t\t300\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20261001",
-        "startTime": "1100",
-        "endDate": "20261009",
-        "endTime": "1100",
-        "minVersion": "150600",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51773,
-        "giftType": 834,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20261001\t1100\t20261009\t1100\t150600\t999999\t0\t0\t51773\t834\t0\t\t\t300\t2\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20261004",
-        "startTime": "000",
-        "endDate": "20261011",
-        "endTime": "000",
-        "minVersion": "150600",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51774,
-        "giftType": 35056,
-        "giftAmount": 0,
-        "title": "「こねこ音楽祭」ログインボーナス（Lv.5）",
-        "message": "こねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20261004\t000\t20261011\t000\t150600\t999999\t0\t0\t51774\t35056\t0\t「こねこ音楽祭」ログインボーナス（Lv.5）\tこねこ音楽祭を記念して特別ボーナス！<br>Lvに応じて報酬が豪華になるにゃ！（10/10まで）\t7\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20261008",
-        "startTime": "000",
-        "endDate": "20261011",
-        "endTime": "000",
-        "minVersion": "150600",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51775,
-        "giftType": 35057,
-        "giftAmount": 0,
-        "title": "「こねこ音楽祭」ログインボーナス（Lv.MAX）",
-        "message": "こねこ音楽祭を記念して特別ボーナス！<br>毎日ネコカン100個もらえるにゃ～！（10/10まで）",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20261008\t000\t20261011\t000\t150600\t999999\t0\t0\t51775\t35057\t0\t「こねこ音楽祭」ログインボーナス（Lv.MAX）\tこねこ音楽祭を記念して特別ボーナス！<br>毎日ネコカン100個もらえるにゃ～！（10/10まで）\t7\t0\t1\t0\t0\t0\t0"
+      "raw": "20261101\t000\t20261102\t000\t150700\t999999\t0\t0\t51783\t835\t0\t\t\t7\t0\t2\t0\t0\t0\t0"
     }
   ]
 }
