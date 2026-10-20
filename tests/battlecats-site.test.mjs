@@ -18,6 +18,9 @@ test("comparison selects the previous saved version by versionCode",()=>{
   assert.equal(url.hostname,"kbc-rakv0.pages.dev");
   assert.equal(url.searchParams.get("revision"),revision);
   assert.equal(url.searchParams.get("compare"),"15400");
+  const first=selectComparisonSnapshots({...catalog,snapshots:[entries[2]]},"15.5.1");
+  assert.equal(first.previous,null);
+  assert.equal(new URL(buildAssetExplorerUrl(undefined,first.current,null)).searchParams.has("compare"),false);
 });
 
 test("readiness requires matching inventories and a working public consumer",async()=>{

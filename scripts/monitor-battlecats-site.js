@@ -42,14 +42,14 @@ export function selectComparisonSnapshots(catalog, expectedVersion) {
   const current = snapshots.filter(snapshot => snapshot.versionName === expectedVersion).sort((a,b)=>b.versionCode-a.versionCode)[0];
   if (!current) return null;
   const previous = snapshots.filter(snapshot => compareVersions(snapshot.versionName,expectedVersion)<0 && snapshot.versionCode<current.versionCode).sort((a,b)=>b.versionCode-a.versionCode)[0];
-  return previous ? {current,previous} : null;
+  return {current,previous:previous || null};
 }
 export function buildAssetExplorerUrl(baseUrl, currentSnapshot, previousSnapshot) {
   const url = new URL(baseUrl || DEFAULT_SITE_URL);
   url.searchParams.set("dataset","Local");
   url.searchParams.set("version",currentSnapshot.id);
-  url.searchParams.set("compare",previousSnapshot.id);
-  url.searchParams.set("view","diff");
+  if(previousSnapshot) url.searchParams.set("compare",previousSnapshot.id);
+  url.searchParams.set("view",previousSnapshot ? "diff" : "browse");
   url.searchParams.set("layout","list");
   if(currentSnapshot.revision) url.searchParams.set("revision",currentSnapshot.revision);
   return url.toString();
@@ -60,10 +60,17 @@ async function checkPublicSite(revision,selected) {
   const response = await fetch(url,{signal:AbortSignal.timeout(10000)});
   if(!response.ok) return false;
   const catalog=await response.json();
-  return catalog.revision===revision && [selected.current.id,selected.previous.id].every(id=>catalog.snapshots?.some(snapshot=>snapshot.dataset==="Local" && snapshot.id===id));
+  const snapshots=[selected.current,selected.previous].filter(Boolean);
+  if(catalog.revision!==revision || !snapshots.every(item=>catalog.snapshots?.some(snapshot=>snapshot.dataset==="Local" && snapshot.id===item.id))) return false;
+  for(const item of snapshots) {
+    url.search=new URLSearchParams({op:"manifest",dataset:"Local",version:item.id,revision});
+    const ready=await fetch(url,{signal:AbortSignal.timeout(10000)});
+    if(!ready.ok) return false;
+  }
+  return true;
 }
-export async function findReadyComparison({owner,assetsRepo,token,expectedVersion,getJson=getRepositoryJson,getRevision=getRepositoryRevision,checkSite=checkPublicSite}) {
-  const revision=await getRevision({owner,repo:assetsRepo,token});
+export async function findReadyComparison({owner,assetsRepo,token,assetsRef="main",expectedVersion,getJson=getRepositoryJson,getRevision=getRepositoryRevision,checkSite=checkPublicSite}) {
+  const revision=await getRevision({owner,repo:assetsRepo,token,ref:assetsRef});
   const read=path=>getJson({owner,repo:assetsRepo,path,token,ref:revision});
   const current=await read(VERSION_PATH);
   if(extractCurrentVersion(current)!==expectedVersion) return null;
@@ -71,9 +78,9 @@ export async function findReadyComparison({owner,assetsRepo,token,expectedVersio
   if(!Array.isArray(catalog?.snapshots)) return null;
   const selected=selectComparisonSnapshots({...catalog,snapshots:catalog.snapshots.filter(entry=>entry.versionName!==expectedVersion || entry.buildId===current.buildId)},expectedVersion);
   if(!selected || selected.current.datasetId!==current.datasetId) return null;
-  const [currentManifest,previousManifest]=await Promise.all([read(manifestPathFor(selected.current)),read(manifestPathFor(selected.previous))]);
-  if(!isManifestReady(currentManifest,selected.current) || !isManifestReady(previousManifest,selected.previous) || !await checkSite(revision,selected)) return null;
-  selected.current.revision=revision; selected.previous.revision=revision;
+  const [currentManifest,previousManifest]=await Promise.all([read(manifestPathFor(selected.current)),selected.previous ? read(manifestPathFor(selected.previous)) : null]);
+  if(!isManifestReady(currentManifest,selected.current) || (selected.previous && !isManifestReady(previousManifest,selected.previous)) || !await checkSite(revision,selected)) return null;
+  selected.current.revision=revision; if(selected.previous) selected.previous.revision=revision;
   return {...selected,currentManifest,previousManifest,siteUrl:buildAssetExplorerUrl(process.env.BATTLECATS_ASSET_EXPLORER_URL,selected.current,selected.previous)};
 }
 export async function waitForReadyComparison({

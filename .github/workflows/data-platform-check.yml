@@ -1,0 +1,15 @@
+name: Validate native monitor contract
+on:
+  push:
+    branches: [codex/data-platform-rebuild]
+permissions:
+  contents: read
+jobs:
+  monitor:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+      - run: npm run test:battlecats-monitor
