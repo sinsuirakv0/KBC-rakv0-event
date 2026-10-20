@@ -49,7 +49,7 @@ export function buildAssetExplorerUrl(baseUrl, currentSnapshot, previousSnapshot
   url.searchParams.set("dataset","Local");
   url.searchParams.set("version",currentSnapshot.id);
   if(previousSnapshot) url.searchParams.set("compare",previousSnapshot.id);
-  url.searchParams.set("view",previousSnapshot ? "diff" : "browse");
+  url.searchParams.set("view",previousSnapshot ? "diff" : "list");
   url.searchParams.set("layout","list");
   if(currentSnapshot.revision) url.searchParams.set("revision",currentSnapshot.revision);
   return url.toString();
