@@ -1,7 +1,7 @@
-name: Validate native monitor contract
+﻿name: Validate native monitor contract
 on:
   push:
-    branches: [codex/data-platform-rebuild]
+    branches: [main, codex/data-platform-rebuild]
 permissions:
   contents: read
 jobs:
