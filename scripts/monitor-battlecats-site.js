@@ -24,7 +24,9 @@ function numberFromEnv(value, fallback, minimum, maximum) {
 }
 function manifestPathFor(snapshot) {
   if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(snapshot?.datasetId)) return null;
-  const expected = `metadata/jp/versions/${snapshot.datasetId}.inventory.json`;
+  const version=snapshot.storageVersion===2?String(snapshot.versionCode):snapshot.datasetId;
+  if(snapshot.storageVersion===2&&(!Number.isSafeInteger(snapshot.versionCode)||snapshot.versionCode<=0))return null;
+  const expected = `metadata/jp/versions/${version}.inventory.json`;
   return snapshot.inventoryPath === expected ? expected : null;
 }
 function isManifestReady(manifest, snapshot) {

@@ -11,3 +11,6 @@
 確認: npm run test:battlecats-monitor（27件成功）。外部への試験通知は未実施。Cloudflareの実画面はユーザーが確認する。関連しないイベント取得処理の作業中変更はこのブランチのコミット対象に含めない。
 
 全体状況: https://github.com/sinsuirakv0/battlecats-apk/blob/codex/data-platform-rebuild/docs/data-platform-review.md
+
+
+2026-10-29: storageVersion=2の版台帳はmetadata/jp/versions/<versionCode>.inventory.json。datasetIdは出典識別に保持する。過去commitの旧パスと、新commitの数字だけの版フォルダを区別して照合する。
