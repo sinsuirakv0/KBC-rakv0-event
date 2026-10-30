@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/10/30 10:49:43",
+  "updatedAt": "26/10/30 14:10:43",
   "data": [
     {
       "header": {
@@ -1216,48 +1216,6 @@
       "header": {
         "startDate": "20261009",
         "startTime": "1100",
-        "endDate": "20261026",
-        "endTime": "1100",
-        "minVersion": "150700",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51776,
-        "giftType": 35059,
-        "giftAmount": 0,
-        "title": "「るろうに剣心」コラボイベント開催記念スタンプ",
-        "message": "イベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めて便利なアイテムや限定キャラクターをゲット！(10/26まで)",
-        "url": "",
-        "repeatFlag": 1
-      },
-      "raw": "20261009\t1100\t20261026\t1100\t150700\t999999\t0\t0\t51776\t35059\t0\t「るろうに剣心」コラボイベント開催記念スタンプ\tイベント期間中にログインすると、1日1回スタンプを押してもらえるにゃ！<br>スタンプを貯めて便利なアイテムや限定キャラクターをゲット！(10/26まで)\t7\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20261009",
-        "startTime": "1100",
-        "endDate": "20261026",
-        "endTime": "1100",
-        "minVersion": "150700",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51777,
-        "giftType": 852,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20261009\t1100\t20261026\t1100\t150700\t999999\t0\t0\t51777\t852\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20261009",
-        "startTime": "1100",
         "endDate": "20261102",
         "endTime": "1100",
         "minVersion": "150700",
@@ -1279,27 +1237,6 @@
       "header": {
         "startDate": "20261016",
         "startTime": "1100",
-        "endDate": "20261021",
-        "endTime": "1100",
-        "minVersion": "150700",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51778,
-        "giftType": 827,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20261016\t1100\t20261021\t1100\t150700\t999999\t0\t0\t51778\t827\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20261016",
-        "startTime": "1100",
         "endDate": "20261108",
         "endTime": "1100",
         "minVersion": "150700",
@@ -1316,48 +1253,6 @@
         "repeatFlag": 1
       },
       "raw": "20261016\t1100\t20261108\t1100\t150700\t999999\t0\t0\t85004\t11035\t0\t\t\t0\t0\t1\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20261021",
-        "startTime": "1100",
-        "endDate": "20261026",
-        "endTime": "1100",
-        "minVersion": "150700",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51779,
-        "giftType": 833,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20261021\t1100\t20261026\t1100\t150700\t999999\t0\t0\t51779\t833\t0\t\t\t300\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20261021",
-        "startTime": "1100",
-        "endDate": "20261026",
-        "endTime": "1100",
-        "minVersion": "150700",
-        "maxVersion": "999999"
-      },
-      "timeBlocks": [],
-      "gift": {
-        "eventId": 51780,
-        "giftType": 834,
-        "giftAmount": 0,
-        "title": "",
-        "message": "",
-        "url": "",
-        "repeatFlag": 0
-      },
-      "raw": "20261021\t1100\t20261026\t1100\t150700\t999999\t0\t0\t51780\t834\t0\t\t\t300\t2\t0\t0\t0\t0\t0"
     },
     {
       "header": {
@@ -1505,6 +1400,90 @@
         "repeatFlag": 0
       },
       "raw": "20261030\t1100\t20261112\t1100\t150700\t999999\t0\t0\t2520\t202\t1\tイベント不具合のお詫び\t「ハロウィンパーティ」ミッション不具合のお詫びでにゃんこチケット1枚が送られました。<br>詳細はアプリ内「運営からのお知らせ」をご確認ください。\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20261101",
+        "startTime": "1100",
+        "endDate": "20261104",
+        "endTime": "1100",
+        "minVersion": "150700",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51784,
+        "giftType": 833,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20261101\t1100\t20261104\t1100\t150700\t999999\t0\t0\t51784\t833\t0\t\t\t300\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20261101",
+        "startTime": "1100",
+        "endDate": "20261104",
+        "endTime": "1100",
+        "minVersion": "150700",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 51785,
+        "giftType": 834,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20261101\t1100\t20261104\t1100\t150700\t999999\t0\t0\t51785\t834\t0\t\t\t300\t2\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20261103",
+        "startTime": "000",
+        "endDate": "20261104",
+        "endTime": "000",
+        "minVersion": "150700",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 2516,
+        "giftType": 203,
+        "giftAmount": 1,
+        "title": "文化の日記念☆",
+        "message": "祝日感謝！文化の日を記念して<br>レアチケット1枚をプレゼント！",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20261103\t000\t20261104\t000\t150700\t999999\t0\t0\t2516\t203\t1\t文化の日記念☆\t祝日感謝！文化の日を記念して<br>レアチケット1枚をプレゼント！\t7\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20261104",
+        "startTime": "1100",
+        "endDate": "20261113",
+        "endTime": "1100",
+        "minVersion": "150700",
+        "maxVersion": "999999"
+      },
+      "timeBlocks": [],
+      "gift": {
+        "eventId": 5230,
+        "giftType": 849,
+        "giftAmount": 0,
+        "title": "",
+        "message": "",
+        "url": "",
+        "repeatFlag": 0
+      },
+      "raw": "20261104\t1100\t20261113\t1100\t150700\t999999\t0\t0\t5230\t849\t0\t\t\t7\t0\t0\t0\t0\t0\t0"
     }
   ]
 }
