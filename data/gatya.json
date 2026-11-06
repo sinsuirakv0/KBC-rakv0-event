@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/10/30 14:10:39",
+  "updatedAt": "26/11/06 14:28:11",
   "data": [
     {
       "header": {
@@ -723,126 +723,6 @@
     },
     {
       "header": {
-        "startDate": "20261029",
-        "startTime": "1100",
-        "endDate": "20261101",
-        "endTime": "1100",
-        "minVersion": "150700",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 1
-      },
-      "gachas": [
-        {
-          "id": 861,
-          "price": 150,
-          "flags": 4216,
-          "rates": {
-            "normal": 0,
-            "rare": 6940,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 60,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "限定超激レア「ネコ王女」含む女性キャラ中心の特別ガチャ! 伝説レアのみ出現率2倍!!"
-        }
-      ],
-      "raw": "20261029\t1100\t20261101\t1100\t150700\t999999\t0\t0\t1\t1\t861\t150\t0\t4216\t0\t0\t6940\t0\t2500\t0\t500\t0\t60\t0\t限定超激レア「ネコ王女」含む女性キャラ中心の特別ガチャ! 伝説レアのみ出現率2倍!!\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20261029",
-        "startTime": "1100",
-        "endDate": "20261101",
-        "endTime": "1100",
-        "minVersion": "150700",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 3
-      },
-      "gachas": [
-        {
-          "id": 1021,
-          "price": 150,
-          "flags": 20600,
-          "rates": {
-            "normal": 0,
-            "rare": 6970,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 30,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "浮いてる敵にめっぽう強いキャラ「獅子番長ラクレス」登場！★詳細はバナーをタップ!!"
-        }
-      ],
-      "raw": "20261029\t1100\t20261101\t1100\t150700\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1021\t150\t0\t20600\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t浮いてる敵にめっぽう強いキャラ「獅子番長ラクレス」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20261101",
-        "startTime": "1100",
-        "endDate": "20261104",
-        "endTime": "1100",
-        "minVersion": "150700",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 1
-      },
-      "gachas": [
-        {
-          "id": 1069,
-          "price": 150,
-          "flags": 4216,
-          "rates": {
-            "normal": 0,
-            "rare": 6470,
-            "superRare": 2600,
-            "uberRare": 900,
-            "legendRare": 30,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "限定キャラ「幼騎士ルーノ」登場！★超激レア出現率アップの「超ネコ祭」開催中!!"
-        }
-      ],
-      "raw": "20261101\t1100\t20261104\t1100\t150700\t999999\t0\t0\t1\t1\t1069\t150\t0\t4216\t0\t0\t6470\t0\t2600\t0\t900\t0\t30\t0\t限定キャラ「幼騎士ルーノ」登場！★超激レア出現率アップの「超ネコ祭」開催中!!\t0\t0"
-    },
-    {
-      "header": {
-        "startDate": "20261101",
-        "startTime": "1100",
-        "endDate": "20261104",
-        "endTime": "1100",
-        "minVersion": "150700",
-        "maxVersion": "999999",
-        "gachaType": 1,
-        "gachaCount": 3
-      },
-      "gachas": [
-        {
-          "id": 1067,
-          "price": 150,
-          "flags": 20600,
-          "rates": {
-            "normal": 0,
-            "rare": 6970,
-            "superRare": 2500,
-            "uberRare": 500,
-            "legendRare": 30,
-            "featured": 0
-          },
-          "guaranteed": false,
-          "message": "赤と黒の攻撃をたまに無効化する「鉄腕！東雲寺あかね」登場！★詳細はバナーをタップ!!"
-        }
-      ],
-      "raw": "20261101\t1100\t20261104\t1100\t150700\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1067\t150\t0\t20600\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t赤と黒の攻撃をたまに無効化する「鉄腕！東雲寺あかね」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
-    },
-    {
-      "header": {
         "startDate": "20261104",
         "startTime": "1100",
         "endDate": "20261106",
@@ -900,6 +780,156 @@
         }
       ],
       "raw": "20261106\t1100\t20261108\t1100\t150700\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1015\t150\t0\t20600\t0\t0\t6970\t0\t2500\t0\t500\t0\t30\t0\t召喚能力を持つキャラクター「魔導師シドミ」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20261108",
+        "startTime": "1100",
+        "endDate": "20261112",
+        "endTime": "1100",
+        "minVersion": "150700",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 2
+      },
+      "gachas": [
+        {
+          "id": 922,
+          "price": 150,
+          "flags": 0,
+          "rates": {
+            "normal": 0,
+            "rare": 7000,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 0,
+            "featured": 0
+          },
+          "guaranteed": true,
+          "message": "一部ハロウィン限定キャラクターに本能追加！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20261108\t1100\t20261112\t1100\t150700\t999999\t0\t0\t1\t2\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t922\t150\t0\t0\t0\t0\t7000\t0\t2500\t0\t500\t1\t0\t0\t一部ハロウィン限定キャラクターに本能追加！★詳細はバナーをタップ!!\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20261108",
+        "startTime": "1100",
+        "endDate": "20261112",
+        "endTime": "1100",
+        "minVersion": "150700",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 1
+      },
+      "gachas": [
+        {
+          "id": 1084,
+          "price": 150,
+          "flags": 0,
+          "rates": {
+            "normal": 0,
+            "rare": 6970,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 30,
+            "featured": 0
+          },
+          "guaranteed": true,
+          "message": "2つの属性にめっぽう強い「いなばの白うさぎ」参戦！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20261108\t1100\t20261112\t1100\t150700\t999999\t0\t0\t1\t1\t1084\t150\t0\t0\t0\t0\t6970\t0\t2500\t0\t500\t1\t30\t0\t2つの属性にめっぽう強い「いなばの白うさぎ」参戦！★詳細はバナーをタップ!!\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20261108",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "150700",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 5
+      },
+      "gachas": [
+        {
+          "id": 1088,
+          "price": 0,
+          "flags": 0,
+          "rates": {
+            "normal": 0,
+            "rare": 0,
+            "superRare": 0,
+            "uberRare": 9500,
+            "legendRare": 500,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "超激レア以上のキャラクターが必ず１体手に入る「レジェンドガチャ」！"
+        }
+      ],
+      "raw": "20261108\t1100\t20300101\t000\t150700\t999999\t0\t0\t1\t5\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1088\t0\t0\t0\t0\t0\t0\t0\t0\t0\t9500\t0\t500\t0\t超激レア以上のキャラクターが必ず１体手に入る「レジェンドガチャ」！\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20261108",
+        "startTime": "1100",
+        "endDate": "20300101",
+        "endTime": "000",
+        "minVersion": "150700",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 6
+      },
+      "gachas": [
+        {
+          "id": 1087,
+          "price": 0,
+          "flags": 0,
+          "rates": {
+            "normal": 0,
+            "rare": 0,
+            "superRare": 0,
+            "uberRare": 10000,
+            "legendRare": 0,
+            "featured": 0
+          },
+          "guaranteed": false,
+          "message": "超激レアのキャラクターが必ず１体手に入る「プラチナガチャ」！"
+        }
+      ],
+      "raw": "20261108\t1100\t20300101\t000\t150700\t999999\t0\t0\t1\t6\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1087\t0\t0\t0\t0\t0\t0\t0\t0\t0\t10000\t0\t0\t0\t超激レアのキャラクターが必ず１体手に入る「プラチナガチャ」！\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0"
+    },
+    {
+      "header": {
+        "startDate": "20261110",
+        "startTime": "1100",
+        "endDate": "20261112",
+        "endTime": "1100",
+        "minVersion": "150700",
+        "maxVersion": "999999",
+        "gachaType": 1,
+        "gachaCount": 3
+      },
+      "gachas": [
+        {
+          "id": 1004,
+          "price": 150,
+          "flags": 0,
+          "rates": {
+            "normal": 0,
+            "rare": 6970,
+            "superRare": 2500,
+            "uberRare": 500,
+            "legendRare": 30,
+            "featured": 0
+          },
+          "guaranteed": true,
+          "message": "進化後に召喚能力を持つ「樹の精霊コモリ」登場！★詳細はバナーをタップ!!"
+        }
+      ],
+      "raw": "20261110\t1100\t20261112\t1100\t150700\t999999\t0\t0\t1\t3\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t-1\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t0\t\t1004\t150\t0\t0\t0\t0\t6970\t0\t2500\t0\t500\t1\t30\t0\t進化後に召喚能力を持つ「樹の精霊コモリ」登場！★詳細はバナーをタップ!!\t0\t0\t0\t0\t0\t0"
     }
   ]
 }
