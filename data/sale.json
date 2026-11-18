@@ -1,5 +1,5 @@
 {
-  "updatedAt": "26/11/10 15:40:14",
+  "updatedAt": "26/11/18 12:32:39",
   "data": [
     {
       "header": {
@@ -12792,14 +12792,14 @@
         "startTime": "1600",
         "endDate": "20300101",
         "endTime": "0",
-        "minVersion": "150700",
+        "minVersion": "160003",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "stageIds": [
         114
       ],
-      "raw": "20260721\t1600\t20300101\t0\t150700\t999999\t0\t0\t1\t114\t0"
+      "raw": "20260721\t1600\t20300101\t0\t160003\t999999\t0\t0\t1\t114\t0"
     },
     {
       "header": {
@@ -14326,14 +14326,14 @@
         "startTime": "1100",
         "endDate": "20261225",
         "endTime": "1100",
-        "minVersion": "160000",
+        "minVersion": "160003",
         "maxVersion": "999999"
       },
       "timeBlocks": [],
       "stageIds": [
         39002
       ],
-      "raw": "20261120\t1100\t20261225\t1100\t160000\t999999\t0\t0\t1\t39002\t0"
+      "raw": "20261120\t1100\t20261225\t1100\t160003\t999999\t0\t0\t1\t39002\t0"
     },
     {
       "header": {
