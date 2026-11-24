@@ -17,7 +17,12 @@ export async function fetchTsv(name, jwt) {
   }
 
   const text = await res.text();
-  if (!text.trim()) throw new Error("Empty TSV response");
+  // 開始・終了マーカーだけの応答や不正なTSVで正常データを上書きしない。
+  const lines = text.replace(/^\uFEFF/, "").split(/\r?\n/).map(line => line.trim()).filter(Boolean);
+  if (lines[0] !== "[start]" || lines.at(-1) !== "[end]" ||
+      !lines.slice(1, -1).some(line => /^\d{8}\t\d+\t\d{8}\t/.test(line))) {
+    throw new Error("Invalid or empty event TSV response");
+  }
   return { text, hash: hashText(text) };
 }
 

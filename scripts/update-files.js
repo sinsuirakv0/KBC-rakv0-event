@@ -109,6 +109,12 @@ export async function updateFiles(name, tsvText, hash, force = false) {
     const parser = parsers[name];
     if (!parser) throw new Error(`parser not found: ${name}`);
 
+    // 変換結果を検証してからTSV・JSON・ハッシュを書き込む。
+    const parsed = parser(tsvText);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      throw new Error("Invalid or empty parsed event data");
+    }
+
     // 1. TSVをraw/に保存（ユニックス時間付きファイル名）
     const unixTime = Math.floor(Date.now() / 1000);
     const rawFilename = `raw/${name}_${unixTime}.tsv`;
@@ -133,7 +139,7 @@ export async function updateFiles(name, tsvText, hash, force = false) {
 
     // 3. TSV→JSON変換して { updatedAt, data } 形式で保存
     console.log(`[${name}] JSON変換・保存中...`);
-    const json = { updatedAt: getJSTTimestamp(), data: parser(tsvText) };
+    const json = { updatedAt: getJSTTimestamp(), data: parsed };
     await updateGitHubFile({
       path:    `data/${name}.json`,
       content: JSON.stringify(json, null, 2),
